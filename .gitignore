@@ -1,0 +1,13 @@
+km_doc.md
+
+# Build output
+bin/
+
+# npm package (published separately)
+npm/
+
+# scripts (local test only)
+scripts/
+
+# Embed data (auto-synced from /skills on build)
+cmd/skills-x/skills/data/

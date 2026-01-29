@@ -1,0 +1,89 @@
+# Skills-X English Language File
+
+# ============================================================================
+# General Messages
+# ============================================================================
+app_name: "Skills-X"
+app_desc: "AI Agent Skills Management Tool"
+app_long_desc: |
+  Skills-X is an AI Agent Skills management tool.
+  
+  Available commands:
+    list          List all available skills
+    init          Download skill to local
+
+# ============================================================================
+# Command Descriptions
+# ============================================================================
+cmd_list_short: "List all available skills"
+cmd_list_long: "List all curated skills, including open-source and castle-x (self-developed)"
+
+cmd_init_short: "Download skill to local"
+cmd_init_long: |
+  Download specified skill to local ~/.claude/skills/ directory.
+  
+  Examples:
+    skills-x init pdf              Download pdf skill
+    skills-x init ui-ux-pro-max    Download ui-ux-pro-max skill
+    skills-x init --all            Download all skills
+cmd_init_flag_all: "Download all skills"
+cmd_init_flag_target: "Target directory (default: ~/.claude/skills)"
+cmd_init_flag_force: "Force overwrite existing skills"
+
+# ============================================================================
+# Output Messages
+# ============================================================================
+list_header: "Available Skills"
+list_total: "Total: %d skills"
+list_opensource: "open-source"
+list_castlex: "castle-x"
+list_category: "Category"
+list_skill_name: "Name"
+list_description: "Description"
+
+init_downloading: "Downloading: %s"
+init_success: "Downloaded: %s"
+init_all_success: "All downloads complete, total %d skills"
+init_all_skipped: "Skipped %d existing skills"
+init_target_dir: "Target directory: %s"
+init_skipped: "Skipped (already exists): %s"
+init_overwrite: "Overwriting: %s"
+init_confirm_overwrite: "'%s' already exists, overwrite?"
+init_confirm_overwrite_all: "Overwrite all existing skills?"
+init_existing_count: "Found %d existing skills"
+
+# ============================================================================
+# Error Messages
+# ============================================================================
+err_title: "Error"
+err_conditions: "Conditions"
+err_solutions: "Solutions"
+err_doc: "Documentation"
+
+# SkillNotFound
+err_skill_not_found: "Skill not found"
+err_skill_not_found_detail: "skill '%s' does not exist"
+err_skill_not_found_cond1: "Skill name must match directory name"
+err_skill_not_found_cond2: "Case sensitive"
+err_skill_not_found_sol1: "Use skills-x list to view all available skills"
+err_skill_not_found_sol2: "Check skill name spelling"
+
+# MissingArgument
+err_missing_argument: "Missing argument: %s"
+
+# TargetDirError
+err_target_dir_create: "Cannot create target directory"
+err_target_dir_create_detail: "Directory: %s"
+err_target_dir_create_sol1: "Check directory permissions"
+err_target_dir_create_sol2: "Use --target to specify another directory"
+
+# CopyError
+err_copy_failed: "Copy failed"
+err_copy_failed_detail: "Cannot copy skill '%s' to target directory"
+err_copy_failed_sol1: "Check disk space"
+err_copy_failed_sol2: "Check directory permissions"
+
+# NoSkillsEmbedded
+err_no_skills_embedded: "No skills data embedded"
+err_no_skills_embedded_detail: "Skills directory not properly embedded during compilation"
+err_no_skills_embedded_sol1: "Re-download or recompile skills-x"

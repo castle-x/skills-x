@@ -1,0 +1,89 @@
+# Skills-X 中文语言文件
+
+# ============================================================================
+# 通用消息
+# ============================================================================
+app_name: "Skills-X"
+app_desc: "AI Agent Skills 管理工具"
+app_long_desc: |
+  Skills-X 是一个 AI Agent Skills 管理工具。
+  
+  可用命令:
+    list          查看已收录的 skills
+    init          下载 skill 到本地
+
+# ============================================================================
+# 命令描述
+# ============================================================================
+cmd_list_short: "查看已收录的 skills"
+cmd_list_long: "列出所有已收录的 skills，包括开源和自研 (castle-x)"
+
+cmd_init_short: "下载 skill 到本地"
+cmd_init_long: |
+  下载指定的 skill 到本地 ~/.claude/skills/ 目录。
+  
+  示例:
+    skills-x init pdf              下载 pdf skill
+    skills-x init ui-ux-pro-max    下载 ui-ux-pro-max skill
+    skills-x init --all            下载全部 skills
+cmd_init_flag_all: "下载全部 skills"
+cmd_init_flag_target: "目标目录 (默认: ~/.claude/skills)"
+cmd_init_flag_force: "强制覆盖已存在的 skills"
+
+# ============================================================================
+# 输出消息
+# ============================================================================
+list_header: "已收录的 Skills"
+list_total: "共 %d 个 skills"
+list_opensource: "开源"
+list_castlex: "castle-x"
+list_category: "分类"
+list_skill_name: "名称"
+list_description: "描述"
+
+init_downloading: "正在下载: %s"
+init_success: "下载成功: %s"
+init_all_success: "全部下载完成，共 %d 个 skills"
+init_all_skipped: "跳过 %d 个已存在的 skills"
+init_target_dir: "目标目录: %s"
+init_skipped: "已跳过 (已存在): %s"
+init_overwrite: "覆盖安装: %s"
+init_confirm_overwrite: "'%s' 已存在，是否覆盖？"
+init_confirm_overwrite_all: "是否覆盖所有已存在的 skills？"
+init_existing_count: "发现 %d 个已存在的 skills"
+
+# ============================================================================
+# 错误消息
+# ============================================================================
+err_title: "错误"
+err_conditions: "条件"
+err_solutions: "解决方法"
+err_doc: "文档"
+
+# SkillNotFound
+err_skill_not_found: "未找到 skill"
+err_skill_not_found_detail: "skill '%s' 不存在"
+err_skill_not_found_cond1: "skill 名称必须与目录名一致"
+err_skill_not_found_cond2: "区分大小写"
+err_skill_not_found_sol1: "使用 skills-x list 查看所有可用 skills"
+err_skill_not_found_sol2: "检查 skill 名称拼写是否正确"
+
+# MissingArgument
+err_missing_argument: "缺少参数: %s"
+
+# TargetDirError
+err_target_dir_create: "无法创建目标目录"
+err_target_dir_create_detail: "目录: %s"
+err_target_dir_create_sol1: "检查目录权限"
+err_target_dir_create_sol2: "使用 --target 指定其他目录"
+
+# CopyError
+err_copy_failed: "复制失败"
+err_copy_failed_detail: "无法复制 skill '%s' 到目标目录"
+err_copy_failed_sol1: "检查磁盘空间"
+err_copy_failed_sol2: "检查目录权限"
+
+# NoSkillsEmbedded
+err_no_skills_embedded: "未嵌入 skills 数据"
+err_no_skills_embedded_detail: "程序编译时未正确嵌入 skills 目录"
+err_no_skills_embedded_sol1: "重新下载或编译 skills-x"
