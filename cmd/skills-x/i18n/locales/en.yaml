@@ -40,6 +40,107 @@ list_castlex: "castle-x"
 list_category: "Category"
 list_skill_name: "Name"
 list_description: "Description"
+list_castlex_tag: "⭐ Original"
+list_skillsx_desc: "🔄 Meta! Contribution guide (not for regular use)"
+
+# ============================================================================
+# Category Names
+# ============================================================================
+cat_castle-x: "🏰 Castle-X (Original)"
+cat_creative: "🎨 Creative & Design"
+cat_document: "📄 Document Processing"
+cat_devtools: "🛠️  Development Tools"
+cat_workflow: "🔄 Workflows"
+cat_git: "📝 Git & Code Review"
+cat_writing: "✍️  Writing"
+cat_integration: "🔗 Integrations"
+cat_business: "📊 Business & Analytics"
+cat_files: "🗂️  File Management"
+cat_utility: "🎲 Utilities"
+cat_skilldev: "🧰 Skills Development"
+cat_other: "📦 Other"
+
+# ============================================================================
+# Skill Descriptions
+# ============================================================================
+# Creative & Design
+skill_ui-ux-pro-max: "UI/UX design intelligence with 67 styles, 96 palettes"
+skill_algorithmic-art: "p5.js generative art, flow fields, particles"
+skill_canvas-design: "Posters, visual art (.png/.pdf)"
+skill_brand-guidelines: "Anthropic brand styling"
+skill_theme-factory: "Artifact theme switching (10 presets)"
+skill_frontend-design: "Frontend design assistance"
+skill_image-enhancer: "Image upscaling, sharpening, cleanup"
+skill_remotion: "Remotion - Video creation in React"
+
+# Document Processing
+skill_pdf: "PDF extract/fill/merge"
+skill_docx: "Word document processing"
+skill_pptx: "PowerPoint presentations"
+skill_xlsx: "Excel sheets/formulas/charts"
+skill_document-skills: "Comprehensive document processing"
+skill_doc-coauthoring: "Document collaboration"
+
+# Development Tools
+skill_mcp-builder: "Build MCP servers"
+skill_artifacts-builder: "React+Tailwind+shadcn artifacts"
+skill_web-artifacts-builder: "Complex HTML artifacts"
+skill_webapp-testing: "Playwright testing"
+skill_langsmith-fetch: "LangSmith debug tracing"
+skill_changelog-generator: "Generate changelog from git commits"
+
+# Workflows
+skill_brainstorming: "Brainstorm before creative work"
+skill_writing-plans: "Write task plans"
+skill_executing-plans: "Execute plans"
+skill_systematic-debugging: "Systematic debugging methodology"
+skill_test-driven-development: "TDD workflow"
+skill_verification-before-completion: "Verify before completion"
+skill_subagent-driven-development: "Subagent-driven development"
+skill_dispatching-parallel-agents: "Parallel agent dispatching"
+
+# Git & Code Review
+skill_requesting-code-review: "Request code review"
+skill_receiving-code-review: "Handle CR feedback"
+skill_finishing-a-development-branch: "Complete development branch"
+skill_using-git-worktrees: "Git Worktree isolation"
+
+# Writing
+skill_content-research-writer: "Content research and writing"
+skill_internal-comms: "Internal communications/reports"
+skill_tailored-resume-generator: "Custom resume generation"
+
+# Integrations
+skill_connect: "Connect 1000+ services"
+skill_connect-apps: "Gmail/Slack/GitHub integration"
+skill_connect-apps-plugin: "App connection plugin"
+skill_slack-gif-creator: "Slack GIF creation"
+
+# Business & Analytics
+skill_competitive-ads-extractor: "Competitor ad analysis"
+skill_developer-growth-analysis: "Developer growth analytics"
+skill_lead-research-assistant: "Lead research assistant"
+skill_meeting-insights-analyzer: "Meeting analysis"
+skill_twitter-algorithm-optimizer: "Tweet optimization"
+
+# File Management
+skill_file-organizer: "File organization"
+skill_invoice-organizer: "Invoice organization/tax prep"
+
+# Utilities
+skill_video-downloader: "YouTube download"
+skill_domain-name-brainstormer: "Domain name ideas"
+skill_raffle-winner-picker: "Raffle picker"
+
+# Skills Development
+skill_skill-creator: "Create new skills"
+skill_writing-skills: "Write/validate skills"
+skill_skill-share: "Share skills"
+skill_template-skill: "Skill template"
+skill_using-superpowers: "How to use skills"
+
+# Castle-X Skills
+skill_skills-x: "Contribute skills to skills-x collection"
 
 init_downloading: "Downloading: %s"
 init_success: "Downloaded: %s"
@@ -51,6 +152,13 @@ init_overwrite: "Overwriting: %s"
 init_confirm_overwrite: "'%s' already exists, overwrite?"
 init_confirm_overwrite_all: "Overwrite all existing skills?"
 init_existing_count: "Found %d existing skills"
+
+# Meta Warning for skills-x
+meta_warning_title: "⚠️  Meta Warning"
+meta_warning_line1: "This skill is the contribution guide for skills-x project."
+meta_warning_line2: "🤔 For regular users, downloading it is useless."
+meta_warning_line3: "👉 Unless you want to contribute to skills-x."
+meta_warning_confirm: "Continue anyway? [y/N]: "
 
 # ============================================================================
 # Error Messages

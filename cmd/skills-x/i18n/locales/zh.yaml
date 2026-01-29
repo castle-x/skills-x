@@ -40,6 +40,107 @@ list_castlex: "castle-x"
 list_category: "分类"
 list_skill_name: "名称"
 list_description: "描述"
+list_castlex_tag: "⭐ 作者自研"
+list_skillsx_desc: "🔄 套娃! 贡献指南 (普通用户用不上)"
+
+# ============================================================================
+# 分类名称
+# ============================================================================
+cat_castle-x: "🏰 Castle-X (自研)"
+cat_creative: "🎨 创意与设计"
+cat_document: "📄 文档处理"
+cat_devtools: "🛠️  开发工具"
+cat_workflow: "🔄 工作流"
+cat_git: "📝 Git 与代码审查"
+cat_writing: "✍️  写作"
+cat_integration: "🔗 集成"
+cat_business: "📊 商业分析"
+cat_files: "🗂️  文件管理"
+cat_utility: "🎲 实用工具"
+cat_skilldev: "🧰 Skills 开发"
+cat_other: "📦 其他"
+
+# ============================================================================
+# Skill 描述
+# ============================================================================
+# Creative & Design
+skill_ui-ux-pro-max: "UI/UX 设计智能助手，67 种风格、96 套配色"
+skill_algorithmic-art: "p5.js 生成艺术、流场、粒子系统"
+skill_canvas-design: "海报、视觉艺术设计 (.png/.pdf)"
+skill_brand-guidelines: "Anthropic 品牌风格指南"
+skill_theme-factory: "Artifact 主题切换 (10 套预设)"
+skill_frontend-design: "前端设计辅助"
+skill_image-enhancer: "图像放大、锐化、清理"
+skill_remotion: "Remotion - React 视频创作框架"
+
+# Document Processing
+skill_pdf: "PDF 提取/填写/合并"
+skill_docx: "Word 文档处理"
+skill_pptx: "PowerPoint 演示文稿"
+skill_xlsx: "Excel 表格/公式/图表"
+skill_document-skills: "综合文档处理"
+skill_doc-coauthoring: "文档协作"
+
+# Development Tools
+skill_mcp-builder: "构建 MCP 服务器"
+skill_artifacts-builder: "React+Tailwind+shadcn artifacts"
+skill_web-artifacts-builder: "复杂 HTML artifacts"
+skill_webapp-testing: "Playwright 测试"
+skill_langsmith-fetch: "LangSmith 调试追踪"
+skill_changelog-generator: "从 git 提交生成更新日志"
+
+# Workflows
+skill_brainstorming: "创意工作前的头脑风暴"
+skill_writing-plans: "编写任务计划"
+skill_executing-plans: "执行计划"
+skill_systematic-debugging: "系统化调试方法论"
+skill_test-driven-development: "TDD 测试驱动开发流程"
+skill_verification-before-completion: "完成前验证"
+skill_subagent-driven-development: "子代理驱动开发"
+skill_dispatching-parallel-agents: "并行代理调度"
+
+# Git & Code Review
+skill_requesting-code-review: "请求代码审查"
+skill_receiving-code-review: "处理 CR 反馈"
+skill_finishing-a-development-branch: "完成开发分支"
+skill_using-git-worktrees: "Git Worktree 隔离"
+
+# Writing
+skill_content-research-writer: "内容研究与写作"
+skill_internal-comms: "内部通讯/报告"
+skill_tailored-resume-generator: "定制简历生成"
+
+# Integrations
+skill_connect: "连接 1000+ 服务"
+skill_connect-apps: "Gmail/Slack/GitHub 集成"
+skill_connect-apps-plugin: "应用连接插件"
+skill_slack-gif-creator: "Slack GIF 创建"
+
+# Business & Analytics
+skill_competitive-ads-extractor: "竞品广告分析"
+skill_developer-growth-analysis: "开发者增长分析"
+skill_lead-research-assistant: "潜在客户研究助手"
+skill_meeting-insights-analyzer: "会议分析"
+skill_twitter-algorithm-optimizer: "推文优化"
+
+# File Management
+skill_file-organizer: "文件整理"
+skill_invoice-organizer: "发票整理/税务准备"
+
+# Utilities
+skill_video-downloader: "YouTube 下载"
+skill_domain-name-brainstormer: "域名创意"
+skill_raffle-winner-picker: "抽奖选择器"
+
+# Skills Development
+skill_skill-creator: "创建新 skills"
+skill_writing-skills: "编写/验证 skills"
+skill_skill-share: "分享 skills"
+skill_template-skill: "Skill 模板"
+skill_using-superpowers: "如何使用 skills"
+
+# Castle-X Skills
+skill_skills-x: "向 skills-x 贡献 skills"
 
 init_downloading: "正在下载: %s"
 init_success: "下载成功: %s"
@@ -51,6 +152,13 @@ init_overwrite: "覆盖安装: %s"
 init_confirm_overwrite: "'%s' 已存在，是否覆盖？"
 init_confirm_overwrite_all: "是否覆盖所有已存在的 skills？"
 init_existing_count: "发现 %d 个已存在的 skills"
+
+# Meta Warning for skills-x
+meta_warning_title: "⚠️  套娃警告"
+meta_warning_line1: "这个 skill 是 skills-x 项目自己用的贡献指南。"
+meta_warning_line2: "🤔 对普通用户来说，下载它没什么用。"
+meta_warning_line3: "👉 除非你想为 skills-x 贡献新的 skill。"
+meta_warning_confirm: "继续下载？[y/N]: "
 
 # ============================================================================
 # 错误消息

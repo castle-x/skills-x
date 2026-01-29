@@ -86,16 +86,13 @@ func initSkill(name string, targetDir string) error {
 	// Special warning for skills-x (meta/self-referential skill)
 	if name == "skills-x" {
 		fmt.Printf("\n%s╭─────────────────────────────────────────────────────────╮%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  ⚠️  套娃警告 / Meta Warning                             │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_title"), colorReset)
 		fmt.Printf("%s├─────────────────────────────────────────────────────────┤%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  这个 skill 是 skills-x 项目自己用的贡献指南。          │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  This skill is the contribution guide for skills-x.    │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line1"), colorReset)
 		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  🤔 对普通用户来说，下载它没什么用。                     │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  🤔 For regular users, downloading it is useless.       │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line2"), colorReset)
 		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  👉 除非你想为 skills-x 贡献新的 skill。                 │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  👉 Unless you want to contribute to skills-x.          │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line3"), colorReset)
 		fmt.Printf("%s╰─────────────────────────────────────────────────────────╯%s\n\n", colorYellow, colorReset)
 
 		if !flagForce {
@@ -224,7 +221,7 @@ func confirmOverwriteAll() bool {
 // confirmContinue prompts user to confirm continuing (for meta skill warning)
 func confirmContinue() bool {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("%s继续下载？/ Continue anyway? [y/N]: %s", colorYellow, colorReset)
+	fmt.Printf("%s%s%s", colorYellow, i18n.T("meta_warning_confirm"), colorReset)
 	response, err := reader.ReadString('\n')
 	if err != nil {
 		return false

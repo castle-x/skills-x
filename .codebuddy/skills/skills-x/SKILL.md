@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: castle-x
-  version: "1.2"
+  version: "1.1"
 ---
 
 # Skills-X Contribution Guide
@@ -29,115 +29,12 @@ skills-x/
 ├── castle-x/            # Castle-X original skills (自研)
 │   └── skills-x/        # This skill
 ├── cmd/skills-x/        # Go source code
-│   ├── skills/
-│   │   └── skills.go    # Skill metadata registry
-│   └── i18n/
-│       └── locales/     # Language files (zh.yaml, en.yaml)
+│   └── skills/
+│       └── skills.go    # Skill metadata registry
 ├── npm/                 # npm package
 │   └── package.json     # Version number here
 └── Makefile             # Build commands
 ```
-
----
-
-## ⚠️ Internationalization (i18n) Rules - CRITICAL
-
-**skills-x supports bilingual (Chinese/English) output. Follow these rules strictly:**
-
-### Rule 1: NO Mixing Languages in a Single String
-
-❌ **FORBIDDEN - Never mix Chinese and English in the same string:**
-```go
-// BAD: Mixed languages
-desc = "🔄 套娃! Contribution guide (not for regular use)"
-tag = "⭐ 作者自研 Original"
-```
-
-✅ **CORRECT - Use separate i18n keys:**
-```go
-// GOOD: Use i18n.T() to get localized string
-desc = i18n.T("list_skillsx_desc")
-tag = i18n.T("list_castlex_tag")
-```
-
-### Rule 2: All User-Facing Strings Must Use i18n
-
-Any text displayed to users MUST go through the i18n system:
-
-1. **Add keys to both language files:**
-
-`cmd/skills-x/i18n/locales/zh.yaml`:
-```yaml
-my_message: "这是中文消息"
-```
-
-`cmd/skills-x/i18n/locales/en.yaml`:
-```yaml
-my_message: "This is English message"
-```
-
-2. **Use in Go code:**
-```go
-import "github.com/castle-x/skills-x/cmd/skills-x/i18n"
-
-// Simple string
-msg := i18n.T("my_message")
-
-// With format arguments
-msg := i18n.Tf("my_format_msg", arg1, arg2)
-```
-
-### Rule 3: i18n Key Naming Convention
-
-| Type | Key Prefix | Example |
-|------|------------|---------|
-| Category names | `cat_` | `cat_creative`, `cat_document` |
-| Skill descriptions | `skill_` | `skill_pdf`, `skill_docx` |
-| Command descriptions | `cmd_` | `cmd_list_short` |
-| List output | `list_` | `list_header`, `list_total` |
-| Init output | `init_` | `init_success` |
-| Error messages | `err_` | `err_skill_not_found` |
-
-### Rule 4: Adding New Skill Descriptions
-
-When adding a new skill, you MUST add descriptions to BOTH language files:
-
-**Step 1:** Add English description to `en.yaml`:
-```yaml
-skill_new-skill: "Brief description in English"
-```
-
-**Step 2:** Add Chinese description to `zh.yaml`:
-```yaml
-skill_new-skill: "简短的中文描述"
-```
-
-**Step 3:** The code automatically picks up translations via:
-```go
-desc := i18n.T("skill_" + skillName)
-```
-
-### Rule 5: Testing Bilingual Output
-
-**Always test BOTH languages after any UI changes:**
-
-```bash
-# Test Chinese
-SKILLS_LANG=zh ./bin/skills-x list
-
-# Test English  
-SKILLS_LANG=en ./bin/skills-x list
-```
-
-### Rule 6: Environment Variable Priority
-
-Language is detected in this order:
-1. `SKILLS_LANG` (highest priority, skills-x specific)
-2. `LANG` (system locale)
-3. `LC_ALL` (system locale)
-4. Default: `zh` (Chinese)
-
----
 
 ## Skill Directory Structure Requirements
 
@@ -236,26 +133,11 @@ Required validation checks:
 - [ ] No uppercase letters in name
 - [ ] No consecutive hyphens in name
 
-### Step 4: Add i18n Translations (REQUIRED)
+### Step 4: Update skills.go Metadata
 
-**You MUST add translations for both Chinese and English:**
+Edit `cmd/skills-x/skills/skills.go` to add:
 
-1. **Edit `cmd/skills-x/i18n/locales/en.yaml`:**
-```yaml
-# Skill Descriptions
-skill_new-skill: "Brief English description"
-```
-
-2. **Edit `cmd/skills-x/i18n/locales/zh.yaml`:**
-```yaml
-# Skill 描述
-skill_new-skill: "简短的中文描述"
-```
-
-### Step 5: Update skills.go Metadata
-
-Edit `cmd/skills-x/skills/skills.go` to add **category mapping only**:
-
+1. **Category mapping** in `skillCategories`:
 ```go
 var skillCategories = map[string]string{
     // ... existing entries
@@ -263,7 +145,13 @@ var skillCategories = map[string]string{
 }
 ```
 
-**Note:** Descriptions are now in i18n files, NOT in `skillDescriptions` map.
+2. **Description** in `skillDescriptions`:
+```go
+var skillDescriptions = map[string]string{
+    // ... existing entries
+    "new-skill-name": "Brief description for list display",
+}
+```
 
 Available categories:
 - `creative` - Design, art, UI/UX
@@ -278,7 +166,7 @@ Available categories:
 - `utility` - General utilities
 - `skilldev` - Skill development
 
-### Step 6: Update README Files
+### Step 5: Update README Files
 
 Update both `README.md` and `README_ZH.md`:
 
@@ -318,12 +206,16 @@ metadata:
 
 2. Add `LICENSE.txt` (copy from project root or create)
 
-### Step 3: Add i18n Translations
+### Step 3: Update skills.go for Castle-X Skills
 
-Same as community skills - add to both `en.yaml` and `zh.yaml`:
+For castle-x skills, add to `castleXSkillDescriptions` in `skills.go`:
 
-```yaml
-skill_new-skill: "Description"
+```go
+// castleXSkillDescriptions provides descriptions for castle-x self-developed skills
+var castleXSkillDescriptions = map[string]string{
+    "skills-x":       "Contribute skills to skills-x collection",
+    "new-skill-name": "Description here",  // Add new skill
+}
 ```
 
 Note: Castle-X skills are automatically assigned category `castle-x` and marked with `IsCastleX: true`.
@@ -336,11 +228,8 @@ Note: Castle-X skills are automatically assigned category `castle-x` and marked 
 # Build the binary
 make build
 
-# Test Chinese output
-SKILLS_LANG=zh ./bin/skills-x list | grep "<skill-name>"
-
-# Test English output
-SKILLS_LANG=en ./bin/skills-x list | grep "<skill-name>"
+# Verify new skill appears in list
+./bin/skills-x list | grep "<skill-name>"
 
 # Test downloading the skill
 ./bin/skills-x init <skill-name> --target /tmp/test-skills
@@ -371,7 +260,7 @@ git add .
 git commit -m "feat: add <skill-name> skill
 
 - Add <skill-name> to skills collection
-- Add i18n translations (en/zh)
+- Update skills.go metadata
 - Update README"
 ```
 
@@ -409,10 +298,8 @@ cd npm && npm publish --access public
 # Validate a skill
 head -20 skills/<name>/SKILL.md
 
-# Build and test locally (both languages)
-make build
-SKILLS_LANG=zh ./bin/skills-x list
-SKILLS_LANG=en ./bin/skills-x list
+# Build and test locally
+make build && ./bin/skills-x list
 
 # Full release workflow
 make build-npm
@@ -430,9 +317,8 @@ cd npm && npm publish --access public
 
 | Issue | Solution |
 |-------|----------|
-| Skill not in list | Check `skillCategories` in skills.go and i18n files |
-| Mixed language output | Ensure ALL strings use `i18n.T()`, no hardcoded text |
-| Missing translation | Add keys to BOTH `en.yaml` and `zh.yaml` |
+| Community skill not in list | Check `skillCategories` and `skillDescriptions` in skills.go |
+| Castle-X skill not in list | Check `castleXSkillDescriptions` in skills.go |
 | init fails | Verify SKILL.md exists and has valid frontmatter |
 | Windows fails | Ensure using `/` not `\` for embed.FS paths |
 | Version mismatch | Check `npm/package.json` version matches build |
@@ -441,20 +327,7 @@ cd npm && npm publish --access public
 
 ## Summary: Where to Put Skills
 
-| Skill Type | Directory | i18n Key | Category |
-|------------|-----------|----------|----------|
-| Community (from external sources) | `skills/<name>/` | `skill_<name>` in both yaml files | `skillCategories` map |
-| Castle-X (original/自研) | `castle-x/<name>/` | `skill_<name>` in both yaml files | Auto: `castle-x` |
-
----
-
-## i18n Checklist for New Skills
-
-Before submitting a PR, verify:
-
-- [ ] `skill_<name>` key added to `en.yaml`
-- [ ] `skill_<name>` key added to `zh.yaml`
-- [ ] No mixed Chinese/English in any single string
-- [ ] Tested with `SKILLS_LANG=zh` - shows Chinese
-- [ ] Tested with `SKILLS_LANG=en` - shows English
-- [ ] Category added to `skillCategories` map
+| Skill Type | Directory | Metadata Location |
+|------------|-----------|-------------------|
+| Community (from external sources) | `skills/<name>/` | `skillCategories` + `skillDescriptions` |
+| Castle-X (original/自研) | `castle-x/<name>/` | `castleXSkillDescriptions` |

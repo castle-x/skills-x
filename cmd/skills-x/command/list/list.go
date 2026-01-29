@@ -20,23 +20,6 @@ const (
 	colorBold   = "\033[1m"
 )
 
-// Category display names (i18n keys)
-var categoryNames = map[string]string{
-	"creative":    "🎨 Creative & Design",
-	"document":    "📄 Document Processing",
-	"devtools":    "🛠️  Development Tools",
-	"workflow":    "🔄 Workflows",
-	"git":         "📝 Git & Code Review",
-	"writing":     "✍️  Writing",
-	"integration": "🔗 Integrations",
-	"business":    "📊 Business & Analytics",
-	"files":       "🗂️  File Management",
-	"utility":     "🎲 Utilities",
-	"skilldev":    "🧰 Skills Development",
-	"other":       "📦 Other",
-	"castle-x":    "🏰 Castle-X (Original)",
-}
-
 // Category order for display
 var categoryOrder = []string{
 	"castle-x", // Castle-X skills first
@@ -53,6 +36,31 @@ func NewCommand() *cobra.Command {
 		RunE:  runList,
 	}
 	return cmd
+}
+
+// getCategoryName returns the localized category name
+func getCategoryName(cat string) string {
+	key := "cat_" + cat
+	name := i18n.T(key)
+	if name == key {
+		// Fallback if not found
+		return "📦 " + cat
+	}
+	return name
+}
+
+// getSkillDescription returns the localized skill description
+func getSkillDescription(skillName string, fallback string) string {
+	key := "skill_" + skillName
+	desc := i18n.T(key)
+	if desc == key {
+		// Fallback to original description if not translated
+		if fallback != "" {
+			return fallback
+		}
+		return "-"
+	}
+	return desc
 }
 
 func runList(cmd *cobra.Command, args []string) error {
@@ -88,23 +96,21 @@ func runList(cmd *cobra.Command, args []string) error {
 			continue
 		}
 
-		catName := categoryNames[cat]
+		catName := getCategoryName(cat)
 		fmt.Printf("%s%s%s\n", colorBold, catName, colorReset)
 
 		for _, s := range catSkills {
 			tag := ""
 			if s.IsCastleX {
-				tag = fmt.Sprintf(" %s⭐ 作者自研%s", colorYellow, colorReset)
+				tag = fmt.Sprintf(" %s%s%s", colorYellow, i18n.T("list_castlex_tag"), colorReset)
 			}
 
-			desc := s.Description
-			if desc == "" {
-				desc = "-"
-			}
+			// Get localized description
+			desc := getSkillDescription(s.Name, s.Description)
 
 			// Special note for skills-x (meta skill)
 			if s.Name == "skills-x" {
-				desc = "🔄 套娃! Contribution guide (not for regular use)"
+				desc = i18n.T("list_skillsx_desc")
 			}
 
 			fmt.Printf("  %s%-30s%s %s%s%s%s\n",

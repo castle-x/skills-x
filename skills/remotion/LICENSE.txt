@@ -1,0 +1,21 @@
+Remotion License
+
+Copyright (c) Remotion
+
+This skill is sourced from:
+https://github.com/remotion-dev/remotion/tree/main/packages/skills/skills/remotion
+
+Remotion uses a dual-license model:
+
+1. FREE LICENSE - For:
+   - Individuals
+   - Organizations with 3 or fewer employees
+   - Non-profit organizations
+   - Evaluation purposes
+
+2. COMPANY LICENSE - For:
+   - Organizations with more than 3 employees
+
+For full license details, see:
+https://github.com/remotion-dev/remotion/blob/main/LICENSE.md
+https://www.remotion.pro/license

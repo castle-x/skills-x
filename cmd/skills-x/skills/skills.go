@@ -33,6 +33,7 @@ var skillCategories = map[string]string{
 	"theme-factory":    "creative",
 	"frontend-design":  "creative",
 	"image-enhancer":   "creative",
+	"remotion":         "creative",
 
 	// Document Processing
 	"pdf":             "document",
