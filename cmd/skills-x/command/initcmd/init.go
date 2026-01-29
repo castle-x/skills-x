@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/anthropics/skills-x/cmd/skills-x/errmsg"
-	"github.com/anthropics/skills-x/cmd/skills-x/i18n"
-	"github.com/anthropics/skills-x/cmd/skills-x/skills"
+	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
+	"github.com/castle-x/skills-x/cmd/skills-x/skills"
 	"github.com/spf13/cobra"
 )
 

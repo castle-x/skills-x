@@ -1,7 +1,7 @@
 # Skills-X
 
 [![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://go.dev/)
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)](https://github.com/anthropics/skills-x)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)](https://github.com/castle-x/skills-x)
 [![npm](https://img.shields.io/npm/v/skills-x?color=CB3837&logo=npm)](https://www.npmjs.com/package/skills-x)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -19,7 +19,7 @@ npm install -g skills-x
 npx skills-x list
 
 # Using go install
-go install github.com/anthropics/skills-x/cmd/skills-x@latest
+go install github.com/castle-x/skills-x/cmd/skills-x@latest
 ```
 
 ### Usage

@@ -1,4 +1,4 @@
-module github.com/anthropics/skills-x
+module github.com/castle-x/skills-x
 
 go 1.21
 

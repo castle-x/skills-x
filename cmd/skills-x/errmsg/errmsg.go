@@ -4,7 +4,7 @@ package errmsg
 import (
 	"fmt"
 
-	"github.com/anthropics/skills-x/cmd/skills-x/i18n"
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 )
 
 // ANSI color codes
@@ -113,7 +113,7 @@ func SkillNotFound(name string) *Error {
 			i18n.T("err_skill_not_found_sol1"),
 			i18n.T("err_skill_not_found_sol2"),
 		},
-		DocURL: "https://github.com/anthropics/skills-x",
+		DocURL: "https://github.com/castle-x/skills-x",
 	}
 }
 
@@ -156,6 +156,6 @@ func NoSkillsEmbedded() *Error {
 		Solutions: []string{
 			i18n.T("err_no_skills_embedded_sol1"),
 		},
-		DocURL: "https://github.com/anthropics/skills-x",
+		DocURL: "https://github.com/castle-x/skills-x",
 	}
 }

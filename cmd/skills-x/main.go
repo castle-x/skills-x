@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/anthropics/skills-x/cmd/skills-x/command/initcmd"
-	"github.com/anthropics/skills-x/cmd/skills-x/command/list"
-	"github.com/anthropics/skills-x/cmd/skills-x/errmsg"
-	"github.com/anthropics/skills-x/cmd/skills-x/i18n"
+	"github.com/castle-x/skills-x/cmd/skills-x/command/initcmd"
+	"github.com/castle-x/skills-x/cmd/skills-x/command/list"
+	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/spf13/cobra"
 )
 
