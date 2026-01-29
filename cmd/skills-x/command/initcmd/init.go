@@ -41,7 +41,7 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.Flags().BoolVar(&flagAll, "all", false, i18n.T("cmd_init_flag_all"))
-	cmd.Flags().StringVar(&flagTarget, "target", "", i18n.T("cmd_init_flag_target"))
+	cmd.Flags().StringVarP(&flagTarget, "target", "t", "", i18n.T("cmd_init_flag_target"))
 	cmd.Flags().BoolVarP(&flagForce, "force", "f", false, i18n.T("cmd_init_flag_force"))
 
 	return cmd
@@ -51,11 +51,12 @@ func runInit(cmd *cobra.Command, args []string) error {
 	// Determine target directory
 	targetDir := flagTarget
 	if targetDir == "" {
-		home, err := os.UserHomeDir()
+		// Default to current directory
+		cwd, err := os.Getwd()
 		if err != nil {
 			return err
 		}
-		targetDir = filepath.Join(home, ".claude", "skills")
+		targetDir = cwd
 	}
 
 	// Create target directory if not exists
@@ -85,15 +86,10 @@ func initSkill(name string, targetDir string) error {
 
 	// Special warning for skills-x (meta/self-referential skill)
 	if name == "skills-x" {
-		fmt.Printf("\n%s╭─────────────────────────────────────────────────────────╮%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_title"), colorReset)
-		fmt.Printf("%s├─────────────────────────────────────────────────────────┤%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line1"), colorReset)
-		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line2"), colorReset)
-		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
-		fmt.Printf("%s│  %-53s │%s\n", colorYellow, i18n.T("meta_warning_line3"), colorReset)
-		fmt.Printf("%s╰─────────────────────────────────────────────────────────╯%s\n\n", colorYellow, colorReset)
+		fmt.Printf("\n%s%s%s\n", colorYellow, i18n.T("meta_warning_title"), colorReset)
+		fmt.Printf("%s  %s%s\n", colorYellow, i18n.T("meta_warning_line1"), colorReset)
+		fmt.Printf("%s  %s%s\n", colorYellow, i18n.T("meta_warning_line2"), colorReset)
+		fmt.Printf("%s  %s%s\n\n", colorYellow, i18n.T("meta_warning_line3"), colorReset)
 
 		if !flagForce {
 			if !confirmContinue() {

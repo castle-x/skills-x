@@ -18,16 +18,17 @@ app_long_desc: |
 cmd_list_short: "查看已收录的 skills"
 cmd_list_long: "列出所有已收录的 skills，包括开源和自研 (castle-x)"
 
-cmd_init_short: "下载 skill 到本地"
+cmd_init_short: "安装 skill 到本地"
 cmd_init_long: |
-  下载指定的 skill 到本地 ~/.claude/skills/ 目录。
+  安装指定的 skill 到本地目录（默认当前目录）。
   
   示例:
-    skills-x init pdf              下载 pdf skill
-    skills-x init ui-ux-pro-max    下载 ui-ux-pro-max skill
-    skills-x init --all            下载全部 skills
-cmd_init_flag_all: "下载全部 skills"
-cmd_init_flag_target: "目标目录 (默认: ~/.claude/skills)"
+    skills-x init pdf              安装 pdf skill
+    skills-x init ui-ux-pro-max    安装 ui-ux-pro-max skill
+    skills-x init --all            安装全部 skills
+    skills-x init pdf -t ./skills  安装到指定目录
+cmd_init_flag_all: "安装全部 skills"
+cmd_init_flag_target: "目标目录 (默认: 当前目录)"
 cmd_init_flag_force: "强制覆盖已存在的 skills"
 
 # ============================================================================
@@ -142,9 +143,9 @@ skill_using-superpowers: "如何使用 skills"
 # Castle-X Skills
 skill_skills-x: "向 skills-x 贡献 skills"
 
-init_downloading: "正在下载: %s"
-init_success: "下载成功: %s"
-init_all_success: "全部下载完成，共 %d 个 skills"
+init_downloading: "正在安装: %s"
+init_success: "安装成功: %s"
+init_all_success: "全部安装完成，共 %d 个 skills"
 init_all_skipped: "跳过 %d 个已存在的 skills"
 init_target_dir: "目标目录: %s"
 init_skipped: "已跳过 (已存在): %s"
@@ -156,9 +157,9 @@ init_existing_count: "发现 %d 个已存在的 skills"
 # Meta Warning for skills-x
 meta_warning_title: "⚠️  套娃警告"
 meta_warning_line1: "这个 skill 是 skills-x 项目自己用的贡献指南。"
-meta_warning_line2: "🤔 对普通用户来说，下载它没什么用。"
+meta_warning_line2: "🤔 对普通用户来说，安装它没什么用。"
 meta_warning_line3: "👉 除非你想为 skills-x 贡献新的 skill。"
-meta_warning_confirm: "继续下载？[y/N]: "
+meta_warning_confirm: "继续安装？[y/N]: "
 
 # ============================================================================
 # 错误消息

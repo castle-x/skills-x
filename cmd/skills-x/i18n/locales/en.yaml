@@ -18,16 +18,17 @@ app_long_desc: |
 cmd_list_short: "List all available skills"
 cmd_list_long: "List all curated skills, including open-source and castle-x (self-developed)"
 
-cmd_init_short: "Download skill to local"
+cmd_init_short: "Install skill to local"
 cmd_init_long: |
-  Download specified skill to local ~/.claude/skills/ directory.
+  Install specified skill to local directory (default: current directory).
   
   Examples:
-    skills-x init pdf              Download pdf skill
-    skills-x init ui-ux-pro-max    Download ui-ux-pro-max skill
-    skills-x init --all            Download all skills
-cmd_init_flag_all: "Download all skills"
-cmd_init_flag_target: "Target directory (default: ~/.claude/skills)"
+    skills-x init pdf              Install pdf skill
+    skills-x init ui-ux-pro-max    Install ui-ux-pro-max skill
+    skills-x init --all            Install all skills
+    skills-x init pdf -t ./skills  Install to specified directory
+cmd_init_flag_all: "Install all skills"
+cmd_init_flag_target: "Target directory (default: current directory)"
 cmd_init_flag_force: "Force overwrite existing skills"
 
 # ============================================================================
@@ -142,9 +143,9 @@ skill_using-superpowers: "How to use skills"
 # Castle-X Skills
 skill_skills-x: "Contribute skills to skills-x collection"
 
-init_downloading: "Downloading: %s"
-init_success: "Downloaded: %s"
-init_all_success: "All downloads complete, total %d skills"
+init_downloading: "Installing: %s"
+init_success: "Installed: %s"
+init_all_success: "All installations complete, total %d skills"
 init_all_skipped: "Skipped %d existing skills"
 init_target_dir: "Target directory: %s"
 init_skipped: "Skipped (already exists): %s"
@@ -156,7 +157,7 @@ init_existing_count: "Found %d existing skills"
 # Meta Warning for skills-x
 meta_warning_title: "⚠️  Meta Warning"
 meta_warning_line1: "This skill is the contribution guide for skills-x project."
-meta_warning_line2: "🤔 For regular users, downloading it is useless."
+meta_warning_line2: "🤔 For regular users, installing it is useless."
 meta_warning_line3: "👉 Unless you want to contribute to skills-x."
 meta_warning_confirm: "Continue anyway? [y/N]: "
 
