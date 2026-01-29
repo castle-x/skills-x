@@ -92,7 +92,12 @@ skills-x/
 
 ---
 
-## Skills Directory (53 total)
+## Skills Directory (52 total)
+
+### 🏰 Castle-X (Original Skills)
+| Skill | Purpose |
+|-------|---------|
+| `skills-x` ⭐ | Contribute skills to skills-x collection |
 
 ### 🎨 Creative & Design
 | Skill | Purpose |
@@ -190,7 +195,6 @@ skills-x/
 | `skill-share` | Share Skills |
 | `template-skill` | Skill template |
 | `using-superpowers` | How to use Skills |
-| `skills-x` ⭐ | Contribute skills to skills-x |
 
 ---
 
@@ -203,8 +207,9 @@ skills-x/
 
 ---
 
-## 🏰 Castle-X (Original Skills)
+## 🏰 About Castle-X Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `skills-x` | Contribute skills to skills-x collection |
+Castle-X skills are **original creations** by the project author, stored in the `castle-x/` directory.
+They are displayed separately in the list with a ⭐ marker to distinguish them from community skills.
+
+To contribute a new Castle-X skill, use the `skills-x` skill for guidance.

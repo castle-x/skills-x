@@ -10,13 +10,17 @@ import (
 //go:embed all:data
 var skillsFS embed.FS
 
+//go:embed all:castle-x
+var castleXFS embed.FS
+
 // SkillInfo holds metadata about a skill
 type SkillInfo struct {
 	Name        string
 	Category    string
 	Description string
-	IsCastleX   bool // true if from castle-x (self-developed)
-	Path        string
+	IsCastleX   bool   // true if from castle-x (self-developed)
+	Path        string // path in embed.FS
+	Source      string // "community" or "castle-x"
 }
 
 // skillCategories defines the category for each skill
@@ -95,7 +99,6 @@ var skillCategories = map[string]string{
 	"skill-share":      "skilldev",
 	"template-skill":   "skilldev",
 	"using-superpowers": "skilldev",
-	"skills-x":         "skilldev",
 }
 
 // skillDescriptions provides short descriptions for each skill
@@ -153,24 +156,28 @@ var skillDescriptions = map[string]string{
 	"skill-share":                     "Share skills",
 	"template-skill":                  "Skill template",
 	"using-superpowers":               "How to use skills",
-	"skills-x":                        "Contribute skills to skills-x collection",
 }
 
-// castleXSkills lists skills from castle-x (self-developed)
-var castleXSkills = map[string]bool{
-	"skills-x": true,
+// castleXSkillDescriptions provides descriptions for castle-x self-developed skills
+var castleXSkillDescriptions = map[string]string{
+	"skills-x": "Contribute skills to skills-x collection",
 }
 
-// GetFS returns the embedded filesystem
+// GetFS returns the embedded filesystem for community skills
 func GetFS() embed.FS {
 	return skillsFS
+}
+
+// GetCastleXFS returns the embedded filesystem for castle-x skills
+func GetCastleXFS() embed.FS {
+	return castleXFS
 }
 
 // ListSkills returns all available skills with metadata
 func ListSkills() ([]SkillInfo, error) {
 	var skills []SkillInfo
 
-	// Walk through skills/data directory
+	// Walk through community skills (data directory)
 	err := fs.WalkDir(skillsFS, "data", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -201,12 +208,55 @@ func ListSkills() ([]SkillInfo, error) {
 			Name:        name,
 			Category:    skillCategories[name],
 			Description: skillDescriptions[name],
-			IsCastleX:   castleXSkills[name],
+			IsCastleX:   false,
 			Path:        path,
+			Source:      "community",
 		}
 
 		if info.Category == "" {
 			info.Category = "other"
+		}
+
+		skills = append(skills, info)
+		return nil
+	})
+
+	if err != nil {
+		return skills, err
+	}
+
+	// Walk through castle-x skills
+	err = fs.WalkDir(castleXFS, "castle-x", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Skip root and non-directories
+		if path == "castle-x" || !d.IsDir() {
+			return nil
+		}
+
+		// Only process top-level directories (skill folders)
+		rel := strings.TrimPrefix(path, "castle-x/")
+		if strings.Contains(rel, "/") {
+			return fs.SkipDir
+		}
+
+		name := d.Name()
+		
+		// Check if SKILL.md exists
+		skillMdPath := path + "/SKILL.md"
+		if _, err := castleXFS.Open(skillMdPath); err != nil {
+			return nil // Skip directories without SKILL.md
+		}
+
+		info := SkillInfo{
+			Name:        name,
+			Category:    "castle-x", // Special category for castle-x skills
+			Description: castleXSkillDescriptions[name],
+			IsCastleX:   true,
+			Path:        path,
+			Source:      "castle-x",
 		}
 
 		skills = append(skills, info)
@@ -236,4 +286,17 @@ func GetSkill(name string) (*SkillInfo, error) {
 func SkillExists(name string) bool {
 	skill, _ := GetSkill(name)
 	return skill != nil
+}
+
+// GetSkillFS returns the appropriate filesystem for a skill
+func GetSkillFS(name string) (embed.FS, string, bool) {
+	skill, err := GetSkill(name)
+	if err != nil || skill == nil {
+		return skillsFS, "", false
+	}
+	
+	if skill.IsCastleX {
+		return castleXFS, skill.Path, true
+	}
+	return skillsFS, skill.Path, true
 }

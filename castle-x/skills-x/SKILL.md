@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: castle-x
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Skills-X Contribution Guide
@@ -13,9 +13,28 @@ This skill provides a standardized workflow for contributing new skills to the s
 
 ## When to Use This Skill
 
-- Adding new skills from external sources (agentskills.io, anthropics/skills, etc.)
+- Adding new community skills from external sources (agentskills.io, anthropics/skills, etc.)
+- Creating castle-x original skills
 - Updating existing skills with new versions
 - Validating skill format compliance before submission
+
+## Project Structure Overview
+
+```
+skills-x/
+├── skills/              # Community skills (from agentskills.io, anthropics/skills)
+│   ├── pdf/
+│   ├── docx/
+│   └── ...
+├── castle-x/            # Castle-X original skills (自研)
+│   └── skills-x/        # This skill
+├── cmd/skills-x/        # Go source code
+│   └── skills/
+│       └── skills.go    # Skill metadata registry
+├── npm/                 # npm package
+│   └── package.json     # Version number here
+└── Makefile             # Build commands
+```
 
 ## Skill Directory Structure Requirements
 
@@ -62,7 +81,9 @@ metadata:               # Optional: additional metadata
 - Should clearly describe what the skill does AND when to use it
 - Include keywords that help AI agents identify relevant tasks
 
-## Contribution Workflow
+---
+
+## Contributing Community Skills
 
 ### Step 1: Find and Validate Source Skill
 
@@ -80,7 +101,7 @@ Before downloading, verify the skill has:
 
 ### Step 2: Download to Skills Directory
 
-Download the skill to the root `skills/` directory:
+Download the skill to the root `skills/` directory (NOT `castle-x/`):
 
 ```bash
 # Clone or download the skill
@@ -153,7 +174,55 @@ Update both `README.md` and `README_ZH.md`:
 2. Add new skill to the appropriate category table
 3. Keep both files in sync
 
-### Step 6: Build and Test
+---
+
+## Contributing Castle-X Original Skills
+
+Castle-X 自研 skills should be placed in `castle-x/` directory, NOT in `skills/`.
+
+### Step 1: Create Skill Directory
+
+```bash
+mkdir -p castle-x/<skill-name>
+```
+
+### Step 2: Create Required Files
+
+1. Create `SKILL.md` with proper frontmatter:
+```yaml
+---
+name: <skill-name>
+description: <what this skill does and when to use it>
+license: MIT
+metadata:
+  author: castle-x
+  version: "1.0"
+---
+
+# <Skill Name>
+
+<Detailed instructions for the AI agent>
+```
+
+2. Add `LICENSE.txt` (copy from project root or create)
+
+### Step 3: Update skills.go for Castle-X Skills
+
+For castle-x skills, add to `castleXSkillDescriptions` in `skills.go`:
+
+```go
+// castleXSkillDescriptions provides descriptions for castle-x self-developed skills
+var castleXSkillDescriptions = map[string]string{
+    "skills-x":       "Contribute skills to skills-x collection",
+    "new-skill-name": "Description here",  // Add new skill
+}
+```
+
+Note: Castle-X skills are automatically assigned category `castle-x` and marked with `IsCastleX: true`.
+
+---
+
+## Build and Test
 
 ```bash
 # Build the binary
@@ -167,19 +236,25 @@ make build
 ls /tmp/test-skills/<skill-name>/
 ```
 
-### Step 7: Update Version and Publish
+---
 
-1. **Increment version** in `npm/package.json`:
+## Release Workflow
+
+### Step 1: Update Version
+
+Increment version in `npm/package.json`:
 ```json
 "version": "0.1.X"  // increment patch version
 ```
 
-2. **Build for npm**:
+### Step 2: Build for npm
+
 ```bash
 make build-npm
 ```
 
-3. **Commit changes**:
+### Step 3: Commit Changes
+
 ```bash
 git add .
 git commit -m "feat: add <skill-name> skill
@@ -189,14 +264,16 @@ git commit -m "feat: add <skill-name> skill
 - Update README"
 ```
 
-4. **Tag and push**:
+### Step 4: Tag and Push
+
 ```bash
 git tag -a v0.1.X -m "Add <skill-name> skill"
 git push origin main
 git push --tags
 ```
 
-5. **Create GitHub Release**:
+### Step 5: Create GitHub Release
+
 ```bash
 make build-all
 gh release create v0.1.X \
@@ -207,10 +284,13 @@ gh release create v0.1.X \
   bin/skills-x-*
 ```
 
-6. **Publish to npm**:
+### Step 6: Publish to npm
+
 ```bash
 cd npm && npm publish --access public
 ```
+
+---
 
 ## Quick Reference Commands
 
@@ -231,11 +311,23 @@ gh release create v0.1.X --title "v0.1.X" --notes "..." bin/skills-x-*
 cd npm && npm publish --access public
 ```
 
+---
+
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| Skill not in list | Check `skillCategories` and `skillDescriptions` in skills.go |
+| Community skill not in list | Check `skillCategories` and `skillDescriptions` in skills.go |
+| Castle-X skill not in list | Check `castleXSkillDescriptions` in skills.go |
 | init fails | Verify SKILL.md exists and has valid frontmatter |
 | Windows fails | Ensure using `/` not `\` for embed.FS paths |
 | Version mismatch | Check `npm/package.json` version matches build |
+
+---
+
+## Summary: Where to Put Skills
+
+| Skill Type | Directory | Metadata Location |
+|------------|-----------|-------------------|
+| Community (from external sources) | `skills/<name>/` | `skillCategories` + `skillDescriptions` |
+| Castle-X (original/自研) | `castle-x/<name>/` | `castleXSkillDescriptions` |

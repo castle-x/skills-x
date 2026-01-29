@@ -34,10 +34,12 @@ var categoryNames = map[string]string{
 	"utility":     "🎲 Utilities",
 	"skilldev":    "🧰 Skills Development",
 	"other":       "📦 Other",
+	"castle-x":    "🏰 Castle-X (Original)",
 }
 
 // Category order for display
 var categoryOrder = []string{
+	"castle-x", // Castle-X skills first
 	"creative", "document", "devtools", "workflow", "git",
 	"writing", "integration", "business", "files", "utility", "skilldev", "other",
 }
@@ -92,12 +94,17 @@ func runList(cmd *cobra.Command, args []string) error {
 		for _, s := range catSkills {
 			tag := ""
 			if s.IsCastleX {
-				tag = fmt.Sprintf(" %s[castle-x]%s", colorYellow, colorReset)
+				tag = fmt.Sprintf(" %s⭐ 作者自研%s", colorYellow, colorReset)
 			}
 
 			desc := s.Description
 			if desc == "" {
 				desc = "-"
+			}
+
+			// Special note for skills-x (meta skill)
+			if s.Name == "skills-x" {
+				desc = "🔄 套娃! Contribution guide (not for regular use)"
 			}
 
 			fmt.Printf("  %s%-30s%s %s%s%s%s\n",

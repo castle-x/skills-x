@@ -90,7 +90,12 @@ skills-x/
 
 ---
 
-## Skills 目录 (53个)
+## Skills 目录 (52个)
+
+### 🏰 Castle-X (作者自研 Skills)
+| Skill | 用途 |
+|-------|------|
+| `skills-x` ⭐ | 向 skills-x 集合贡献新 skill |
 
 ### 🎨 创意设计
 | Skill | 用途 |
@@ -188,7 +193,6 @@ skills-x/
 | `skill-share` | 分享 Skill |
 | `template-skill` | Skill 模板 |
 | `using-superpowers` | 如何使用 Skills |
-| `skills-x` ⭐ | 向 skills-x 贡献 skill |
 
 ---
 
@@ -201,8 +205,9 @@ skills-x/
 
 ---
 
-## 🏰 Castle-X (原创 Skills)
+## 🏰 关于 Castle-X Skills
 
-| Skill | 用途 |
-|-------|------|
-| `skills-x` | 向 skills-x 集合贡献新 skill |
+Castle-X skills 是**项目作者的原创作品**，存放在 `castle-x/` 目录下。
+它们在列表中单独显示，并带有 ⭐ 标记以区分社区 skills。
+
+要贡献新的 Castle-X skill，请参考 `skills-x` skill 的指南。

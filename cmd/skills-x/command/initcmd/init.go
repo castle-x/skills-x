@@ -22,6 +22,7 @@ const (
 	colorGreen  = "\033[32m"
 	colorYellow = "\033[33m"
 	colorCyan   = "\033[36m"
+	colorRed    = "\033[31m"
 )
 
 var (
@@ -76,14 +77,35 @@ func runInit(cmd *cobra.Command, args []string) error {
 }
 
 func initSkill(name string, targetDir string) error {
-	// Check if skill exists
-	if !skills.SkillExists(name) {
+	// Check if skill exists and get the appropriate FS
+	skillFS, srcPath, exists := skills.GetSkillFS(name)
+	if !exists {
 		return errmsg.SkillNotFound(name)
 	}
 
-	// Copy skill to target
-	// Note: embed.FS always uses "/" as separator
-	srcPath := "data/" + name
+	// Special warning for skills-x (meta/self-referential skill)
+	if name == "skills-x" {
+		fmt.Printf("\n%s╭─────────────────────────────────────────────────────────╮%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  ⚠️  套娃警告 / Meta Warning                             │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s├─────────────────────────────────────────────────────────┤%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  这个 skill 是 skills-x 项目自己用的贡献指南。          │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  This skill is the contribution guide for skills-x.    │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  🤔 对普通用户来说，下载它没什么用。                     │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  🤔 For regular users, downloading it is useless.       │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│                                                         │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  👉 除非你想为 skills-x 贡献新的 skill。                 │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s│  👉 Unless you want to contribute to skills-x.          │%s\n", colorYellow, colorReset)
+		fmt.Printf("%s╰─────────────────────────────────────────────────────────╯%s\n\n", colorYellow, colorReset)
+
+		if !flagForce {
+			if !confirmContinue() {
+				fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_skipped", name), colorReset)
+				return nil
+			}
+		}
+	}
+
 	dstPath := filepath.Join(targetDir, name)
 
 	// Check if already exists
@@ -99,7 +121,7 @@ func initSkill(name string, targetDir string) error {
 		fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_downloading", name), colorReset)
 	}
 
-	if err := copyDir(skills.GetFS(), srcPath, dstPath); err != nil {
+	if err := copyDir(skillFS, srcPath, dstPath); err != nil {
 		return errmsg.CopyFailed(name)
 	}
 
@@ -132,8 +154,8 @@ func initAll(targetDir string) error {
 	count := 0
 	skipped := 0
 	for _, s := range skillList {
-		// Note: embed.FS always uses "/" as separator
-		srcPath := "data/" + s.Name
+		// Get appropriate FS and path for this skill
+		skillFS, srcPath, _ := skills.GetSkillFS(s.Name)
 		dstPath := filepath.Join(targetDir, s.Name)
 
 		// Check if exists
@@ -150,7 +172,7 @@ func initAll(targetDir string) error {
 			fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_downloading", s.Name), colorReset)
 		}
 
-		if err := copyDir(skills.GetFS(), srcPath, dstPath); err != nil {
+		if err := copyDir(skillFS, srcPath, dstPath); err != nil {
 			fmt.Printf("%s✗ %s: %v%s\n", colorYellow, s.Name, err, colorReset)
 			continue
 		}
@@ -191,6 +213,18 @@ func confirmOverwrite(name string) bool {
 func confirmOverwriteAll() bool {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf("%s%s [y/N]: %s", colorYellow, i18n.T("init_confirm_overwrite_all"), colorReset)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return false
+	}
+	response = strings.TrimSpace(strings.ToLower(response))
+	return response == "y" || response == "yes"
+}
+
+// confirmContinue prompts user to confirm continuing (for meta skill warning)
+func confirmContinue() bool {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("%s继续下载？/ Continue anyway? [y/N]: %s", colorYellow, colorReset)
 	response, err := reader.ReadString('\n')
 	if err != nil {
 		return false
