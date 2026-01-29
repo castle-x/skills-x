@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: castle-x
-  version: "1.2"
+  version: "1.3"
 ---
 
 # Skills-X Contribution Guide
@@ -385,14 +385,48 @@ git push --tags
 
 ### Step 5: Create GitHub Release
 
+⚠️ **CRITICAL: You MUST upload binary assets to the release!**
+
+GitHub Release without binary assets is useless - users cannot download the tool.
+
 ```bash
-make build-all
+# Build all platform binaries first
+make build-npm
+
+# Create release WITH binary assets (REQUIRED!)
 gh release create v0.1.X \
   --title "v0.1.X - Add <skill-name>" \
   --notes "## Added
 - New skill: <skill-name>
 - Description: <brief description>" \
-  bin/skills-x-*
+  npm/bin/skills-x-linux-amd64 \
+  npm/bin/skills-x-linux-arm64 \
+  npm/bin/skills-x-darwin-amd64 \
+  npm/bin/skills-x-darwin-arm64 \
+  npm/bin/skills-x-windows-amd64.exe
+```
+
+❌ **WRONG - Release without assets:**
+```bash
+# This creates an EMPTY release - USELESS!
+gh release create v0.1.X --title "v0.1.X" --notes "..."
+```
+
+✅ **CORRECT - Release with all binary assets:**
+```bash
+gh release create v0.1.X --title "v0.1.X" --notes "..." \
+  npm/bin/skills-x-linux-amd64 \
+  npm/bin/skills-x-linux-arm64 \
+  npm/bin/skills-x-darwin-amd64 \
+  npm/bin/skills-x-darwin-arm64 \
+  npm/bin/skills-x-windows-amd64.exe
+```
+
+If you forgot to upload assets, use `gh release upload`:
+```bash
+gh release upload v0.1.X \
+  npm/bin/skills-x-* \
+  --clobber
 ```
 
 ### Step 6: Publish to npm
@@ -419,8 +453,12 @@ make build-npm
 git add . && git commit -m "feat: add <skill>"
 git tag -a v0.1.X -m "Add <skill>"
 git push origin main --tags
-make build-all
-gh release create v0.1.X --title "v0.1.X" --notes "..." bin/skills-x-*
+gh release create v0.1.X --title "v0.1.X" --notes "..." \
+  npm/bin/skills-x-linux-amd64 \
+  npm/bin/skills-x-linux-arm64 \
+  npm/bin/skills-x-darwin-amd64 \
+  npm/bin/skills-x-darwin-arm64 \
+  npm/bin/skills-x-windows-amd64.exe
 cd npm && npm publish --access public
 ```
 
@@ -436,6 +474,7 @@ cd npm && npm publish --access public
 | init fails | Verify SKILL.md exists and has valid frontmatter |
 | Windows fails | Ensure using `/` not `\` for embed.FS paths |
 | Version mismatch | Check `npm/package.json` version matches build |
+| **Release has no assets** | **MUST include binary files when running `gh release create`** |
 
 ---
 

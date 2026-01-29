@@ -9,5 +9,8 @@ npm/
 # scripts (local test only)
 scripts/
 
+# IDE cache
+.codebuddy/
+
 # Embed data (auto-synced from /skills on build)
 cmd/skills-x/skills/data/
