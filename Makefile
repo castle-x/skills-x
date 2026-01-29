@@ -64,15 +64,20 @@ build-all: sync-skills build-linux build-darwin build-windows
 	@echo "All platforms built -> $(OUT_DIR)/"
 
 # 跨平台构建并输出到 npm/bin (用于 npm 发布)
+# 从 npm/package.json 读取版本号，确保二进制版本与 npm 版本一致
+NPM_VERSION=$(shell grep '"version"' npm/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
+NPM_LDFLAGS=-ldflags "-X main.Version=$(NPM_VERSION) -X main.BuildTime=$(BUILD_TIME)"
+
 build-npm: sync-skills
 	@mkdir -p npm/bin
-	GOOS=linux GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-amd64 ./$(CMD_DIR)
-	GOOS=linux GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-arm64 ./$(CMD_DIR)
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-amd64 ./$(CMD_DIR)
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-arm64 ./$(CMD_DIR)
-	GOOS=windows GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o npm/bin/$(BINARY_NAME)-windows-amd64.exe ./$(CMD_DIR)
+	@echo "Building version: $(NPM_VERSION)"
+	GOOS=linux GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-amd64 ./$(CMD_DIR)
+	GOOS=linux GOARCH=arm64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-arm64 ./$(CMD_DIR)
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-amd64 ./$(CMD_DIR)
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-arm64 ./$(CMD_DIR)
+	GOOS=windows GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-windows-amd64.exe ./$(CMD_DIR)
 	@rm -rf $(SKILLS_DATA)
-	@echo "All platforms built -> npm/bin/"
+	@echo "All platforms built -> npm/bin/ (v$(NPM_VERSION))"
 	@ls -lh npm/bin/
 
 build-linux:

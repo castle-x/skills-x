@@ -82,7 +82,8 @@ func initSkill(name string, targetDir string) error {
 	}
 
 	// Copy skill to target
-	srcPath := filepath.Join("data", name)
+	// Note: embed.FS always uses "/" as separator
+	srcPath := "data/" + name
 	dstPath := filepath.Join(targetDir, name)
 
 	// Check if already exists
@@ -131,7 +132,8 @@ func initAll(targetDir string) error {
 	count := 0
 	skipped := 0
 	for _, s := range skillList {
-		srcPath := filepath.Join("data", s.Name)
+		// Note: embed.FS always uses "/" as separator
+		srcPath := "data/" + s.Name
 		dstPath := filepath.Join(targetDir, s.Name)
 
 		// Check if exists
@@ -208,12 +210,12 @@ func copyDir(srcFS fs.FS, srcPath string, dstPath string) error {
 		}
 
 		// Calculate relative path
-		relPath, err := filepath.Rel(srcPath, path)
-		if err != nil {
-			return err
-		}
+		// Note: embed.FS paths always use "/", so use strings.TrimPrefix instead of filepath.Rel
+		relPath := strings.TrimPrefix(path, srcPath)
+		relPath = strings.TrimPrefix(relPath, "/")
 
-		targetPath := filepath.Join(dstPath, relPath)
+		// Convert to local path separator for destination
+		targetPath := filepath.Join(dstPath, filepath.FromSlash(relPath))
 
 		if d.IsDir() {
 			return os.MkdirAll(targetPath, 0755)

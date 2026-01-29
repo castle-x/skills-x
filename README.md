@@ -22,6 +22,16 @@ npx skills-x list
 go install github.com/castle-x/skills-x/cmd/skills-x@latest
 ```
 
+### Update
+
+```bash
+# Update to latest version
+npm update -g skills-x
+
+# Or reinstall
+npm install -g skills-x@latest
+```
+
 ### Usage
 
 ```bash

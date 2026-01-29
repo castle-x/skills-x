@@ -4,7 +4,6 @@ package skills
 import (
 	"embed"
 	"io/fs"
-	"path/filepath"
 	"strings"
 )
 
@@ -181,15 +180,17 @@ func ListSkills() ([]SkillInfo, error) {
 		}
 
 		// Only process top-level directories (skill folders)
-		rel, _ := filepath.Rel("data", path)
-		if strings.Contains(rel, string(filepath.Separator)) {
+		// Note: embed.FS always uses "/" as separator, regardless of OS
+		rel := strings.TrimPrefix(path, "data/")
+		if strings.Contains(rel, "/") {
 			return fs.SkipDir
 		}
 
 		name := d.Name()
 		
 		// Check if SKILL.md exists
-		skillMdPath := filepath.Join(path, "SKILL.md")
+		// Note: must use "/" for embed.FS, not filepath.Join (which uses "\" on Windows)
+		skillMdPath := path + "/SKILL.md"
 		if _, err := skillsFS.Open(skillMdPath); err != nil {
 			return nil // Skip directories without SKILL.md
 		}
