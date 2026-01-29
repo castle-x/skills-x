@@ -475,6 +475,7 @@ cd npm && npm publish --access public
 | Windows fails | Ensure using `/` not `\` for embed.FS paths |
 | Version mismatch | Check `npm/package.json` version matches build |
 | **Release has no assets** | **MUST include binary files when running `gh release create`** |
+| **Skill not in README** | **MUST update BOTH `README.md` and `README_ZH.md` with new skill** |
 
 ---
 

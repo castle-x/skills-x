@@ -90,7 +90,7 @@ skills-x/
 
 ---
 
-## Skills 目录 (52个)
+## Skills 目录 (53个)
 
 ### 🏰 Castle-X (作者自研 Skills)
 | Skill | 用途 |
@@ -107,6 +107,7 @@ skills-x/
 | `theme-factory` | 工件主题切换 (10种预设) |
 | `frontend-design` | 前端设计 |
 | `image-enhancer` | 图像放大、锐化、清理 |
+| `remotion` | **AI 视频编程** - 使用 React + Remotion 制作视频 |
 
 ### 📄 文档处理
 | Skill | 用途 |

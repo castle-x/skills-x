@@ -92,7 +92,7 @@ skills-x/
 
 ---
 
-## Skills Directory (52 total)
+## Skills Directory (53 total)
 
 ### 🏰 Castle-X (Original Skills)
 | Skill | Purpose |
@@ -109,6 +109,7 @@ skills-x/
 | `theme-factory` | Artifact theme switching (10 presets) |
 | `frontend-design` | Frontend design |
 | `image-enhancer` | Image upscaling, sharpening, cleanup |
+| `remotion` | **AI Video Programming** - Create videos with React using Remotion |
 
 ### 📄 Document Processing
 | Skill | Purpose |
