@@ -95,6 +95,7 @@ var skillCategories = map[string]string{
 	"skill-share":      "skilldev",
 	"template-skill":   "skilldev",
 	"using-superpowers": "skilldev",
+	"skills-x":         "skilldev",
 }
 
 // skillDescriptions provides short descriptions for each skill
@@ -152,11 +153,12 @@ var skillDescriptions = map[string]string{
 	"skill-share":                     "Share skills",
 	"template-skill":                  "Skill template",
 	"using-superpowers":               "How to use skills",
+	"skills-x":                        "Contribute skills to skills-x collection",
 }
 
 // castleXSkills lists skills from castle-x (self-developed)
 var castleXSkills = map[string]bool{
-	// Add castle-x skills here when available
+	"skills-x": true,
 }
 
 // GetFS returns the embedded filesystem

@@ -190,6 +190,7 @@ skills-x/
 | `skill-share` | Share Skills |
 | `template-skill` | Skill template |
 | `using-superpowers` | How to use Skills |
+| `skills-x` ⭐ | Contribute skills to skills-x |
 
 ---
 
@@ -206,4 +207,4 @@ skills-x/
 
 | Skill | Purpose |
 |-------|---------|
-| *Coming soon* | — |
+| `skills-x` | Contribute skills to skills-x collection |

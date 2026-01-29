@@ -188,6 +188,7 @@ skills-x/
 | `skill-share` | 分享 Skill |
 | `template-skill` | Skill 模板 |
 | `using-superpowers` | 如何使用 Skills |
+| `skills-x` ⭐ | 向 skills-x 贡献 skill |
 
 ---
 
@@ -204,4 +205,4 @@ skills-x/
 
 | Skill | 用途 |
 |-------|------|
-| *待添加* | — |
+| `skills-x` | 向 skills-x 集合贡献新 skill |
