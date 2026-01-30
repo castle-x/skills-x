@@ -38,6 +38,7 @@ cmd_init_long: |
 cmd_init_flag_all: "Install all skills"
 cmd_init_flag_target: "Target directory (default: current directory)"
 cmd_init_flag_force: "Force overwrite existing skills"
+cmd_init_flag_refresh: "Force refresh cached repositories (slower, fetches latest)"
 
 # ============================================================================
 # Output Messages
@@ -154,6 +155,7 @@ skill_using-superpowers: "How to use skills"
 # X Skills
 skill_skills-x: "Contribute skills to skills-x collection"
 
+init_refresh_warning: "⚠ Refresh mode: fetching latest from repositories (this may be slower)"
 init_downloading: "Installing: %s"
 init_success: "Installed: %s"
 init_all_success: "All installations complete, total %d skills"

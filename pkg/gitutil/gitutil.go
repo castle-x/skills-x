@@ -18,6 +18,10 @@ const (
 	SparseCloneTimeout = 30 * time.Second
 	// TempDirPrefix is the prefix for temporary directories
 	TempDirPrefix = "skills-"
+	// MaxRetries is the maximum number of retry attempts for network operations
+	MaxRetries = 3
+	// RetryDelay is the delay between retry attempts
+	RetryDelay = 2 * time.Second
 )
 
 // CloneError represents a git clone error
@@ -40,22 +44,39 @@ type CloneResult struct {
 
 // CloneRepo clones a git repository to a temporary directory
 // Uses shallow clone (--depth 1) for efficiency
+// Supports caching: if repo exists, reuses it directly (no network request)
+// Includes retry logic for transient network failures
 func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
+	return CloneRepoWithRefresh(gitURL, repoName, false)
+}
+
+// CloneRepoWithRefresh clones a git repository with optional cache refresh
+// If refresh is true, it will fetch the latest changes even if cache exists
+func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneResult, error) {
 	// Create a deterministic temp directory based on repo name
-	// This allows potential caching/reuse
+	// This allows caching/reuse across invocations
 	tempDir := getTempDir(repoName)
 
-	// If directory already exists and has content, reuse it
+	// If directory already exists and has content
 	if dirExists(tempDir) && hasGitContent(tempDir) {
-		// Pull latest changes instead of re-cloning
-		if err := pullRepo(tempDir); err == nil {
+		if refresh {
+			// Force refresh: update the cached repo
+			if err := updateShallowRepo(tempDir); err != nil {
+				// If update fails, remove and re-clone
+				os.RemoveAll(tempDir)
+			} else {
+				return &CloneResult{
+					TempDir: tempDir,
+					Repo:    repoName,
+				}, nil
+			}
+		} else {
+			// Use cache directly - no network request
 			return &CloneResult{
 				TempDir: tempDir,
 				Repo:    repoName,
 			}, nil
 		}
-		// If pull fails, remove and re-clone
-		os.RemoveAll(tempDir)
 	}
 
 	// Ensure parent directory exists
@@ -63,7 +84,35 @@ func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
 
-	// Clone with timeout
+	// Clone with retry logic for transient network failures
+	var lastErr error
+	for attempt := 1; attempt <= MaxRetries; attempt++ {
+		result, err := cloneWithTimeout(gitURL, tempDir)
+		if err == nil {
+			return result, nil
+		}
+
+		lastErr = err
+
+		// Don't retry on auth errors - they won't succeed
+		if cloneErr, ok := err.(*CloneError); ok && cloneErr.IsAuthError {
+			return nil, err
+		}
+
+		// Clean up failed attempt
+		os.RemoveAll(tempDir)
+
+		// Wait before retrying (except on last attempt)
+		if attempt < MaxRetries {
+			time.Sleep(RetryDelay)
+		}
+	}
+
+	return nil, lastErr
+}
+
+// cloneWithTimeout performs a single clone attempt with timeout
+func cloneWithTimeout(gitURL string, tempDir string) (*CloneResult, error) {
 	cmd := exec.Command("git", "clone", "--depth", "1", gitURL, tempDir)
 
 	// Set up timeout
@@ -75,8 +124,6 @@ func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
 	select {
 	case err := <-done:
 		if err != nil {
-			// Clean up on failure
-			os.RemoveAll(tempDir)
 			return nil, parseGitError(err, gitURL)
 		}
 	case <-time.After(CloneTimeout):
@@ -84,7 +131,6 @@ func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
 		if cmd.Process != nil {
 			cmd.Process.Kill()
 		}
-		os.RemoveAll(tempDir)
 		return nil, &CloneError{
 			URL:       gitURL,
 			Message:   fmt.Sprintf("Clone timed out after %v. Check your network or credentials.", CloneTimeout),
@@ -94,7 +140,7 @@ func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
 
 	return &CloneResult{
 		TempDir: tempDir,
-		Repo:    repoName,
+		Repo:    filepath.Base(tempDir),
 	}, nil
 }
 
@@ -274,10 +320,34 @@ func hasGitContent(path string) bool {
 	return dirExists(gitDir)
 }
 
-// pullRepo pulls latest changes in a repo
+// pullRepo pulls latest changes in a repo (for non-shallow clones)
 func pullRepo(dir string) error {
 	cmd := exec.Command("git", "-C", dir, "pull", "--ff-only")
 	return cmd.Run()
+}
+
+// updateShallowRepo updates a shallow clone by fetching latest and resetting
+// This is the correct way to update a --depth 1 clone
+func updateShallowRepo(dir string) error {
+	// Fetch latest with depth 1
+	fetchCmd := exec.Command("git", "-C", dir, "fetch", "--depth", "1", "origin")
+	if err := runWithTimeout(fetchCmd, CloneTimeout); err != nil {
+		return err
+	}
+
+	// Get the default branch name
+	branchCmd := exec.Command("git", "-C", dir, "symbolic-ref", "refs/remotes/origin/HEAD", "--short")
+	output, err := branchCmd.Output()
+	if err != nil {
+		// Fallback: try to reset to origin/main or origin/master
+		resetCmd := exec.Command("git", "-C", dir, "reset", "--hard", "origin/HEAD")
+		return runWithTimeout(resetCmd, SparseCloneTimeout)
+	}
+
+	// Reset to the fetched head
+	branch := strings.TrimSpace(string(output))
+	resetCmd := exec.Command("git", "-C", dir, "reset", "--hard", branch)
+	return runWithTimeout(resetCmd, SparseCloneTimeout)
 }
 
 // parseGitError converts git errors to CloneError

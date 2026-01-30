@@ -38,6 +38,7 @@ cmd_init_long: |
 cmd_init_flag_all: "安装全部 skills"
 cmd_init_flag_target: "目标目录 (默认: 当前目录)"
 cmd_init_flag_force: "强制覆盖已存在的 skills"
+cmd_init_flag_refresh: "强制刷新缓存仓库（较慢，获取最新版本）"
 
 # ============================================================================
 # 输出消息
@@ -154,6 +155,7 @@ skill_using-superpowers: "如何使用 skills"
 # X Skills
 skill_skills-x: "向 skills-x 贡献 skills"
 
+init_refresh_warning: "⚠ 刷新模式: 正在从仓库获取最新版本（可能较慢）"
 init_downloading: "正在安装: %s"
 init_success: "安装成功: %s"
 init_all_success: "全部安装完成，共 %d 个 skills"

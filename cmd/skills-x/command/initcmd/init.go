@@ -32,9 +32,10 @@ const (
 )
 
 var (
-	flagAll    bool
-	flagTarget string
-	flagForce  bool
+	flagAll     bool
+	flagTarget  string
+	flagForce   bool
+	flagRefresh bool
 )
 
 // NewCommand creates the init command
@@ -49,6 +50,7 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().BoolVar(&flagAll, "all", false, i18n.T("cmd_init_flag_all"))
 	cmd.Flags().StringVarP(&flagTarget, "target", "t", "", i18n.T("cmd_init_flag_target"))
 	cmd.Flags().BoolVarP(&flagForce, "force", "f", false, i18n.T("cmd_init_flag_force"))
+	cmd.Flags().BoolVar(&flagRefresh, "refresh", false, i18n.T("cmd_init_flag_refresh"))
 
 	return cmd
 }
@@ -70,7 +72,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return errmsg.TargetDirCreateError(targetDir)
 	}
 
-	fmt.Printf("%s%s%s\n\n", colorCyan, i18n.Tf("init_target_dir", targetDir), colorReset)
+	fmt.Printf("%s%s%s\n", colorCyan, i18n.Tf("init_target_dir", targetDir), colorReset)
+
+	// Show refresh warning if enabled
+	if flagRefresh {
+		fmt.Printf("%s%s%s\n", colorYellow, i18n.T("init_refresh_warning"), colorReset)
+	}
+	fmt.Println()
 
 	// Load registry
 	reg, err := registry.Load()
@@ -179,7 +187,7 @@ func initRegistrySkill(reg *registry.Registry, name string, targetDir string) er
 		// Use sparse checkout for large repos - only fetch the specific skill path
 		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
 	} else {
-		result, err = gitutil.CloneRepo(source.GetGitURL(), source.Repo)
+		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, flagRefresh)
 	}
 	if err != nil {
 		return fmt.Errorf("%s: %w", i18n.T("init_clone_failed"), err)
@@ -286,7 +294,7 @@ func initAll(reg *registry.Registry, targetDir string) error {
 		}
 
 		// Clone repository for normal repos
-		result, err := gitutil.CloneRepo(source.GetGitURL(), source.Repo)
+		result, err := gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, flagRefresh)
 		if err != nil {
 			fmt.Printf("%s  ⚠ %s: %v%s\n", colorYellow, i18n.T("init_clone_failed"), err, colorReset)
 			errors++

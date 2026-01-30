@@ -24,11 +24,6 @@ anthropic:
       description: Creating algorithmic art using p5.js with seeded randomness
       description_zh: 使用 p5.js 和种子随机数创建算法艺术
 
-    - name: artifacts-builder
-      path: skills/artifacts-builder
-      description: Build interactive artifacts with React
-      description_zh: 使用 React 构建交互式 artifacts
-
     - name: brand-guidelines
       path: skills/brand-guidelines
       description: Apply Anthropic brand colors and typography
@@ -104,11 +99,6 @@ anthropic:
       description: Excel spreadsheet creation, formulas and charts
       description_zh: Excel 电子表格创建、公式和图表
 
-    - name: template-skill
-      path: skills/template-skill
-      description: Template for creating new skills
-      description_zh: 创建新 skills 的模板
-
 # =============================================================================
 # Vercel Labs Skills
 # https://github.com/vercel-labs/agent-skills
@@ -127,8 +117,8 @@ vercel:
       description: 100+ rules for accessibility, performance and UX
       description_zh: 100+ 条可访问性、性能和用户体验规则
 
-    - name: react-native-guidelines
-      path: skills/react-native-guidelines
+    - name: react-native-skills
+      path: skills/react-native-skills
       description: React Native best practices for AI agents
       description_zh: AI agents 的 React Native 最佳实践
 
@@ -235,3 +225,31 @@ superpowers:
       path: skills/writing-skills
       description: Create, edit, and verify skills
       description_zh: 创建、编辑和验证 skills
+
+# =============================================================================
+# Developer Kit by Giuseppe Trisciuoglio
+# https://github.com/giuseppe-trisciuoglio/developer-kit
+# =============================================================================
+developer-kit:
+  repo: github.com/giuseppe-trisciuoglio/developer-kit
+  license: MIT
+  skills:
+    - name: react-patterns
+      path: skills/react
+      description: React 19 patterns covering Server Components, Actions, hooks, Suspense and TypeScript
+      description_zh: React 19 模式 - 服务器组件、Actions、hooks、Suspense 和 TypeScript
+
+    - name: shadcn-ui
+      path: skills/shadcn-ui
+      description: shadcn/ui component library with Radix UI and Tailwind CSS
+      description_zh: shadcn/ui 组件库 - 基于 Radix UI 和 Tailwind CSS
+
+    - name: tailwind-css-patterns
+      path: skills/tailwind-css
+      description: Tailwind CSS utility-first styling patterns for responsive design
+      description_zh: Tailwind CSS 实用优先样式模式 - 响应式设计
+
+    - name: typescript-docs
+      path: skills/typescript-docs
+      description: TypeScript documentation with JSDoc, TypeDoc and ADR patterns
+      description_zh: TypeScript 文档 - JSDoc、TypeDoc 和 ADR 模式

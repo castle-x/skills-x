@@ -78,7 +78,7 @@ skills-x init --all --target .windsurf/skills
 
 ```
 skills-x/
-├── x/              # 🏰 My original Skills (embedded in binary)
+├── skills/         # 🏰 Original Skills (embedded in binary)
 └── pkg/registry/   # Skill sources registry
 ```
 

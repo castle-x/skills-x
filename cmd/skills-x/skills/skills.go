@@ -9,10 +9,10 @@ import (
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 )
 
-// go:embed directive embeds the x/ directory (synced by Makefile before build)
+// go:embed directive embeds the skills/ directory (synced by Makefile before build)
 // Note: embed.FS always uses "/" as path separator, regardless of OS (Windows compatible)
 //
-//go:embed all:x
+//go:embed all:skills
 var xFS embed.FS
 
 // SkillInfo holds metadata about a skill
@@ -38,10 +38,10 @@ func GetXFS() embed.FS {
 func ListXSkills() ([]SkillInfo, error) {
 	var skills []SkillInfo
 
-	// The embedded filesystem has "x" as root directory
-	// Structure: x/skill-name/SKILL.md
+	// The embedded filesystem has "skills" as root directory
+	// Structure: skills/skill-name/SKILL.md
 	// Note: embed.FS always uses "/" as separator, regardless of OS
-	const xRoot = "x"
+	const xRoot = "skills"
 
 	// Walk through x skills directory
 	err := fs.WalkDir(xFS, xRoot, func(path string, d fs.DirEntry, err error) error {

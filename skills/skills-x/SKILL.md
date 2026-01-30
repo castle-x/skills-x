@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: x
-  version: "1.3"
+  version: "1.5"
 ---
 
 # Skills-X Contribution Guide
@@ -24,7 +24,7 @@ This skill provides a standardized workflow for contributing new skills to the s
 skills-x/
 ├── pkg/registry/        # Skill registry definition
 │   └── registry.yaml    # Indexes skills from external sources
-├── x/                   # X original skills (自研)
+├── skills/              # Self-developed skills (自研)
 │   └── skills-x/        # This skill (embedded in binary)
 ├── cmd/skills-x/        # Go source code
 │   ├── command/         # CLI commands (list, init)
@@ -243,7 +243,7 @@ Test that the new skill can be installed:
 make build
 
 # Test listing the skill
-./bin/skills-x list --no-fetch | grep "skill-name"
+./bin/skills-x list | grep "skill-name"
 
 # Test installing the skill
 ./bin/skills-x init skill-name --target /tmp/test-install
@@ -258,14 +258,14 @@ ls /tmp/test-install/skill-name/
 
 ---
 
-## Contributing X Original Skills
+## Contributing Self-Developed Skills (自研)
 
-X 自研 skills should be placed in `x/` directory, NOT in `skills/`.
+Self-developed skills should be placed in the `skills/` directory at the project root.
 
 ### Step 1: Create Skill Directory
 
 ```bash
-mkdir -p x/<skill-name>
+mkdir -p skills/<skill-name>
 ```
 
 ### Step 2: Create Required Files
@@ -296,7 +296,7 @@ Same as community skills - add to both `en.yaml` and `zh.yaml`:
 skill_new-skill: "Description"
 ```
 
-Note: X skills are automatically assigned category `x` and marked with `IsX: true`.
+Note: Self-developed skills are automatically assigned category `skills-x` and marked with `IsX: true`.
 
 ---
 
@@ -334,7 +334,60 @@ Increment version in `npm/package.json`:
 make build-npm
 ```
 
-### Step 3: Commit Changes
+### Step 3: Pre-Release Testing (CRITICAL)
+
+⚠️ **IMPORTANT: Always run this test before releasing to catch broken or missing skills!**
+
+Test all skills can be installed successfully:
+
+```bash
+# Use a clean temporary directory
+TEST_DIR=$(mktemp -d)
+echo "Testing in: $TEST_DIR"
+
+# Test installing all skills
+./bin/skills-x init --all --target "$TEST_DIR"
+
+# Check for failures
+if [ $? -ne 0 ]; then
+  echo "❌ Some skills failed to install!"
+  echo "Review the output above for skills that are:"
+  echo "  - Not found in repository"
+  echo "  - Have incorrect paths"
+  echo "  - Repository no longer exists"
+  exit 1
+fi
+
+# Clean up
+rm -rf "$TEST_DIR"
+echo "✅ All skills tested successfully"
+```
+
+**If any skills fail:**
+
+1. **Skill not found in repo** (`⚠ 在仓库中未找到 skill 路径`):
+   - The skill path in `registry.yaml` is incorrect
+   - The skill was removed/renamed in the source repository
+   - **Action**: Remove from `pkg/registry/registry.yaml` or fix the path
+
+2. **Repository not accessible**:
+   - The repository was deleted or made private
+   - **Action**: Remove the entire source from `pkg/registry/registry.yaml`
+
+3. **Clone failed**:
+   - Network issue (retry)
+   - Repository URL changed
+   - **Action**: Update repo URL or remove from registry
+
+**After fixing registry.yaml:**
+
+```bash
+# Rebuild and test again
+make build-npm
+./bin/skills-x init --all --target "$(mktemp -d)"
+```
+
+### Step 4: Commit Changes
 
 ```bash
 git add .
@@ -345,7 +398,7 @@ git commit -m "feat: add <skill-name> skill
 - Update README"
 ```
 
-### Step 4: Tag and Push
+### Step 5: Tag and Push
 
 ```bash
 git tag -a v0.1.X -m "Add <skill-name> skill"
@@ -353,7 +406,7 @@ git push origin main
 git push --tags
 ```
 
-### Step 5: Create GitHub Release
+### Step 6: Create GitHub Release
 
 ⚠️ **CRITICAL: You MUST upload binary assets to the release!**
 
@@ -399,7 +452,7 @@ gh release upload v0.1.X \
   --clobber
 ```
 
-### Step 6: Publish to npm
+### Step 7: Publish to npm
 
 ```bash
 cd npm && npm publish --access public
@@ -420,6 +473,7 @@ SKILLS_LANG=en ./bin/skills-x list
 
 # Full release workflow
 make build-npm
+./bin/skills-x init --all --target "$(mktemp -d)"  # Test all skills
 git add . && git commit -m "feat: add <skill>"
 git tag -a v0.1.X -m "Add <skill>"
 git push origin main --tags
@@ -439,7 +493,7 @@ cd npm && npm publish --access public
 | Issue | Solution |
 |-------|----------|
 | Open source skill not in list | Check registry.yaml entry (repo, path, name fields) |
-| X original skill not in list | Check i18n translations and skill directory in `x/` |
+| Self-developed skill not in list | Check i18n translations and skill directory in `skills/` |
 | Mixed language output | Ensure ALL strings use `i18n.T()`, no hardcoded text |
 | Missing translation | Add keys to BOTH `en.yaml` and `zh.yaml` |
 | init fails | Verify SKILL.md exists and has valid frontmatter |
@@ -455,11 +509,11 @@ cd npm && npm publish --access public
 | Skill Type | Storage Location | Description Source | Workflow |
 |------------|------------------|--------------------|----------|
 | **Open Source Skills** (from external repositories) | **Remote repositories only** - no local copy | Directly in `registry.yaml` (`description` and `description_zh` fields) | Edit `pkg/registry/registry.yaml` to add source and skills |
-| **X Original Skills** (x自研) | `x/<name>/` directory (embedded in binary) | `i18n/locales/` files (`skill_<name>` keys) | 1. Create skill in `x/<name>/`<br>2. Add i18n translations<br>3. Build binary |
+| **Self-Developed Skills** (自研) | `skills/<name>/` directory (embedded in binary) | `i18n/locales/` files (`skill_<name>` keys) | 1. Create skill in `skills/<name>/`<br>2. Add i18n translations<br>3. Build binary |
 
 **Key Differences:**
 - **Open Source Skills**: Descriptions stored in registry.yaml, fetched on-demand from remote repos
-- **X Original Skills**: Descriptions stored in i18n files, embedded in binary during build
+- **Self-Developed Skills**: Descriptions stored in i18n files, embedded in binary during build
 
 ---
 
@@ -476,14 +530,14 @@ Before submitting a PR for adding new open source skills, verify:
 - [ ] `path` field points to correct skill location in repo
 - [ ] `description` field provides clear English description
 - [ ] `description_zh` field provides Chinese translation (optional but recommended)
-- [ ] Skill appears in `list` output (use `--no-fetch` flag for testing)
+- [ ] Skill appears in `list` output
 - [ ] Skill can be installed with `init` command
 
-### For X Original Skills (self-developed)
+### For Self-Developed Skills (自研)
 
-Before submitting a PR for new X skills, verify:
+Before submitting a PR for new self-developed skills, verify:
 
-- [ ] Skill directory created in `x/<name>/`
+- [ ] Skill directory created in `skills/<name>/`
 - [ ] `SKILL.md` file with proper YAML frontmatter
 - [ ] `skill_<name>` key added to `en.yaml`
 - [ ] `skill_<name>` key added to `zh.yaml`

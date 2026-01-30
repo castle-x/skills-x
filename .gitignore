@@ -14,7 +14,7 @@ scripts/
 
 # Embed data (auto-synced on build)
 cmd/skills-x/skills/data/
-cmd/skills-x/skills/x/
+cmd/skills-x/skills/skills/
 
 # video 
 video/
@@ -27,6 +27,10 @@ video/
 
 # Backup (copied skills, not for distribution)
 .backup/
+
+
+.cursor/
+
 
 # References (personal notes, not for distribution)
 references/

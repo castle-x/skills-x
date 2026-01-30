@@ -15,22 +15,22 @@ GOMOD=$(GOCMD) mod
 # 目录
 CMD_DIR=cmd/skills-x
 OUT_DIR=bin
-X_DATA=$(CMD_DIR)/skills/x
+SKILLS_DATA=$(CMD_DIR)/skills/skills
 
 # 默认目标
 all: build
 
-# 同步 x (自研) skills 数据到 embed 目录
-sync-x:
-	@rm -rf $(X_DATA)
-	@cp -r x $(X_DATA)
-	@echo "Synced x -> $(X_DATA)"
+# 同步自研 skills 数据到 embed 目录
+sync-skills:
+	@rm -rf $(SKILLS_DATA)
+	@cp -r skills $(SKILLS_DATA)
+	@echo "Synced skills -> $(SKILLS_DATA)"
 
 # 构建
-build: sync-x
+build: sync-skills
 	@mkdir -p $(OUT_DIR)
 	$(GOBUILD) $(LDFLAGS) -o $(OUT_DIR)/$(BINARY_NAME) ./$(CMD_DIR)
-	@rm -rf $(X_DATA)
+	@rm -rf $(SKILLS_DATA)
 	@echo "Built: $(OUT_DIR)/$(BINARY_NAME)"
 
 # 安装到 GOPATH/bin
@@ -60,8 +60,8 @@ deps:
 	$(GOMOD) tidy
 
 # 跨平台构建
-build-all: sync-x build-linux build-darwin build-windows
-	@rm -rf $(X_DATA)
+build-all: sync-skills build-linux build-darwin build-windows
+	@rm -rf $(SKILLS_DATA)
 	@echo "All platforms built -> $(OUT_DIR)/"
 
 # 跨平台构建并输出到 npm/bin (用于 npm 发布)
@@ -69,7 +69,7 @@ build-all: sync-x build-linux build-darwin build-windows
 NPM_VERSION=$(shell grep '"version"' npm/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
 NPM_LDFLAGS=-ldflags "-X main.Version=$(NPM_VERSION) -X main.BuildTime=$(BUILD_TIME)"
 
-build-npm: sync-x
+build-npm: sync-skills
 	@mkdir -p npm/bin
 	@echo "Building version: $(NPM_VERSION)"
 	GOOS=linux GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-amd64 ./$(CMD_DIR)
@@ -77,7 +77,7 @@ build-npm: sync-x
 	GOOS=darwin GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-amd64 ./$(CMD_DIR)
 	GOOS=darwin GOARCH=arm64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-arm64 ./$(CMD_DIR)
 	GOOS=windows GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-windows-amd64.exe ./$(CMD_DIR)
-	@rm -rf $(X_DATA)
+	@rm -rf $(SKILLS_DATA)
 	@echo "All platforms built -> npm/bin/ (v$(NPM_VERSION))"
 	@ls -lh npm/bin/
 

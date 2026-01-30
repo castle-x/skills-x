@@ -76,7 +76,7 @@ skills-x init --all --target .windsurf/skills
 
 ```
 skills-x/
-├── x/              # 🏰 我的原创 Skills（嵌入到二进制中）
+├── skills/         # 🏰 原创 Skills（嵌入到二进制中）
 └── pkg/registry/   # Skill 来源注册表
 ```
 
