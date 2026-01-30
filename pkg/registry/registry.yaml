@@ -253,3 +253,36 @@ developer-kit:
       path: skills/typescript-docs
       description: TypeScript documentation with JSDoc, TypeDoc and ADR patterns
       description_zh: TypeScript 文档 - JSDoc、TypeDoc 和 ADR 模式
+
+# =============================================================================
+# Tencent CloudBase (腾讯云开发)
+# https://github.com/tencentcloudbase/skills
+# =============================================================================
+tencentcloudbase:
+  repo: github.com/tencentcloudbase/skills
+  license: MIT
+  skills:
+    - name: miniprogram-development
+      path: skills/miniprogram-development
+      description: WeChat Mini Program development with CloudBase - login-free auth, AI models, and deployment
+      description_zh: 微信小程序开发 - 免登录认证、AI模型集成、部署发布
+
+    - name: auth-wechat
+      path: skills/auth-wechat
+      description: WeChat Mini Program authentication - automatic OPENID/UNIONID injection
+      description_zh: 微信小程序认证 - 自动注入 OPENID/UNIONID
+
+    - name: ai-model-wechat
+      path: skills/ai-model-wechat
+      description: AI models in Mini Programs - Hunyuan and DeepSeek with streaming support
+      description_zh: 小程序 AI 模型 - 混元和 DeepSeek，支持流式响应
+
+    - name: no-sql-wx-mp-sdk
+      path: skills/no-sql-wx-mp-sdk
+      description: CloudBase document database for Mini Programs - CRUD, queries, pagination, geo
+      description_zh: 小程序文档数据库 - 增删改查、复杂查询、分页、地理位置
+
+    - name: cloudbase-guidelines
+      path: skills/cloudbase-guidelines
+      description: Essential CloudBase development guidelines for web, mini programs, and backend
+      description_zh: 腾讯云开发指南 - Web、小程序、后端服务开发规范
