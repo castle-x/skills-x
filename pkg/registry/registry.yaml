@@ -1,0 +1,188 @@
+# Skills-X Registry
+# 
+# This registry indexes skills from external sources.
+# Skills are fetched from GitHub on demand, not bundled.
+#
+# Format:
+#   - name: skill-name
+#     repo: github.com/owner/repo
+#     path: path/to/skill (optional, defaults to skill name)
+#     license: license type
+#     description: brief description (English)
+#     description_zh: brief description (Chinese, optional)
+
+# =============================================================================
+# Anthropic Official Skills (Apache 2.0)
+# https://github.com/anthropics/skills
+# =============================================================================
+anthropic:
+  repo: github.com/anthropics/skills
+  license: Apache-2.0
+  skills:
+    - name: algorithmic-art
+      path: skills/algorithmic-art
+      description: Creating algorithmic art using p5.js with seeded randomness
+      description_zh: 使用 p5.js 和种子随机数创建算法艺术
+
+    - name: artifacts-builder
+      path: skills/artifacts-builder
+      description: Build interactive artifacts with React
+      description_zh: 使用 React 构建交互式 artifacts
+
+    - name: brand-guidelines
+      path: skills/brand-guidelines
+      description: Apply Anthropic brand colors and typography
+      description_zh: 应用 Anthropic 品牌色彩和排版
+
+    - name: canvas-design
+      path: skills/canvas-design
+      description: Create visual art in PNG and PDF using design philosophy
+      description_zh: 使用设计理念创建 PNG 和 PDF 视觉艺术
+
+    - name: frontend-design
+      path: skills/frontend-design
+      description: Frontend design best practices
+      description_zh: 前端设计最佳实践
+
+    - name: internal-comms
+      path: skills/internal-comms
+      description: Internal communications templates
+      description_zh: 内部沟通模板
+
+    - name: mcp-builder
+      path: skills/mcp-builder
+      description: Generate MCP (Model Context Protocol) servers
+      description_zh: 生成 MCP (模型上下文协议) 服务器
+
+    - name: skill-creator
+      path: skills/skill-creator
+      description: Create new agent skills
+      description_zh: 创建新的 agent skills
+
+    - name: slack-gif-creator
+      path: skills/slack-gif-creator
+      description: Create animated GIFs optimized for Slack
+      description_zh: 创建针对 Slack 优化的动画 GIF
+
+    - name: theme-factory
+      path: skills/theme-factory
+      description: Toolkit for styling artifacts with themes
+      description_zh: 使用主题样式化 artifacts 的工具包
+
+    - name: webapp-testing
+      path: skills/webapp-testing
+      description: Test web applications
+      description_zh: 测试 Web 应用程序
+
+    - name: web-artifacts-builder
+      path: skills/web-artifacts-builder
+      description: Build web artifacts with React
+      description_zh: 使用 React 构建 Web artifacts
+
+    - name: doc-coauthoring
+      path: skills/doc-coauthoring
+      description: Collaborative document editing
+      description_zh: 协作文档编辑
+
+# =============================================================================
+# Anthropic Document Skills (Proprietary - NOT AVAILABLE)
+# https://github.com/anthropics/skills
+# =============================================================================
+# ⚠️  LICENSE RESTRICTION: The following skills have proprietary licenses that
+#     explicitly prohibit extraction, copying, and redistribution:
+#
+#     - pdf    (PDF viewing and creation)
+#     - docx   (Word document handling)
+#     - pptx   (PowerPoint presentation)
+#     - xlsx   (Excel spreadsheet)
+#
+# These skills are "source available" for reference only, NOT open source.
+# The license states:
+#   "Users may not extract these materials from the Services or retain copies
+#    outside the Services, reproduce or copy, distribute, sublicense, or
+#    transfer these materials to any third party."
+#
+# ✅ HOW TO USE THESE SKILLS:
+#    1. Use directly in Claude.ai (built-in for Pro/Team subscribers)
+#    2. Use official tool: npx skills add anthropics/skills --skill pdf
+#    3. Access via Claude API with appropriate subscription
+#
+# skills-x will NOT provide clone/install functionality for these skills.
+
+# =============================================================================
+# Vercel Labs Skills
+# https://github.com/vercel-labs/agent-skills
+# =============================================================================
+vercel:
+  repo: github.com/vercel-labs/agent-skills
+  license: MIT
+  skills:
+    - name: react-best-practices
+      path: skills/react-best-practices
+      description: React and Next.js performance optimization from Vercel Engineering
+      description_zh: 来自 Vercel 工程团队的 React 和 Next.js 性能优化指南
+
+    - name: web-design-guidelines
+      path: skills/web-design-guidelines
+      description: 100+ rules for accessibility, performance and UX
+      description_zh: 100+ 条可访问性、性能和用户体验规则
+
+    - name: react-native-guidelines
+      path: skills/react-native-guidelines
+      description: React Native best practices for AI agents
+      description_zh: AI agents 的 React Native 最佳实践
+
+# =============================================================================
+# Remotion
+# https://github.com/remotion-dev/skills
+# =============================================================================
+remotion:
+  repo: github.com/remotion-dev/skills
+  license: Remotion License
+  skills:
+    - name: remotion
+      path: skills/remotion
+      description: Best practices for Remotion - Video creation in React
+      description_zh: Remotion 最佳实践 - 使用 React 创建视频
+
+# =============================================================================
+# Unknown Source (to be identified)
+# These skills have no clear source attribution
+# =============================================================================
+# TODO: Identify original sources for these skills:
+#   - brainstorming
+#   - changelog-generator
+#   - competitive-ads-extractor
+#   - connect
+#   - connect-apps
+#   - connect-apps-plugin
+#   - content-research-writer
+#   - developer-growth-analysis
+#   - dispatching-parallel-agents
+#   - document-skills
+#   - domain-name-brainstormer
+#   - executing-plans
+#   - file-organizer
+#   - finishing-a-development-branch
+#   - image-enhancer
+#   - invoice-organizer
+#   - langsmith-fetch
+#   - lead-research-assistant
+#   - meeting-insights-analyzer
+#   - raffle-winner-picker
+#   - receiving-code-review
+#   - requesting-code-review
+#   - skill-share
+#   - subagent-driven-development
+#   - systematic-debugging
+#   - tailored-resume-generator
+#   - template-skill
+#   - test-driven-development
+#   - twitter-algorithm-optimizer
+#   - ui-ux-pro-max
+#   - using-git-worktrees
+#   - using-superpowers
+#   - verification-before-completion
+#   - video-downloader
+#   - writing-plans
+#   - writing-skills

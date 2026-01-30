@@ -12,8 +12,21 @@ scripts/
 # IDE cache
 .codebuddy/
 
-# Embed data (auto-synced from /skills on build)
+# Embed data (auto-synced on build)
 cmd/skills-x/skills/data/
+cmd/skills-x/skills/x/
 
 # video 
 video/
+
+# vscode
+.vscode/
+
+# agents
+.agents/
+
+# Backup (copied skills, not for distribution)
+.backup/
+
+# References (personal notes, not for distribution)
+references/

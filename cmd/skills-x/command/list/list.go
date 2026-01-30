@@ -4,9 +4,13 @@ package list
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/castle-x/skills-x/cmd/skills-x/skills"
+	"github.com/castle-x/skills-x/pkg/discover"
+	"github.com/castle-x/skills-x/pkg/gitutil"
+	"github.com/castle-x/skills-x/pkg/registry"
 	"github.com/spf13/cobra"
 )
 
@@ -18,108 +22,253 @@ const (
 	colorCyan   = "\033[36m"
 	colorGray   = "\033[90m"
 	colorBold   = "\033[1m"
+	colorBlue   = "\033[34m"
+	colorDim    = "\033[2m"
 )
 
-// Category order for display
-var categoryOrder = []string{
-	"castle-x", // Castle-X skills first
-	"creative", "document", "devtools", "workflow", "git",
-	"writing", "integration", "business", "files", "utility", "skilldev", "other",
-}
+var (
+	flagVerbose bool
+	flagNoFetch bool
+)
 
 // NewCommand creates the list command
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list",
-		Short: i18n.T("cmd_list_short"),
-		Long:  i18n.T("cmd_list_long"),
-		RunE:  runList,
+		Use:     "list",
+		Aliases: []string{"ls"},
+		Short:   i18n.T("cmd_list_short"),
+		Long:    i18n.T("cmd_list_long"),
+		RunE:    runList,
 	}
+
+	cmd.Flags().BoolVarP(&flagVerbose, "verbose", "v", false, i18n.T("cmd_list_flag_verbose"))
+	cmd.Flags().BoolVar(&flagNoFetch, "no-fetch", false, i18n.T("cmd_list_flag_no_fetch"))
+
 	return cmd
 }
 
-// getCategoryName returns the localized category name
-func getCategoryName(cat string) string {
-	key := "cat_" + cat
-	name := i18n.T(key)
-	if name == key {
-		// Fallback if not found
-		return "📦 " + cat
-	}
-	return name
+// sourceSkills holds skills grouped by source
+type sourceSkills struct {
+	Source *registry.Source
+	Skills []skillDisplay
 }
 
-// getSkillDescription returns the localized skill description
-func getSkillDescription(skillName string, fallback string) string {
-	key := "skill_" + skillName
-	desc := i18n.T(key)
-	if desc == key {
-		// Fallback to original description if not translated
-		if fallback != "" {
-			return fallback
-		}
-		return "-"
-	}
-	return desc
+// skillDisplay holds skill display information
+type skillDisplay struct {
+	Name        string
+	Description string
+	Version     string
+	FromRepo    bool // true if dynamically fetched from repo
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-	skillList, err := skills.ListSkills()
+	// Load registry
+	reg, err := registry.Load()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load registry: %w", err)
 	}
 
-	// Group by category
-	byCategory := make(map[string][]skills.SkillInfo)
-	for _, s := range skillList {
-		byCategory[s.Category] = append(byCategory[s.Category], s)
-	}
+	// Title removed as requested - no need to display "Available Skills from Registry" or "注册表中的 Skills"
 
-	// Sort skills within each category
-	for cat := range byCategory {
-		sort.Slice(byCategory[cat], func(i, j int) bool {
-			// castle-x skills first
-			if byCategory[cat][i].IsCastleX != byCategory[cat][j].IsCastleX {
-				return byCategory[cat][i].IsCastleX
-			}
-			return byCategory[cat][i].Name < byCategory[cat][j].Name
-		})
-	}
+	// Get all sources
+	sources := reg.GetAllSources()
+	
+	// Sort sources by name
+	sort.Slice(sources, func(i, j int) bool {
+		// Put "anthropic" first, then alphabetically
+		if sources[i].Name == "anthropic" {
+			return true
+		}
+		if sources[j].Name == "anthropic" {
+			return false
+		}
+		return sources[i].Name < sources[j].Name
+	})
 
-	// Print header
-	fmt.Printf("\n%s%s%s %s%s%s\n\n", colorBold, i18n.T("list_header"), colorReset, colorGray, i18n.Tf("list_total", len(skillList)), colorReset)
+	totalSkills := 0
+	totalSources := 0
 
-	// Print by category
-	for _, cat := range categoryOrder {
-		catSkills, ok := byCategory[cat]
-		if !ok || len(catSkills) == 0 {
+	for _, source := range sources {
+		skills, err := getSkillsForSource(source, !flagNoFetch)
+		if err != nil {
+			// Print error but continue
+			fmt.Printf("%s⚠ %s: %v%s\n\n", colorYellow, source.Repo, err, colorReset)
 			continue
 		}
 
-		catName := getCategoryName(cat)
-		fmt.Printf("%s%s%s\n", colorBold, catName, colorReset)
+		if len(skills) == 0 {
+			continue
+		}
 
-		for _, s := range catSkills {
-			tag := ""
-			if s.IsCastleX {
-				tag = fmt.Sprintf(" %s%s%s", colorYellow, i18n.T("list_castlex_tag"), colorReset)
-			}
+		totalSources++
+		totalSkills += len(skills)
 
-			// Get localized description
-			desc := getSkillDescription(s.Name, s.Description)
+		// Print source header
+		printSourceHeader(source)
 
-			// Special note for skills-x (meta skill)
-			if s.Name == "skills-x" {
-				desc = i18n.T("list_skillsx_desc")
-			}
-
-			fmt.Printf("  %s%-30s%s %s%s%s%s\n",
-				colorCyan, s.Name, colorReset,
-				colorGray, desc, colorReset,
-				tag)
+		// Print skills
+		for _, skill := range skills {
+			printSkill(skill)
 		}
 		fmt.Println()
 	}
 
+	// Print x (self-developed) skills if available
+	xSkills := getXSkills()
+	if len(xSkills) > 0 {
+		totalSources++
+		totalSkills += len(xSkills)
+		
+		fmt.Printf("%s📦 %sskills-x%s %s(Original)%s\n",
+			colorBold, colorCyan, colorReset, colorGray, colorReset)
+		
+		for _, skill := range xSkills {
+			printSkill(skill)
+		}
+		fmt.Println()
+	}
+
+	// Print summary
+	fmt.Printf("%s%s%s\n", colorGray, i18n.Tf("list_summary", totalSkills, totalSources), colorReset)
+
 	return nil
+}
+
+// getSkillsForSource gets skills for a source
+// If fetch is true, it will clone the repo and discover skills dynamically
+// Otherwise, it uses the registry data
+func getSkillsForSource(source *registry.Source, fetch bool) ([]skillDisplay, error) {
+	if !fetch {
+		// Use registry data only
+		return getSkillsFromRegistry(source), nil
+	}
+
+	// Try to fetch from repo
+	skills, err := fetchSkillsFromRepo(source)
+	if err != nil {
+		// Fallback to registry data
+		if flagVerbose {
+			fmt.Printf("%s  (fallback to registry: %v)%s\n", colorDim, err, colorReset)
+		}
+		return getSkillsFromRegistry(source), nil
+	}
+
+	return skills, nil
+}
+
+// getSkillsFromRegistry returns skills from registry definition
+func getSkillsFromRegistry(source *registry.Source) []skillDisplay {
+	lang := i18n.GetLanguage()
+	skills := make([]skillDisplay, 0, len(source.Skills))
+	for _, s := range source.Skills {
+		skills = append(skills, skillDisplay{
+			Name:        s.Name,
+			Description: s.GetDescription(lang),
+			Version:     s.Version,
+			FromRepo:    false,
+		})
+	}
+	
+	// Sort by name
+	sort.Slice(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
+	
+	return skills
+}
+
+// fetchSkillsFromRepo clones the repo and discovers skills
+func fetchSkillsFromRepo(source *registry.Source) ([]skillDisplay, error) {
+	gitURL := source.GetGitURL()
+
+	// Show progress
+	fmt.Printf("%s  %s %s...%s", colorDim, i18n.T("list_fetching"), source.GetRepoShortName(), colorReset)
+
+	// Clone or use cached
+	result, err := gitutil.CloneRepo(gitURL, source.Repo)
+	if err != nil {
+		fmt.Printf("\r%s  %s %s ✗%s\n", colorYellow, i18n.T("list_fetch_failed"), source.GetRepoShortName(), colorReset)
+		return nil, err
+	}
+
+	// Clear progress line
+	fmt.Printf("\r%s\r", strings.Repeat(" ", 60))
+
+	// Discover skills
+	discovered, err := discover.DiscoverSkills(result.TempDir, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert to display format
+	skills := make([]skillDisplay, 0, len(discovered))
+	for _, d := range discovered {
+		skills = append(skills, skillDisplay{
+			Name:        d.Name,
+			Description: d.Description,
+			Version:     d.Version,
+			FromRepo:    true,
+		})
+	}
+
+	// Sort by name
+	sort.Slice(skills, func(i, j int) bool {
+		return skills[i].Name < skills[j].Name
+	})
+
+	return skills, nil
+}
+
+// getXSkills returns x (self-developed) skills
+func getXSkills() []skillDisplay {
+	// Load from embedded x/ directory via skills package
+	xSkillsList, err := skills.ListXSkills()
+	if err != nil {
+		return nil
+	}
+
+	result := make([]skillDisplay, 0, len(xSkillsList))
+	for _, s := range xSkillsList {
+		result = append(result, skillDisplay{
+			Name:        s.Name,
+			Description: s.Description,
+			FromRepo:    false,
+		})
+	}
+	return result
+}
+
+// printSourceHeader prints the source header
+func printSourceHeader(source *registry.Source) {
+	license := ""
+	if source.License != "" {
+		license = fmt.Sprintf(" %s(%s)%s", colorGray, source.License, colorReset)
+	}
+
+	fmt.Printf("%s📦 %s%s%s%s\n",
+		colorBold, colorCyan, source.Repo, colorReset, license)
+}
+
+// printSkill prints a skill entry
+func printSkill(skill skillDisplay) {
+	version := ""
+	if skill.Version != "" {
+		version = fmt.Sprintf(" %s(%s)%s", colorGreen, skill.Version, colorReset)
+	}
+
+	desc := skill.Description
+	if desc == "" {
+		desc = "-"
+	}
+
+	// Truncate description if too long
+	maxDescLen := 50
+	if len(desc) > maxDescLen {
+		desc = desc[:maxDescLen-3] + "..."
+	}
+
+	fmt.Printf("   %s%-35s%s%s %s%s%s\n",
+		colorCyan, skill.Name, colorReset,
+		version,
+		colorGray, desc, colorReset)
 }

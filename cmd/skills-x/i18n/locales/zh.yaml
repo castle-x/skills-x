@@ -9,24 +9,32 @@ app_long_desc: |
   Skills-X 是一个 AI Agent Skills 管理工具。
   
   可用命令:
-    list          查看已收录的 skills
-    init          下载 skill 到本地
+    list          查看注册表中的 skills
+    init          安装 skill 到本地
 
 # ============================================================================
 # 命令描述
 # ============================================================================
-cmd_list_short: "查看已收录的 skills"
-cmd_list_long: "列出所有已收录的 skills，包括开源和自研 (castle-x)"
+cmd_list_short: "查看注册表中的 skills"
+cmd_list_long: |
+  列出注册表中的所有 skills，按仓库来源分组显示。
+  
+  默认会从各个仓库获取最新的 skills 列表。
+  使用 --no-fetch 仅显示注册表中定义的 skills。
+cmd_list_flag_verbose: "显示详细输出"
+cmd_list_flag_no_fetch: "不从仓库获取，仅使用注册表数据"
 
 cmd_init_short: "安装 skill 到本地"
 cmd_init_long: |
   安装指定的 skill 到本地目录（默认当前目录）。
   
+  Skills 从注册表中获取，并从源仓库克隆。
+  
   示例:
-    skills-x init pdf              安装 pdf skill
-    skills-x init ui-ux-pro-max    安装 ui-ux-pro-max skill
-    skills-x init --all            安装全部 skills
-    skills-x init pdf -t ./skills  安装到指定目录
+    skills-x init react-best-practices    安装 react-best-practices skill
+    skills-x init remotion                安装 remotion skill
+    skills-x init --all                   安装全部 skills
+    skills-x init remotion -t ./skills    安装到指定目录
 cmd_init_flag_all: "安装全部 skills"
 cmd_init_flag_target: "目标目录 (默认: 当前目录)"
 cmd_init_flag_force: "强制覆盖已存在的 skills"
@@ -34,20 +42,23 @@ cmd_init_flag_force: "强制覆盖已存在的 skills"
 # ============================================================================
 # 输出消息
 # ============================================================================
-list_header: "已收录的 Skills"
+list_header: "注册表中的 Skills"
 list_total: "共 %d 个 skills"
+list_summary: "共 %d 个 skills，来自 %d 个源"
 list_opensource: "开源"
-list_castlex: "castle-x"
+list_x: "x"
 list_category: "分类"
 list_skill_name: "名称"
 list_description: "描述"
-list_castlex_tag: "⭐ 作者自研"
+list_x_tag: "⭐ 作者自研"
 list_skillsx_desc: "🔄 套娃! 贡献指南 (普通用户用不上)"
+list_fetching: "正在获取"
+list_fetch_failed: "获取失败"
 
 # ============================================================================
 # 分类名称
 # ============================================================================
-cat_castle-x: "🏰 Castle-X (自研)"
+cat_x: "🏰 X (自研)"
 cat_creative: "🎨 创意与设计"
 cat_document: "📄 文档处理"
 cat_devtools: "🛠️  开发工具"
@@ -140,19 +151,28 @@ skill_skill-share: "分享 skills"
 skill_template-skill: "Skill 模板"
 skill_using-superpowers: "如何使用 skills"
 
-# Castle-X Skills
+# X Skills
 skill_skills-x: "向 skills-x 贡献 skills"
 
 init_downloading: "正在安装: %s"
 init_success: "安装成功: %s"
 init_all_success: "全部安装完成，共 %d 个 skills"
 init_all_skipped: "跳过 %d 个已存在的 skills"
+init_all_errors: "安装失败 %d 个 skills"
 init_target_dir: "目标目录: %s"
 init_skipped: "已跳过 (已存在): %s"
 init_overwrite: "覆盖安装: %s"
 init_confirm_overwrite: "'%s' 已存在，是否覆盖？"
 init_confirm_overwrite_all: "是否覆盖所有已存在的 skills？"
 init_existing_count: "发现 %d 个已存在的 skills"
+init_cloning: "正在克隆仓库"
+init_clone_failed: "克隆失败"
+init_skill_path_not_found: "在仓库中未找到 skill 路径"
+init_from_source: "来源: %s"
+init_from_embedded: "来源: 嵌入 (x 自研技能)"
+init_conflict_found: "发现 %d 个名为 '%s' 的 skill 来自不同源:"
+init_choose_source: "请选择来源"
+init_cancelled: "已取消安装"
 
 # Meta Warning for skills-x
 meta_warning_title: "⚠️  套娃警告"

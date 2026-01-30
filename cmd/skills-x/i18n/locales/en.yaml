@@ -9,24 +9,32 @@ app_long_desc: |
   Skills-X is an AI Agent Skills management tool.
   
   Available commands:
-    list          List all available skills
-    init          Download skill to local
+    list          List all available skills from registry
+    init          Install skill to local
 
 # ============================================================================
 # Command Descriptions
 # ============================================================================
-cmd_list_short: "List all available skills"
-cmd_list_long: "List all curated skills, including open-source and castle-x (self-developed)"
+cmd_list_short: "List all available skills from registry"
+cmd_list_long: |
+  List all skills from the registry, grouped by repository source.
+  
+  By default, it fetches the latest skills from each repository.
+  Use --no-fetch to only show skills defined in the registry.
+cmd_list_flag_verbose: "Show verbose output"
+cmd_list_flag_no_fetch: "Don't fetch from repositories, use registry data only"
 
 cmd_init_short: "Install skill to local"
 cmd_init_long: |
   Install specified skill to local directory (default: current directory).
   
+  Skills are fetched from the registry and cloned from their source repositories.
+  
   Examples:
-    skills-x init pdf              Install pdf skill
-    skills-x init ui-ux-pro-max    Install ui-ux-pro-max skill
-    skills-x init --all            Install all skills
-    skills-x init pdf -t ./skills  Install to specified directory
+    skills-x init react-best-practices       Install react-best-practices skill
+    skills-x init remotion                   Install remotion skill
+    skills-x init --all                      Install all skills
+    skills-x init remotion -t ./skills       Install to specified directory
 cmd_init_flag_all: "Install all skills"
 cmd_init_flag_target: "Target directory (default: current directory)"
 cmd_init_flag_force: "Force overwrite existing skills"
@@ -34,20 +42,23 @@ cmd_init_flag_force: "Force overwrite existing skills"
 # ============================================================================
 # Output Messages
 # ============================================================================
-list_header: "Available Skills"
+list_header: "Available Skills from Registry"
 list_total: "Total: %d skills"
+list_summary: "Total: %d skills from %d sources"
 list_opensource: "open-source"
-list_castlex: "castle-x"
+list_x: "x"
 list_category: "Category"
 list_skill_name: "Name"
 list_description: "Description"
-list_castlex_tag: "⭐ Original"
+list_x_tag: "⭐ Original"
 list_skillsx_desc: "🔄 Meta! Contribution guide (not for regular use)"
+list_fetching: "Fetching"
+list_fetch_failed: "Fetch failed"
 
 # ============================================================================
 # Category Names
 # ============================================================================
-cat_castle-x: "🏰 Castle-X (Original)"
+cat_x: "🏰 X (Original)"
 cat_creative: "🎨 Creative & Design"
 cat_document: "📄 Document Processing"
 cat_devtools: "🛠️  Development Tools"
@@ -140,19 +151,28 @@ skill_skill-share: "Share skills"
 skill_template-skill: "Skill template"
 skill_using-superpowers: "How to use skills"
 
-# Castle-X Skills
+# X Skills
 skill_skills-x: "Contribute skills to skills-x collection"
 
 init_downloading: "Installing: %s"
 init_success: "Installed: %s"
 init_all_success: "All installations complete, total %d skills"
 init_all_skipped: "Skipped %d existing skills"
+init_all_errors: "Failed to install %d skills"
 init_target_dir: "Target directory: %s"
 init_skipped: "Skipped (already exists): %s"
 init_overwrite: "Overwriting: %s"
 init_confirm_overwrite: "'%s' already exists, overwrite?"
 init_confirm_overwrite_all: "Overwrite all existing skills?"
 init_existing_count: "Found %d existing skills"
+init_cloning: "Cloning repository"
+init_clone_failed: "Clone failed"
+init_skill_path_not_found: "Skill path not found in repository"
+init_from_source: "From: %s"
+init_from_embedded: "From: embedded (x skill)"
+init_conflict_found: "Found %d skills named '%s' from different sources:"
+init_choose_source: "Choose source"
+init_cancelled: "Installation cancelled"
 
 # Meta Warning for skills-x
 meta_warning_title: "⚠️  Meta Warning"

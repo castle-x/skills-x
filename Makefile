@@ -1,4 +1,4 @@
-.PHONY: build clean install test sync-skills build-all build-npm
+.PHONY: build clean install test build-all build-npm
 
 # 项目信息
 BINARY_NAME=skills-x
@@ -15,25 +15,22 @@ GOMOD=$(GOCMD) mod
 # 目录
 CMD_DIR=cmd/skills-x
 OUT_DIR=bin
-SKILLS_DATA=$(CMD_DIR)/skills/data
-CASTLE_X_DATA=$(CMD_DIR)/skills/castle-x
+X_DATA=$(CMD_DIR)/skills/x
 
 # 默认目标
 all: build
 
-# 同步 skills 数据到 embed 目录
-sync-skills:
-	@rm -rf $(SKILLS_DATA) $(CASTLE_X_DATA)
-	@cp -r skills $(SKILLS_DATA)
-	@cp -r castle-x $(CASTLE_X_DATA)
-	@echo "Synced skills -> $(SKILLS_DATA)"
-	@echo "Synced castle-x -> $(CASTLE_X_DATA)"
+# 同步 x (自研) skills 数据到 embed 目录
+sync-x:
+	@rm -rf $(X_DATA)
+	@cp -r x $(X_DATA)
+	@echo "Synced x -> $(X_DATA)"
 
 # 构建
-build: sync-skills
+build: sync-x
 	@mkdir -p $(OUT_DIR)
 	$(GOBUILD) $(LDFLAGS) -o $(OUT_DIR)/$(BINARY_NAME) ./$(CMD_DIR)
-	@rm -rf $(SKILLS_DATA) $(CASTLE_X_DATA)
+	@rm -rf $(X_DATA)
 	@echo "Built: $(OUT_DIR)/$(BINARY_NAME)"
 
 # 安装到 GOPATH/bin
@@ -50,6 +47,7 @@ install-local:
 # 清理
 clean:
 	@rm -rf $(OUT_DIR)
+	@rm -rf /tmp/skills-*
 	@echo "Cleaned"
 
 # 测试
@@ -62,8 +60,8 @@ deps:
 	$(GOMOD) tidy
 
 # 跨平台构建
-build-all: sync-skills build-linux build-darwin build-windows
-	@rm -rf $(SKILLS_DATA) $(CASTLE_X_DATA)
+build-all: sync-x build-linux build-darwin build-windows
+	@rm -rf $(X_DATA)
 	@echo "All platforms built -> $(OUT_DIR)/"
 
 # 跨平台构建并输出到 npm/bin (用于 npm 发布)
@@ -71,7 +69,7 @@ build-all: sync-skills build-linux build-darwin build-windows
 NPM_VERSION=$(shell grep '"version"' npm/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
 NPM_LDFLAGS=-ldflags "-X main.Version=$(NPM_VERSION) -X main.BuildTime=$(BUILD_TIME)"
 
-build-npm: sync-skills
+build-npm: sync-x
 	@mkdir -p npm/bin
 	@echo "Building version: $(NPM_VERSION)"
 	GOOS=linux GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-linux-amd64 ./$(CMD_DIR)
@@ -79,7 +77,7 @@ build-npm: sync-skills
 	GOOS=darwin GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-amd64 ./$(CMD_DIR)
 	GOOS=darwin GOARCH=arm64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-darwin-arm64 ./$(CMD_DIR)
 	GOOS=windows GOARCH=amd64 $(GOBUILD) $(NPM_LDFLAGS) -o npm/bin/$(BINARY_NAME)-windows-amd64.exe ./$(CMD_DIR)
-	@rm -rf $(SKILLS_DATA) $(CASTLE_X_DATA)
+	@rm -rf $(X_DATA)
 	@echo "All platforms built -> npm/bin/ (v$(NPM_VERSION))"
 	@ls -lh npm/bin/
 
