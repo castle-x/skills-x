@@ -429,6 +429,7 @@ func promptChoice(max int) int {
 }
 
 // copyDir copies a directory from source to destination
+// Follows symlinks to copy actual content
 func copyDir(srcPath string, dstPath string) error {
 	// Remove existing directory
 	os.RemoveAll(dstPath)
@@ -445,6 +446,27 @@ func copyDir(srcPath string, dstPath string) error {
 		}
 
 		targetPath := filepath.Join(dstPath, relPath)
+
+		// Check if it's a symlink
+		if d.Type()&os.ModeSymlink != 0 {
+			// Resolve symlink to get actual path
+			realPath, err := filepath.EvalSymlinks(path)
+			if err != nil {
+				return nil // Skip broken symlinks
+			}
+
+			info, err := os.Stat(realPath)
+			if err != nil {
+				return nil // Skip if can't stat
+			}
+
+			if info.IsDir() {
+				// Recursively copy symlinked directory
+				return copyDir(realPath, targetPath)
+			}
+			// Copy symlinked file
+			return copyFile(realPath, targetPath)
+		}
 
 		if d.IsDir() {
 			return os.MkdirAll(targetPath, 0755)

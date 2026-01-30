@@ -146,43 +146,92 @@ remotion:
       description_zh: Remotion 最佳实践 - 使用 React 创建视频
 
 # =============================================================================
-# Unknown Source (to be identified)
-# These skills have no clear source attribution
+# UI/UX Pro Max
+# https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 # =============================================================================
-# TODO: Identify original sources for these skills:
-#   - brainstorming
-#   - changelog-generator
-#   - competitive-ads-extractor
-#   - connect
-#   - connect-apps
-#   - connect-apps-plugin
-#   - content-research-writer
-#   - developer-growth-analysis
-#   - dispatching-parallel-agents
-#   - document-skills
-#   - domain-name-brainstormer
-#   - executing-plans
-#   - file-organizer
-#   - finishing-a-development-branch
-#   - image-enhancer
-#   - invoice-organizer
-#   - langsmith-fetch
-#   - lead-research-assistant
-#   - meeting-insights-analyzer
-#   - raffle-winner-picker
-#   - receiving-code-review
-#   - requesting-code-review
-#   - skill-share
-#   - subagent-driven-development
-#   - systematic-debugging
-#   - tailored-resume-generator
-#   - template-skill
-#   - test-driven-development
-#   - twitter-algorithm-optimizer
-#   - ui-ux-pro-max
-#   - using-git-worktrees
-#   - using-superpowers
-#   - verification-before-completion
-#   - video-downloader
-#   - writing-plans
-#   - writing-skills
+ui-ux-pro-max:
+  repo: github.com/nextlevelbuilder/ui-ux-pro-max-skill
+  license: MIT
+  skills:
+    - name: ui-ux-pro-max
+      path: .claude/skills/ui-ux-pro-max
+      description: UI/UX design intelligence - 50 styles, 97 palettes, 57 fonts, 9 stacks
+      description_zh: UI/UX 设计智能 - 50 种风格、97 色板、57 字体、9 技术栈
+
+# =============================================================================
+# Superpowers by Jesse Vincent (obra)
+# https://github.com/obra/superpowers
+# =============================================================================
+superpowers:
+  repo: github.com/obra/superpowers
+  license: MIT
+  skills:
+    - name: brainstorming
+      path: skills/brainstorming
+      description: Brainstorm before any creative work - features, designs, architecture
+      description_zh: 创意工作前头脑风暴 - 功能、设计、架构
+
+    - name: dispatching-parallel-agents
+      path: skills/dispatching-parallel-agents
+      description: Dispatch 2+ independent tasks to work on in parallel
+      description_zh: 分派 2+ 个独立任务并行处理
+
+    - name: executing-plans
+      path: skills/executing-plans
+      description: Execute written implementation plans step by step
+      description_zh: 逐步执行书面实施计划
+
+    - name: finishing-a-development-branch
+      path: skills/finishing-a-development-branch
+      description: Complete development branch when tests pass
+      description_zh: 测试通过后完成开发分支
+
+    - name: receiving-code-review
+      path: skills/receiving-code-review
+      description: Handle code review feedback before implementing changes
+      description_zh: 在实施更改前处理代码审查反馈
+
+    - name: requesting-code-review
+      path: skills/requesting-code-review
+      description: Request code review when completing tasks or features
+      description_zh: 完成任务或功能时请求代码审查
+
+    - name: subagent-driven-development
+      path: skills/subagent-driven-development
+      description: Execute plans with independent tasks using subagents
+      description_zh: 使用子代理执行独立任务的计划
+
+    - name: systematic-debugging
+      path: skills/systematic-debugging
+      description: Systematic approach to bugs, test failures, unexpected behavior
+      description_zh: 系统化调试 - 处理 bug、测试失败、异常行为
+
+    - name: test-driven-development
+      path: skills/test-driven-development
+      description: TDD workflow - write tests before implementation
+      description_zh: TDD 工作流 - 先写测试再实现
+
+    - name: using-git-worktrees
+      path: skills/using-git-worktrees
+      description: Git worktrees for feature isolation from current branch
+      description_zh: 使用 Git worktrees 隔离功能开发
+
+    - name: using-superpowers
+      path: skills/using-superpowers
+      description: How to find and use superpowers skills effectively
+      description_zh: 如何有效查找和使用 superpowers 技能
+
+    - name: verification-before-completion
+      path: skills/verification-before-completion
+      description: Verify work is complete, fixed, or passing before claiming done
+      description_zh: 完成前验证工作已完成、修复或通过
+
+    - name: writing-plans
+      path: skills/writing-plans
+      description: Write implementation plans for multi-step tasks from specs
+      description_zh: 根据规格编写多步骤任务的实施计划
+
+    - name: writing-skills
+      path: skills/writing-skills
+      description: Create, edit, and verify skills
+      description_zh: 创建、编辑和验证 skills
