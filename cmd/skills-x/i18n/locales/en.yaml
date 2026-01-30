@@ -22,7 +22,7 @@ cmd_list_long: |
   By default, it fetches the latest skills from each repository.
   Use --no-fetch to only show skills defined in the registry.
 cmd_list_flag_verbose: "Show verbose output"
-cmd_list_flag_no_fetch: "Don't fetch from repositories, use registry data only"
+cmd_list_flag_fetch: "Fetch from repositories to discover all skills (slower)"
 
 cmd_init_short: "Install skill to local"
 cmd_init_long: |

@@ -90,32 +90,37 @@ skills-x/
 $ skills-x list
 
 📦 github.com/anthropics/skills (Apache-2.0)
-   algorithmic-art                     Creating algorithmic art using p5.js with seede...
-   artifacts-builder                   Build interactive artifacts with React
-   brand-guidelines                    Apply Anthropic brand colors and typography
-   canvas-design                       Create visual art in PNG and PDF using design p...
-   doc-coauthoring                     Collaborative document editing
-   frontend-design                     Frontend design best practices
-   internal-comms                      Internal communications templates
-   mcp-builder                         Generate MCP (Model Context Protocol) servers
-   skill-creator                       Create new agent skills
-   slack-gif-creator                   Create animated GIFs optimized for Slack
-   theme-factory                       Toolkit for styling artifacts with themes
-   web-artifacts-builder               Build web artifacts with React
-   webapp-testing                      Test web applications
+   algorithmic-art      Creating algorithmic art using p5.js...
+   artifacts-builder    Build interactive artifacts with React
+   brand-guidelines     Apply Anthropic brand colors and typography
+   canvas-design        Create visual art in PNG and PDF...
+   doc-coauthoring      Collaborative document editing
+   docx                 Word document creation, editing and analysis
+   frontend-design      Frontend design best practices
+   internal-comms       Internal communications templates
+   mcp-builder          Generate MCP servers
+   pdf                  PDF manipulation - extract, fill forms, merge
+   pptx                 PowerPoint presentation creation and editing
+   skill-creator        Create new agent skills
+   slack-gif-creator    Create animated GIFs optimized for Slack
+   template-skill       Template for creating new skills
+   theme-factory        Toolkit for styling artifacts with themes
+   web-artifacts-builder Build web artifacts with React
+   webapp-testing       Test web applications
+   xlsx                 Excel spreadsheet creation, formulas and charts
 
 📦 github.com/remotion-dev/skills (Remotion License)
-   remotion                            Best practices for Remotion - Video creation in...
+   remotion             Best practices for Remotion - Video creation...
 
 📦 github.com/vercel-labs/agent-skills (MIT)
-   react-best-practices                React and Next.js performance optimization from...
-   react-native-guidelines             React Native best practices for AI agents
-   web-design-guidelines               100+ rules for accessibility, performance and UX
+   react-best-practices      React and Next.js performance optimization
+   react-native-guidelines   React Native best practices for AI agents
+   web-design-guidelines     100+ rules for accessibility, performance, UX
 
 📦 skills-x (Original)
-   skills-x                            Contribute skills to skills-x collection
+   skills-x             Contribute skills to skills-x collection
 
-Total: 18 skills from 4 sources
+Total: 23 skills from 4 sources
 ```
 
 ---

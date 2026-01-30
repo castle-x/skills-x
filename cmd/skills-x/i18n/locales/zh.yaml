@@ -22,7 +22,7 @@ cmd_list_long: |
   默认会从各个仓库获取最新的 skills 列表。
   使用 --no-fetch 仅显示注册表中定义的 skills。
 cmd_list_flag_verbose: "显示详细输出"
-cmd_list_flag_no_fetch: "不从仓库获取，仅使用注册表数据"
+cmd_list_flag_fetch: "从仓库获取以发现所有 skills（较慢）"
 
 cmd_init_short: "安装 skill 到本地"
 cmd_init_long: |

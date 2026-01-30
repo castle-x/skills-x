@@ -84,30 +84,30 @@ anthropic:
       description: Collaborative document editing
       description_zh: 协作文档编辑
 
-# =============================================================================
-# Anthropic Document Skills (Proprietary - NOT AVAILABLE)
-# https://github.com/anthropics/skills
-# =============================================================================
-# ⚠️  LICENSE RESTRICTION: The following skills have proprietary licenses that
-#     explicitly prohibit extraction, copying, and redistribution:
-#
-#     - pdf    (PDF viewing and creation)
-#     - docx   (Word document handling)
-#     - pptx   (PowerPoint presentation)
-#     - xlsx   (Excel spreadsheet)
-#
-# These skills are "source available" for reference only, NOT open source.
-# The license states:
-#   "Users may not extract these materials from the Services or retain copies
-#    outside the Services, reproduce or copy, distribute, sublicense, or
-#    transfer these materials to any third party."
-#
-# ✅ HOW TO USE THESE SKILLS:
-#    1. Use directly in Claude.ai (built-in for Pro/Team subscribers)
-#    2. Use official tool: npx skills add anthropics/skills --skill pdf
-#    3. Access via Claude API with appropriate subscription
-#
-# skills-x will NOT provide clone/install functionality for these skills.
+    - name: pdf
+      path: skills/pdf
+      description: PDF manipulation - extract, fill forms, merge documents
+      description_zh: PDF 操作 - 提取、填写表单、合并文档
+
+    - name: docx
+      path: skills/docx
+      description: Word document creation, editing and analysis
+      description_zh: Word 文档创建、编辑和分析
+
+    - name: pptx
+      path: skills/pptx
+      description: PowerPoint presentation creation and editing
+      description_zh: PowerPoint 演示文稿创建和编辑
+
+    - name: xlsx
+      path: skills/xlsx
+      description: Excel spreadsheet creation, formulas and charts
+      description_zh: Excel 电子表格创建、公式和图表
+
+    - name: template-skill
+      path: skills/template-skill
+      description: Template for creating new skills
+      description_zh: 创建新 skills 的模板
 
 # =============================================================================
 # Vercel Labs Skills

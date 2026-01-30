@@ -28,7 +28,7 @@ const (
 
 var (
 	flagVerbose bool
-	flagNoFetch bool
+	flagFetch   bool // changed: default to NOT fetch, use --fetch to enable
 )
 
 // NewCommand creates the list command
@@ -42,7 +42,7 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.Flags().BoolVarP(&flagVerbose, "verbose", "v", false, i18n.T("cmd_list_flag_verbose"))
-	cmd.Flags().BoolVar(&flagNoFetch, "no-fetch", false, i18n.T("cmd_list_flag_no_fetch"))
+	cmd.Flags().BoolVar(&flagFetch, "fetch", false, i18n.T("cmd_list_flag_fetch"))
 
 	return cmd
 }
@@ -89,7 +89,7 @@ func runList(cmd *cobra.Command, args []string) error {
 	totalSources := 0
 
 	for _, source := range sources {
-		skills, err := getSkillsForSource(source, !flagNoFetch)
+		skills, err := getSkillsForSource(source, flagFetch)
 		if err != nil {
 			// Print error but continue
 			fmt.Printf("%s⚠ %s: %v%s\n\n", colorYellow, source.Repo, err, colorReset)
