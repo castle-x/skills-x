@@ -1,7 +1,8 @@
-.PHONY: build clean install test build-all build-npm
+.PHONY: build clean install test build-all build-npm build-local sync-local-skills
 
 # 项目信息
 BINARY_NAME=skills-x
+LOCAL_BINARY_NAME=skills-x-local
 VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
 LDFLAGS=-ldflags "-X main.Version=$(VERSION) -X main.BuildTime=$(BUILD_TIME)"
@@ -16,6 +17,7 @@ GOMOD=$(GOCMD) mod
 CMD_DIR=cmd/skills-x
 OUT_DIR=bin
 SKILLS_DATA=$(CMD_DIR)/skills/skills
+LOCAL_SKILLS_DIR=local_skills
 
 # 默认目标
 all: build
@@ -26,12 +28,26 @@ sync-skills:
 	@cp -r skills $(SKILLS_DATA)
 	@echo "Synced skills -> $(SKILLS_DATA)"
 
+# 同步本地 skills 数据到 embed 目录（仅本地打包）
+sync-local-skills:
+	@rm -rf $(SKILLS_DATA)
+	@cp -r skills $(SKILLS_DATA)
+	@cp -r $(LOCAL_SKILLS_DIR)/* $(SKILLS_DATA)/
+	@echo "Synced skills + local_skills -> $(SKILLS_DATA)"
+
 # 构建
 build: sync-skills
 	@mkdir -p $(OUT_DIR)
 	$(GOBUILD) $(LDFLAGS) -o $(OUT_DIR)/$(BINARY_NAME) ./$(CMD_DIR)
 	@rm -rf $(SKILLS_DATA)
 	@echo "Built: $(OUT_DIR)/$(BINARY_NAME)"
+
+# 本地版本构建（仅 Linux，使用 local_skills）
+build-local: sync-local-skills
+	@mkdir -p $(OUT_DIR)
+	GOOS=linux GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o $(OUT_DIR)/$(LOCAL_BINARY_NAME) ./$(CMD_DIR)
+	@rm -rf $(SKILLS_DATA)
+	@echo "Built local: $(OUT_DIR)/$(LOCAL_BINARY_NAME)"
 
 # 安装到 GOPATH/bin
 install:

@@ -101,6 +101,7 @@ skill_web-artifacts-builder: "Complex HTML artifacts"
 skill_webapp-testing: "Playwright testing"
 skill_langsmith-fetch: "LangSmith debug tracing"
 skill_changelog-generator: "Generate changelog from git commits"
+skill_openclaw-session-header-fix: "Fix missing session header causing transcript overwrite"
 
 # Workflows
 skill_brainstorming: "Brainstorm before creative work"

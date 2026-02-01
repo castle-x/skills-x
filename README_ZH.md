@@ -134,7 +134,8 @@ $ skills-x list
 
 ## 🏰 关于 X Skills
 
-X skills 是**项目作者的原创作品**，存放在 `x/` 目录下。
+X skills 是**项目作者的原创 Skill**，存放在 `skills/` 目录下，并已适配业内 Git 仓库的 skill 规范（使用 skills 目录）。
 它们在列表中单独显示，并带有 ⭐ 标记以区分社区 skills。
 
 要贡献新的 X skill，请参考 `skills-x` skill 的指南。
+创建新 skill 后，需要询问是否添加 `REAEDME.md` 背景总结文档，用于记录问题、复盘方案，并沉淀为后续可复用的工具。

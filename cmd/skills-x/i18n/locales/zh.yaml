@@ -101,6 +101,7 @@ skill_web-artifacts-builder: "复杂 HTML artifacts"
 skill_webapp-testing: "Playwright 测试"
 skill_langsmith-fetch: "LangSmith 调试追踪"
 skill_changelog-generator: "从 git 提交生成更新日志"
+skill_openclaw-session-header-fix: "修复 openclaw session 覆写问题"
 
 # Workflows
 skill_brainstorming: "创意工作前的头脑风暴"

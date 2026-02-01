@@ -34,3 +34,16 @@ video/
 
 # References (personal notes, not for distribution)
 references/
+
+# Local docs (personal notes, not for distribution)
+docs/
+
+# Local skills (not for distribution)
+skills/baidu-speech-to-text/
+skills/oc-gateway/
+
+# Personal memos (not for distribution)
+memos/
+
+# Local skills directory (not for distribution)
+local_skills/

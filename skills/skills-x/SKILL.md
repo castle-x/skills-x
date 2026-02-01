@@ -17,6 +17,7 @@ This skill provides a standardized workflow for contributing new skills to the s
 - Creating x original skills
 - Updating existing skills with new versions
 - Validating skill format compliance before submission
+ - After creating a new skill, ask whether to generate a REAEDME (background summary)
 
 ## Project Structure Overview
 
@@ -287,6 +288,10 @@ metadata:
 ```
 
 2. Add `LICENSE.txt` (copy from project root or create)
+
+3. Ask the user whether to add a summary document named `REAEDME.md`.
+   - Purpose: describe the skill’s background, the problem it solves, and the author's goals.
+   - Do NOT include any secrets or API keys.
 
 ### Step 3: Add i18n Translations
 

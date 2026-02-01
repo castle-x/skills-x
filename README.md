@@ -136,7 +136,8 @@ Total: 23 skills from 4 sources
 
 ## 🏰 About X Skills
 
-X skills are **original creations** by the project author, stored in the `x/` directory.
+X skills are **original Skills** by the project author, stored in the `skills/` directory and aligned with common Git repo skill conventions.
 They are displayed separately in the list with a ⭐ marker to distinguish them from community skills.
 
 To contribute a new X skill, use the `skills-x` skill for guidance.
+After creating a new skill, ask whether to add a `REAEDME.md` background summary document.
