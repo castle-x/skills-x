@@ -68,9 +68,6 @@ project/
 ├── pkg/
 │   └── siteserver/          # Static file server
 │       └── siteserver.go
-├── internal/
-│   └── app/
-│       └── app.go           # Application integration
 ├── Makefile
 └── go.mod
 ```
