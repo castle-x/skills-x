@@ -105,6 +105,7 @@ skill_openclaw-session-header-fix: "Fix missing session header causing transcrip
 skill_baidu-speech-to-text: "Baidu speech-to-text (optimized for China mainland)"
 skill_minimal-ui-design: "Minimal UI design - low-noise, icon-forward"
 skill_newapi-deploy-config: "New API deploy (host network) and channel configuration"
+skill_go-embedded-spa: "Go embedded SPA (single-binary deployment)"
 
 # Workflows
 skill_brainstorming: "Brainstorm before creative work"

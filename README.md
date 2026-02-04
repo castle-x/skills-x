@@ -154,13 +154,14 @@ $ skills-x list
 
 📦 skills-x (Original)
    baidu-speech-to-text       Baidu speech-to-text (optimized for China mainland)
+   go-embedded-spa            Go embedded SPA (single-binary deployment)
    go-i18n                    Go CLI i18n rules (author use)
    minimal-ui-design          Minimal UI design - low-noise, icon-forward
    newapi-deploy-config       New API deploy (host network) and channel configuration
    openclaw-session-header-fix Fix missing session header causing transcript overwrite
    skills-x                   Contribute skills to skills-x collection
 
-Total: 51 skills from 10 sources
+Total: 52 skills from 10 sources
 ```
 
 ---

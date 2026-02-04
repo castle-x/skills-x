@@ -105,6 +105,7 @@ skill_openclaw-session-header-fix: "修复 openclaw session 覆写问题"
 skill_baidu-speech-to-text: "百度语音识别 - 语音转文本（国内环境优化）"
 skill_minimal-ui-design: "极简 UI 设计 - 低噪声、图标优先"
 skill_newapi-deploy-config: "New API 部署与模型配置（Host 网络）"
+skill_go-embedded-spa: "Go 内嵌 SPA（单二进制部署）"
 
 # Workflows
 skill_brainstorming: "创意工作前的头脑风暴"

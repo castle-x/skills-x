@@ -152,13 +152,14 @@ $ skills-x list
 
 📦 skills-x (Original)
    baidu-speech-to-text       百度语音识别 - 语音转文本（国内环境优化）
+   go-embedded-spa            Go 内嵌 SPA（单二进制部署）
    go-i18n                    Go CLI 多语言规则（作者自用）
    minimal-ui-design          极简 UI 设计 - 低噪声、图标优先
    newapi-deploy-config       New API 部署与模型配置（Host 网络）
    openclaw-session-header-fix 修复 openclaw session 覆写问题
    skills-x                   向 skills-x 贡献 skills
 
-共 51 个 skills，来自 10 个源
+共 52 个 skills，来自 10 个源
 ```
 
 ---

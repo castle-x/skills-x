@@ -1,0 +1,13 @@
+package site
+
+import (
+	"embed"
+	"io/fs"
+)
+
+//go:embed all:dist
+var distDir embed.FS
+
+// DistDirFS returns the embedded frontend resource filesystem
+// Usage: siteserver.StaticFS(h, site.DistDirFS)
+var DistDirFS, _ = fs.Sub(distDir, "dist")
