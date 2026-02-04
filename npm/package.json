@@ -1,0 +1,43 @@
+{
+  "name": "skills-x",
+  "version": "0.2.9",
+  "description": "AI Agent Skills management tool - Install and manage Claude/AI agent skills",
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "claude",
+    "anthropic",
+    "llm",
+    "cli"
+  ],
+  "author": "castle-x",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/castle-x/skills-x.git"
+  },
+  "homepage": "https://github.com/castle-x/skills-x#readme",
+  "bugs": {
+    "url": "https://github.com/castle-x/skills-x/issues"
+  },
+  "bin": {
+    "skills-x": "bin/skills-x.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/",
+    "install.js",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@openai/codex": "^0.93.0",
+    "claude-code": "^1.0.0",
+    "opencode-ai": "^1.1.48"
+  }
+}

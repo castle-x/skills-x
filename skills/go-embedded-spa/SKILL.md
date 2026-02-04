@@ -1,6 +1,6 @@
 ---
 name: go-embedded-spa
-description: This skill provides guidance for implementing Go Embedded SPA architecture - embedding React/Vue/TSX frontend static resources into Go binary using go:embed directive. Use this skill when building self-contained single-binary applications, implementing SPA with Go backend, setting up cross-platform deployable full-stack projects, or configuring static file serving with Hertz/Gin frameworks.
+description: This skill provides guidance for implementing Go Embedded SPA architecture - embedding React/Vue/TSX frontend static resources into Go binary using go:embed directive. Use this skill when building self-contained single-binary applications, implementing SPA with Go backend, setting up cross-platform deployable full-stack projects, or configuring static file serving with Go standard library net/http.
 ---
 
 # Go Embedded SPA
@@ -15,200 +15,100 @@ Go Embedded SPA is a technique that embeds frontend SPA (Single Page Application
 |---------|-------------|
 | 🎯 Single File Deploy | One binary contains both frontend and backend, no nginx needed |
 | 🌍 Cross-Platform | `GOOS/GOARCH` easily compiles for Linux/Mac/Windows |
-| 📦 Zero Dependencies | Target machine needs no Node.js/npm |
+| 📦 Zero Dependencies | Target machine needs no Node.js/npm, uses Go standard library only |
 | 🚀 Container Friendly | Dockerfile only needs `COPY + ENTRYPOINT` |
 | 🔒 Resource Security | Static resources compiled into binary, tamper-proof |
 | ⚡ Fast Startup | No disk I/O for loading static files |
 
-## Architecture Flow
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Build Process                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   Frontend Source      Vite/Webpack        Build Output          │
-│  ┌──────────────┐     ┌──────────────┐    ┌──────────────┐      │
-│  │  site/src/*  │ ──► │    build     │ ──► │  site/dist/* │      │
-│  │  (React TSX) │     │              │    │ (static files)│      │
-│  └──────────────┘     └──────────────┘    └──────────────┘      │
-│                                                  │                │
-│                                                  ▼                │
-│   Go Source            go build           Final Binary           │
-│  ┌──────────────┐     ┌──────────────┐    ┌──────────────┐      │
-│  │    *.go      │ ──► │   compile    │ ◄── │ //go:embed   │      │
-│  │  embed.go    │     │              │    │   all:dist   │      │
-│  └──────────────┘     └──────────────┘    └──────────────┘      │
-│                              │                                    │
-│                              ▼                                    │
-│                       ┌──────────────┐                           │
-│                       │ bin/app      │ (contains frontend)       │
-│                       └──────────────┘                           │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## Implementation Guide
-
-### Step 1: Project Structure
-
-Create the following directory structure:
+## Project Structure
 
 ```
 project/
+├── go.mod
+├── Makefile
 ├── site/                    # Frontend project
-│   ├── src/                 # Source code
-│   │   ├── main.tsx
-│   │   ├── App.tsx
-│   │   └── ...
-│   ├── dist/                # Build output (embedded)
 │   ├── embed.go             # Go embed directive
+│   ├── src/                 # React/Vue source
+│   ├── dist/                # Build output (embedded)
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── index.html
 ├── pkg/
 │   └── siteserver/          # Static file server
 │       └── siteserver.go
-├── Makefile
-└── go.mod
+└── cmd/
+    └── app/
+        └── main.go
 ```
 
-### Step 2: Create embed.go
+## Implementation Steps
 
-Create `site/embed.go` with the embed directive:
+### Step 1: Create embed.go
 
-```go
-package site
+Create `site/embed.go` to declare embed directive. See `references/embed.md` for complete code.
 
-import (
-	"embed"
-	"io/fs"
-)
+Key points:
+- Use `//go:embed all:dist` to embed all files including hidden files
+- Use `fs.Sub()` to remove `dist/` prefix
 
-//go:embed all:dist
-var distDir embed.FS
+### Step 2: Create Static File Server
 
-// DistDirFS returns the embedded frontend resource filesystem
-// Usage: siteserver.StaticFS(h, site.DistDirFS)
-var DistDirFS, _ = fs.Sub(distDir, "dist")
-```
+Create `pkg/siteserver/siteserver.go`. See `references/siteserver.md` for complete implementation using Go standard `net/http`.
 
-**Key Points:**
-- `//go:embed all:dist` - The `all:` prefix embeds ALL files including those starting with `.` or `_`
-- `embed.FS` - Go 1.16+ embedded read-only filesystem type
-- `fs.Sub(distDir, "dist")` - Creates sub-filesystem, removes `dist/` prefix for clean access
+Core logic:
+1. Pre-load `index.html` for SPA fallback
+2. Create `http.FileServer` from embed.FS
+3. Detect static resources by file extension
+4. Return `index.html` for SPA routes (no file extension)
 
-### Step 3: Create Static File Server
-
-Create `pkg/siteserver/siteserver.go` for serving embedded files. See `references/siteserver.md` for the complete implementation.
-
-**Core Logic:**
-1. Pre-load `index.html` for SPA route fallback
-2. Create standard library file server from embed.FS
-3. Register NoRoute handler (catches all unmatched routes)
-4. Static resource detection (path contains `.`)
-5. SPA fallback (return index.html for non-static routes)
-
-### Step 4: Application Integration
-
-In the main application, register static file server AFTER API routes:
+### Step 3: Application Integration
 
 ```go
+package main
+
 import (
+    "log"
+    "net/http"
+    
     "your-project/pkg/siteserver"
     "your-project/site"
 )
 
-func NewApp() {
-    h := server.Default()
+func main() {
+    mux := http.NewServeMux()
     
     // 1. Register API routes FIRST
-    h.POST("/apis/v1/users", userHandler)
-    h.GET("/apis/v1/data", dataHandler)
+    mux.HandleFunc("/apis/v1/health", healthHandler)
+    mux.HandleFunc("/apis/v1/data", dataHandler)
     
-    // 2. Register static file server LAST (as fallback)
-    if err := siteserver.StaticFS(h, site.DistDirFS); err != nil {
-        log.Warn("Failed to register static file server: %v", err)
-    }
+    // 2. Wrap with static file server (as fallback)
+    handler := siteserver.WrapHandler(mux, site.DistDirFS)
     
-    h.Spin()
+    log.Println("Server starting on :8080")
+    log.Fatal(http.ListenAndServe(":8080", handler))
 }
 ```
 
-**Order is critical:** API routes must be registered before static file server to ensure API matching priority.
+**Order is critical:** API routes must be registered before static file server.
 
-### Step 5: Build Configuration
+### Step 4: Build
 
-#### Makefile
-
-```makefile
-build-web:  ## Build frontend
-	cd site && npm run build
-
-build-backend:  ## Build backend
-	go build -o bin/app ./cmd/app
-
-build: build-web build-backend  ## Build all (frontend first!)
-
-clean:  ## Clean build artifacts
-	rm -rf site/dist bin/app
-```
-
-**Build order MUST be:** `build-web` → `build-backend`
-
-#### Vite Configuration (site/vite.config.ts)
-
-```typescript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'dist',              // Output dir matches embed directive
-    emptyDirBeforeWrite: true,
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      '/apis': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      '/ws': {
-        target: 'ws://localhost:8080',
-        ws: true,
-      },
-    },
-  },
-})
-```
-
-### Step 6: Cross-Platform Build
+Build order: **frontend first, then backend**
 
 ```bash
-# Build for multiple platforms
-GOOS=linux   GOARCH=amd64 go build -o bin/app-linux ./cmd/app
-GOOS=darwin  GOARCH=arm64 go build -o bin/app-macos ./cmd/app
-GOOS=windows GOARCH=amd64 go build -o bin/app.exe ./cmd/app
+make build-web      # npm run build → site/dist/
+make build-backend  # go build (embeds dist/)
 ```
 
-### Step 7: Container Deployment
+### Step 5: Cross-Platform Build
 
-Minimal Dockerfile:
-
-```dockerfile
-FROM scratch
-COPY app /app
-ENTRYPOINT ["/app"]
-```
-
-Or with Alpine base:
-
-```dockerfile
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-COPY app /app
-ENTRYPOINT ["/app"]
+```bash
+make build-linux        # Linux amd64
+make build-linux-arm64  # Linux arm64
+make build-macos        # macOS Intel
+make build-macos-arm64  # macOS Apple Silicon
+make build-windows      # Windows amd64
+make build-all          # All platforms
 ```
 
 ## Request Handling Flow
@@ -218,62 +118,47 @@ Browser Request
       │
       ▼
 ┌─────────────────────────────────────┐
-│           HTTP Server               │
-├─────────────────────────────────────┤
-│  Route Matching                     │
+│  http.ServeMux Route Matching       │
 │  ├── /apis/*  → API Handler         │
-│  ├── /ws      → WebSocket Handler   │
-│  └── Others   → NoRoute (siteserver)│
+│  └── Others   → Static Handler      │
 └─────────────────────────────────────┘
               │
               ▼
 ┌─────────────────────────────────────┐
-│       NoRoute Handler Logic         │
-├─────────────────────────────────────┤
-│  GET /assets/index-abc123.js        │
-│  → Has extension → embed.FS read    │
-│  → Return JS file                   │
-│                                     │
-│  GET /dashboard/settings            │
-│  → No extension → SPA fallback      │
-│  → Return index.html                │
+│  Static Handler                     │
+│  ├── Has extension → serve file     │
+│  └── No extension → return index.html│
 └─────────────────────────────────────┘
 ```
 
 ## Caching Strategy
 
-| Path Pattern | Cache-Control | Reason |
-|--------------|---------------|--------|
-| `/assets/*` | `public, max-age=31536000, immutable` | Files have hash in name, safe for long cache |
-| `/index.html` | `no-cache` | Entry file must always be fresh |
-| Other static | Default | Standard browser caching |
+| Path | Cache-Control | Reason |
+|------|---------------|--------|
+| `/assets/*` | `max-age=31536000, immutable` | Files have hash in name |
+| `/index.html` | `no-cache` | Entry must be fresh |
+
+## Container Deployment
+
+Minimal Dockerfile:
+
+```dockerfile
+FROM scratch
+COPY app /app
+ENTRYPOINT ["/app"]
+```
 
 ## Troubleshooting
 
-### Common Issues
+1. **Empty dist error** → Run `make build-web` before `make build-backend`
+2. **Static files 404** → Check `//go:embed all:dist` path relative to embed.go
+3. **API not matching** → Register API routes BEFORE wrapping with siteserver
+4. **SPA routes 404** → Verify handler returns index.html for non-file paths
 
-1. **Empty dist directory error**
-   - Ensure `make build-web` runs BEFORE `make build-backend`
-   - Check that `site/dist/` exists and contains files
+## References
 
-2. **Static files not found**
-   - Verify `//go:embed all:dist` path is correct relative to embed.go location
-   - Check `fs.Sub()` prefix matches actual directory structure
-
-3. **API routes not matching**
-   - Ensure API routes are registered BEFORE `siteserver.StaticFS()`
-   - Check route patterns don't conflict
-
-4. **SPA routes return 404**
-   - Verify NoRoute handler returns index.html for non-file paths
-   - Check path detection logic (looking for `.` in filename)
-
-## Resources
-
-### references/
-- `siteserver.md` - Complete static file server implementation for Hertz framework
-
-### assets/
-- `embed.go.tmpl` - Template for embed.go file
-- `siteserver.go.tmpl` - Template for static file server
-- `vite.config.ts.tmpl` - Template for Vite configuration
+- `go-dependencies.md` - Go module dependencies (standard library only)
+- `embed.md` - Complete embed.go implementation
+- `siteserver.md` - Static file server using Go standard net/http
+- `vite-config.md` - Vite configuration for development proxy
+- `makefile.md` - Complete Makefile with cross-platform build

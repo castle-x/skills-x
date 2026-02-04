@@ -4,10 +4,8 @@ km_doc.md
 bin/
 
 # npm package (published separately)
-npm/
-
-# scripts (local test only)
-scripts/
+npm/bin/
+npm/node_modules/
 
 # IDE cache
 .codebuddy/
@@ -31,10 +29,6 @@ video/
 
 .cursor/
 
-
-# References (personal notes, not for distribution)
-references/
-
 # Local docs (personal notes, not for distribution)
 docs/
 
@@ -46,6 +40,9 @@ memos/
 
 # Local skills directory (not for distribution)
 local_skills/
+
+# Local scripts (not for distribution)
+local_scripts/
 
 # Local site (memos management app)
 site/

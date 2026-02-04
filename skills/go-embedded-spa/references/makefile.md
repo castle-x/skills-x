@@ -1,4 +1,9 @@
-.PHONY: help build build-web build-backend dev-web dev-backend clean install-web \
+# Makefile with Cross-Platform Build
+
+## Complete Makefile
+
+```makefile
+.PHONY: help build build-web build-backend dev-web dev-backend clean \
         build-linux build-linux-arm64 build-macos build-macos-arm64 build-windows build-all
 
 # Default target
@@ -8,11 +13,10 @@
 GREEN  := \033[0;32m
 YELLOW := \033[1;33m
 BLUE   := \033[0;34m
-RED    := \033[0;31m
-NC     := \033[0m # No Color
+NC     := \033[0m
 
 # Project configuration - MODIFY THESE FOR YOUR PROJECT
-BINARY_NAME := myapp
+BINARY_NAME := app
 CMD_PATH    := ./cmd/$(BINARY_NAME)/main.go
 OUTPUT_DIR  := bin
 LDFLAGS     := -s -w
@@ -116,3 +120,72 @@ build-all: build-web ## Build for all platforms
 	@printf "$(GREEN)[Success] All platforms built$(NC)\n"
 	@printf "\n$(BLUE)Generated files:$(NC)\n"
 	@ls -lh $(OUTPUT_DIR)/$(BINARY_NAME)-* 2>/dev/null | awk '{printf "  %s  %s\n", $$5, $$9}'
+```
+
+## Configuration Variables
+
+Modify these at the top of Makefile for your project:
+
+```makefile
+BINARY_NAME := app              # Your binary name
+CMD_PATH    := ./cmd/app/main.go # Path to main.go
+OUTPUT_DIR  := bin              # Output directory
+LDFLAGS     := -s -w            # Linker flags (-s -w for smaller binary)
+```
+
+## Build Targets
+
+### Basic Commands
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make build` | Build frontend + backend |
+| `make build-web` | Build frontend only |
+| `make build-backend` | Build backend (current platform) |
+| `make dev-web` | Start Vite dev server |
+| `make dev-backend` | Start Go with hot reload |
+| `make run` | Run compiled binary |
+| `make clean` | Remove build artifacts |
+
+### Cross-Platform Builds
+
+| Command | Output |
+|---------|--------|
+| `make build-linux` | `bin/app-linux-amd64` |
+| `make build-linux-arm64` | `bin/app-linux-arm64` |
+| `make build-macos` | `bin/app-darwin-amd64` |
+| `make build-macos-arm64` | `bin/app-darwin-arm64` |
+| `make build-windows` | `bin/app-windows-amd64.exe` |
+| `make build-all` | All of the above |
+
+## LDFLAGS Explained
+
+```makefile
+LDFLAGS := -s -w
+```
+
+| Flag | Effect | Size Reduction |
+|------|--------|----------------|
+| `-s` | Strip symbol table | ~20% smaller |
+| `-w` | Strip DWARF debug info | ~10% smaller |
+
+## Build Output
+
+```bash
+$ make build-all
+[Building All Platforms]
+  → Linux amd64
+  → Linux arm64
+  → macOS amd64 (Intel)
+  → macOS arm64 (Apple Silicon)
+  → Windows amd64
+[Success] All platforms built
+
+Generated files:
+  12M  bin/app-linux-amd64
+  11M  bin/app-linux-arm64
+  12M  bin/app-darwin-amd64
+  11M  bin/app-darwin-arm64
+  12M  bin/app-windows-amd64.exe
+```
