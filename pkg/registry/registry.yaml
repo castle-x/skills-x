@@ -201,11 +201,6 @@ superpowers:
       description: TDD workflow - write tests before implementation
       description_zh: TDD 工作流 - 先写测试再实现
 
-    - name: using-git-worktrees
-      path: skills/using-git-worktrees
-      description: Git worktrees for feature isolation from current branch
-      description_zh: 使用 Git worktrees 隔离功能开发
-
     - name: using-superpowers
       path: skills/using-superpowers
       description: How to find and use superpowers skills effectively
@@ -253,6 +248,32 @@ developer-kit:
       path: skills/typescript-docs
       description: TypeScript documentation with JSDoc, TypeDoc and ADR patterns
       description_zh: TypeScript 文档 - JSDoc、TypeDoc 和 ADR 模式
+
+# =============================================================================
+# Vercel Labs Skills CLI
+# https://github.com/vercel-labs/skills
+# =============================================================================
+vercel-labs-skills:
+  repo: github.com/vercel-labs/skills
+  license: MIT
+  skills:
+    - name: find-skills
+      path: skills/find-skills
+      description: Find and install agent skills using the Skills CLI
+      description_zh: 使用 Skills CLI 查找并安装技能
+
+# =============================================================================
+# Masayuki Kono Agent Skills
+# https://github.com/masayuki-kono/agent-skills
+# =============================================================================
+masayuki-kono:
+  repo: github.com/masayuki-kono/agent-skills
+  license: MIT
+  skills:
+    - name: implementation-plan
+      path: skills/implementation-plan
+      description: Guide for creating implementation plans
+      description_zh: 编写实施/开发方案的指南
 
 # =============================================================================
 # Tencent CloudBase (腾讯云开发)

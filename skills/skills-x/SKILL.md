@@ -235,9 +235,9 @@ new-source-name:
 - `description`: English description (max 1024 chars)
 - `description_zh`: Chinese description (optional, max 1024 chars)
 
-### Step 3: Verify Skill Installation
+### Step 3: Verify Skill Installation (Always)
 
-Test that the new skill can be installed:
+After updating the registry, ALWAYS build and run list/init tests (no need to ask).
 
 ```bash
 # Build the binary
@@ -256,6 +256,13 @@ ls /tmp/test-install/skill-name/
 - [ ] Skill can be installed with `init`
 - [ ] English and Chinese descriptions display correctly
 - [ ] License information is accurate
+
+### Step 4: Ask for Release Actions
+
+After tests finish, ask the user whether they want to:
+- Commit and push
+- Create GitHub release
+- Publish to npm
 
 ---
 

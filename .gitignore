@@ -39,11 +39,13 @@ references/
 docs/
 
 # Local skills (not for distribution)
-skills/baidu-speech-to-text/
-skills/oc-gateway/
+# (keep only local_skills/ below)
 
 # Personal memos (not for distribution)
 memos/
 
 # Local skills directory (not for distribution)
 local_skills/
+
+# Local site (memos management app)
+site/

@@ -90,37 +90,77 @@ skills-x/
 $ skills-x list
 
 📦 github.com/anthropics/skills (Apache-2.0)
-   algorithmic-art      Creating algorithmic art using p5.js...
-   artifacts-builder    Build interactive artifacts with React
-   brand-guidelines     Apply Anthropic brand colors and typography
-   canvas-design        Create visual art in PNG and PDF...
-   doc-coauthoring      Collaborative document editing
-   docx                 Word document creation, editing and analysis
-   frontend-design      Frontend design best practices
-   internal-comms       Internal communications templates
-   mcp-builder          Generate MCP servers
-   pdf                  PDF manipulation - extract, fill forms, merge
-   pptx                 PowerPoint presentation creation and editing
-   skill-creator        Create new agent skills
-   slack-gif-creator    Create animated GIFs optimized for Slack
-   template-skill       Template for creating new skills
-   theme-factory        Toolkit for styling artifacts with themes
-   web-artifacts-builder Build web artifacts with React
-   webapp-testing       Test web applications
-   xlsx                 Excel spreadsheet creation, formulas and charts
+   algorithmic-art           Creating algorithmic art using p5.js...
+   brand-guidelines          Apply Anthropic brand colors and typography
+   canvas-design             Create visual art in PNG and PDF...
+   doc-coauthoring           Collaborative document editing
+   docx                      Word document creation, editing and analysis
+   frontend-design           Frontend design best practices
+   internal-comms            Internal communications templates
+   mcp-builder               Generate MCP servers
+   pdf                       PDF manipulation - extract, fill forms, merge
+   pptx                      PowerPoint presentation creation and editing
+   skill-creator             Create new agent skills
+   slack-gif-creator         Create animated GIFs optimized for Slack
+   theme-factory             Toolkit for styling artifacts with themes
+   web-artifacts-builder     Build web artifacts with React
+   webapp-testing            Test web applications
+   xlsx                      Excel spreadsheet creation, formulas and charts
 
 📦 github.com/remotion-dev/skills (Remotion License)
    remotion             Best practices for Remotion - Video creation...
 
+📦 github.com/vercel-labs/skills (MIT)
+   find-skills          Find and install agent skills using the Skills CLI
+
 📦 github.com/vercel-labs/agent-skills (MIT)
-   react-best-practices      React and Next.js performance optimization
-   react-native-guidelines   React Native best practices for AI agents
-   web-design-guidelines     100+ rules for accessibility, performance, UX
+   react-best-practices  React and Next.js performance optimization from Vercel Engineering
+   react-native-skills   React Native best practices for AI agents
+   web-design-guidelines 100+ rules for accessibility, performance and UX
+
+📦 github.com/giuseppe-trisciuoglio/developer-kit (MIT)
+   react-patterns        React 19 patterns covering Server Components...
+   shadcn-ui             shadcn/ui component library with Radix UI and Tailwind CSS
+   tailwind-css-patterns Tailwind CSS utility-first styling patterns...
+   typescript-docs       TypeScript documentation with JSDoc, TypeDoc and ADR patterns
+
+📦 github.com/masayuki-kono/agent-skills (MIT)
+   implementation-plan   Guide for creating implementation plans
+
+📦 github.com/obra/superpowers (MIT)
+   brainstorming                   Brainstorm before any creative work...
+   dispatching-parallel-agents     Dispatch 2+ independent tasks to work on in parallel
+   executing-plans                 Execute written implementation plans step by step
+   finishing-a-development-branch  Complete development branch when tests pass
+   receiving-code-review           Handle code review feedback before implementing...
+   requesting-code-review          Request code review when completing tasks or features
+   subagent-driven-development     Execute plans with independent tasks using subagents
+   systematic-debugging            Systematic approach to bugs, test failures...
+   test-driven-development         TDD workflow - write tests before implementation
+   using-superpowers               How to find and use superpowers skills effectively
+   verification-before-completion  Verify work is complete, fixed, or passing...
+   writing-plans                   Write implementation plans for multi-step tasks...
+   writing-skills                  Create, edit, and verify skills
+
+📦 github.com/tencentcloudbase/skills (MIT)
+   ai-model-wechat          AI models in Mini Programs...
+   auth-wechat              WeChat Mini Program authentication...
+   cloudbase-guidelines     Essential CloudBase development guidelines...
+   miniprogram-development  WeChat Mini Program development with CloudBase...
+   no-sql-wx-mp-sdk          CloudBase document database for Mini Programs...
+
+📦 github.com/nextlevelbuilder/ui-ux-pro-max-skill (MIT)
+   ui-ux-pro-max         UI/UX design intelligence - 50 styles, 97 palettes...
 
 📦 skills-x (Original)
-   skills-x             Contribute skills to skills-x collection
+   baidu-speech-to-text       Baidu speech-to-text (optimized for China mainland)
+   go-i18n                    Go CLI i18n rules (author use)
+   minimal-ui-design          Minimal UI design - low-noise, icon-forward
+   newapi-deploy-config       New API deploy (host network) and channel configuration
+   openclaw-session-header-fix Fix missing session header causing transcript overwrite
+   skills-x                   Contribute skills to skills-x collection
 
-Total: 23 skills from 4 sources
+Total: 51 skills from 10 sources
 ```
 
 ---
