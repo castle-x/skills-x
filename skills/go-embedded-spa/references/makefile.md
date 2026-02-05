@@ -3,7 +3,7 @@
 ## Complete Makefile
 
 ```makefile
-.PHONY: help build build-web build-backend dev-web dev-backend clean \
+.PHONY: help build build-web build-backend dev dev-web dev-backend clean run \
         build-linux build-linux-arm64 build-macos build-macos-arm64 build-windows build-all
 
 # Default target
@@ -17,7 +17,7 @@ NC     := \033[0m
 
 # Project configuration - MODIFY THESE FOR YOUR PROJECT
 BINARY_NAME := app
-CMD_PATH    := ./cmd/$(BINARY_NAME)/main.go
+CMD_PATH    := ./cmd/app
 OUTPUT_DIR  := bin
 LDFLAGS     := -s -w
 
@@ -28,14 +28,14 @@ help: ## Show help
 	@printf "\n$(YELLOW)Cross-Platform Build:$(NC)\n"
 	@grep -E '^build-(linux|macos|windows|all).*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-20s$(NC) %s\n", $$1, $$2}'
 
-install-web: ## Install frontend dependencies
+install: ## Install frontend dependencies
 	@printf "$(BLUE)[Installing Frontend Dependencies]$(NC)\n"
 	@cd site && npm install
 
 build-web: ## Build frontend
 	@printf "$(BLUE)[Building Frontend]$(NC)\n"
 	@cd site && npm run build
-	@printf "$(GREEN)[Success] Frontend built$(NC)\n"
+	@printf "$(GREEN)[Success] Frontend built to site/dist/$(NC)\n"
 
 build-backend: ## Build backend (current platform)
 	@printf "$(BLUE)[Building Backend]$(NC)\n"
@@ -45,21 +45,30 @@ build-backend: ## Build backend (current platform)
 
 build: build-web build-backend ## Build frontend and backend
 
-dev-web: ## Start frontend dev server (http://localhost:5173)
+dev-web: ## Start frontend only (http://localhost:5173)
 	@printf "$(BLUE)[Starting Frontend Dev Server]$(NC)\n"
 	@printf "$(YELLOW)URL: http://localhost:5173$(NC)\n"
-	@printf "$(YELLOW)API Proxy: http://localhost:8080$(NC)\n"
+	@printf "$(YELLOW)API Proxy: /api -> http://localhost:8080$(NC)\n"
 	@cd site && npm run dev
 
-dev-backend: ## Start backend dev server (http://localhost:8080)
+dev-backend: ## Start backend only (http://localhost:8080)
 	@printf "$(BLUE)[Starting Backend Dev Server]$(NC)\n"
 	@printf "$(YELLOW)URL: http://localhost:8080$(NC)\n"
 	@go run $(CMD_PATH)
 
-dev: ## Show instructions for running both servers
-	@printf "$(YELLOW)Please run in two terminals:$(NC)\n"
-	@printf "  Terminal 1: $(GREEN)make dev-backend$(NC)\n"
-	@printf "  Terminal 2: $(GREEN)make dev-web$(NC)\n"
+dev: ## Start both backend and frontend (recommended for development)
+	@printf "$(BLUE)============================================$(NC)\n"
+	@printf "$(BLUE)  Starting Development Server$(NC)\n"
+	@printf "$(BLUE)============================================$(NC)\n"
+	@printf "  Backend:  $(GREEN)http://localhost:8080$(NC) (Go)\n"
+	@printf "  Frontend: $(GREEN)http://localhost:5173$(NC) (Vite)\n"
+	@printf "  API Proxy: $(YELLOW)/api -> localhost:8080$(NC)\n"
+	@printf "$(BLUE)============================================$(NC)\n"
+	@printf "\n"
+	@trap 'kill $$(jobs -p) 2>/dev/null; exit 0' INT TERM; \
+	go run $(CMD_PATH) & \
+	sleep 1 && \
+	cd site && npm run dev
 
 run: ## Run compiled binary
 	@printf "$(BLUE)[Running Service]$(NC)\n"
@@ -128,7 +137,7 @@ Modify these at the top of Makefile for your project:
 
 ```makefile
 BINARY_NAME := app              # Your binary name
-CMD_PATH    := ./cmd/app/main.go # Path to main.go
+CMD_PATH    := ./cmd/app        # Path to main package
 OUTPUT_DIR  := bin              # Output directory
 LDFLAGS     := -s -w            # Linker flags (-s -w for smaller binary)
 ```
@@ -143,10 +152,40 @@ LDFLAGS     := -s -w            # Linker flags (-s -w for smaller binary)
 | `make build` | Build frontend + backend |
 | `make build-web` | Build frontend only |
 | `make build-backend` | Build backend (current platform) |
-| `make dev-web` | Start Vite dev server |
-| `make dev-backend` | Start Go with hot reload |
+| `make dev` | **Start both backend + frontend** (recommended) |
+| `make dev-web` | Start Vite dev server only |
+| `make dev-backend` | Start Go backend only |
 | `make run` | Run compiled binary |
 | `make clean` | Remove build artifacts |
+
+### Development Mode
+
+**Recommended:** Use `make dev` to start both servers in one terminal:
+
+```bash
+$ make dev
+============================================
+  Starting Development Server
+============================================
+  Backend:  http://localhost:8080 (Go)
+  Frontend: http://localhost:5173 (Vite)
+  API Proxy: /api -> localhost:8080
+============================================
+```
+
+- Frontend runs on **:5173** with hot reload
+- API requests (`/api/*`) are proxied to Go backend on **:8080**
+- Press **Ctrl+C** to stop both servers
+
+**Alternative:** Run in separate terminals if you need independent control:
+
+```bash
+# Terminal 1
+make dev-backend
+
+# Terminal 2
+make dev-web
+```
 
 ### Cross-Platform Builds
 

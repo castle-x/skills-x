@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/command/initcmd"
 	"github.com/castle-x/skills-x/cmd/skills-x/command/list"
 	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
+	"github.com/castle-x/skills-x/pkg/versioncheck"
 	"github.com/spf13/cobra"
 )
 
@@ -38,9 +42,34 @@ func main() {
 	// Set version template
 	rootCmd.SetVersionTemplate("skills-x version {{.Version}}\n")
 
-	if err := rootCmd.Execute(); err != nil {
+	os.Exit(run(rootCmd, func() { checkForUpdate(Version) }))
+}
+
+func checkForUpdate(currentVersion string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	latest, err := versioncheck.FetchLatestVersion(ctx, "skills-x")
+	if err != nil {
+		return
+	}
+	if versioncheck.ShouldNotify(currentVersion, latest) {
+		fmt.Println(i18n.Tf("update_available", latest, currentVersion))
+		fmt.Println(i18n.T("update_command"))
+	}
+}
+
+func run(rootCmd *cobra.Command, postRun func()) int {
+	err := rootCmd.Execute()
+	if err != nil {
 		// Use custom error format
 		errmsg.PrintError(err)
-		os.Exit(1)
 	}
+	if postRun != nil {
+		postRun()
+	}
+	if err != nil {
+		return 1
+	}
+	return 0
 }

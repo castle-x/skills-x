@@ -42,6 +42,12 @@ cmd_init_flag_refresh: "Force refresh cached repositories (slower, fetches lates
 cmd_init_flag_include_x: "Include skills-x (self-developed) skills when using --all"
 
 # ============================================================================
+# Update Check
+# ============================================================================
+update_available: "New version %s available (current %s)"
+update_command: "Run: npm install -g skills-x@latest"
+
+# ============================================================================
 # Output Messages
 # ============================================================================
 list_header: "Available Skills from Registry"

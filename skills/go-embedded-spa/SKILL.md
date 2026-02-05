@@ -91,16 +91,31 @@ func main() {
 
 **Order is critical:** API routes must be registered before static file server.
 
-### Step 4: Build
+### Step 4: Development
+
+**Recommended:** Start both backend and frontend with one command:
+
+```bash
+make dev
+# Backend:  http://localhost:8080 (Go)
+# Frontend: http://localhost:5173 (Vite with hot reload)
+# API Proxy: /api/* -> localhost:8080
+```
+
+Press `Ctrl+C` to stop both servers.
+
+### Step 5: Build for Production
 
 Build order: **frontend first, then backend**
 
 ```bash
+make build          # Build both (frontend + backend)
+# Or separately:
 make build-web      # npm run build → site/dist/
 make build-backend  # go build (embeds dist/)
 ```
 
-### Step 5: Cross-Platform Build
+### Step 6: Cross-Platform Build
 
 ```bash
 make build-linux        # Linux amd64
