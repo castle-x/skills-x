@@ -36,6 +36,7 @@ var (
 	flagTarget  string
 	flagForce   bool
 	flagRefresh bool
+	flagIncludeX bool
 )
 
 // NewCommand creates the init command
@@ -51,6 +52,7 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&flagTarget, "target", "t", "", i18n.T("cmd_init_flag_target"))
 	cmd.Flags().BoolVarP(&flagForce, "force", "f", false, i18n.T("cmd_init_flag_force"))
 	cmd.Flags().BoolVar(&flagRefresh, "refresh", false, i18n.T("cmd_init_flag_refresh"))
+	cmd.Flags().BoolVar(&flagIncludeX, "include-x", false, i18n.T("cmd_init_flag_include_x"))
 
 	return cmd
 }
@@ -336,6 +338,42 @@ func initAll(reg *registry.Registry, targetDir string) error {
 
 			fmt.Printf("%s  ✓ %s%s\n", colorGreen, skill.Name, colorReset)
 			count++
+		}
+	}
+
+	if flagIncludeX {
+		fmt.Printf("\n%s📦 %sskills-x%s %s(Original)%s\n",
+			colorBold, colorCyan, colorReset, colorGray, colorReset)
+
+		xSkills, err := skills.ListXSkills()
+		if err != nil {
+			fmt.Printf("%s  ⚠ %s: %v%s\n", colorYellow, "skills-x", err, colorReset)
+			errors++
+		} else {
+			for _, s := range xSkills {
+				embedFS, skillPath, ok := skills.GetXSkillFS(s.Name)
+				if !ok || skillPath == "" {
+					fmt.Printf("%s  ⚠ %s: %s%s\n", colorYellow, s.Name, i18n.T("init_skill_path_not_found"), colorReset)
+					errors++
+					continue
+				}
+
+				dstPath := filepath.Join(targetDir, s.Name)
+				if dirExists(dstPath) && !flagForce {
+					fmt.Printf("%s  - %s%s\n", colorGray, i18n.Tf("init_skipped", s.Name), colorReset)
+					skipped++
+					continue
+				}
+
+				if err := copyFromEmbedFS(embedFS, skillPath, dstPath); err != nil {
+					fmt.Printf("%s  ✗ %s: %v%s\n", colorRed, s.Name, err, colorReset)
+					errors++
+					continue
+				}
+
+				fmt.Printf("%s  ✓ %s%s\n", colorGreen, s.Name, colorReset)
+				count++
+			}
 		}
 	}
 

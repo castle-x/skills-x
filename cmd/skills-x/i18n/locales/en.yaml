@@ -39,6 +39,7 @@ cmd_init_flag_all: "Install all skills"
 cmd_init_flag_target: "Target directory (default: current directory)"
 cmd_init_flag_force: "Force overwrite existing skills"
 cmd_init_flag_refresh: "Force refresh cached repositories (slower, fetches latest)"
+cmd_init_flag_include_x: "Include skills-x (self-developed) skills when using --all"
 
 # ============================================================================
 # Output Messages

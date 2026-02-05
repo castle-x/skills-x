@@ -39,6 +39,7 @@ cmd_init_flag_all: "安装全部 skills"
 cmd_init_flag_target: "目标目录 (默认: 当前目录)"
 cmd_init_flag_force: "强制覆盖已存在的 skills"
 cmd_init_flag_refresh: "强制刷新缓存仓库（较慢，获取最新版本）"
+cmd_init_flag_include_x: "配合 --all 时包含 skills-x 自研技能"
 
 # ============================================================================
 # 输出消息
