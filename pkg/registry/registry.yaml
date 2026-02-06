@@ -307,3 +307,16 @@ tencentcloudbase:
       path: skills/cloudbase-guidelines
       description: Essential CloudBase development guidelines for web, mini programs, and backend
       description_zh: 腾讯云开发指南 - Web、小程序、后端服务开发规范
+
+# =============================================================================
+# Axton Obsidian Visual Skills
+# https://github.com/axtonliu/axton-obsidian-visual-skills
+# =============================================================================
+axton-obsidian-visual-skills:
+  repo: github.com/axtonliu/axton-obsidian-visual-skills
+  license: MIT
+  skills:
+    - name: excalidraw-diagram
+      path: excalidraw-diagram
+      description: Generate Excalidraw diagrams from text with Obsidian, standard, and animated outputs
+      description_zh: 根据文本生成 Excalidraw 图，支持 Obsidian/标准/动画三种输出
