@@ -320,3 +320,16 @@ axton-obsidian-visual-skills:
       path: excalidraw-diagram
       description: Generate Excalidraw diagrams from text with Obsidian, standard, and animated outputs
       description_zh: 根据文本生成 Excalidraw 图，支持 Obsidian/标准/动画三种输出
+
+# =============================================================================
+# Terma Skills
+# https://github.com/bfollington/terma
+# =============================================================================
+terma:
+  repo: github.com/bfollington/terma
+  license: CC-BY-SA-4.0
+  skills:
+    - name: strudel
+      path: plugins/tsal/skills/strudel
+      description: Strudel live-coding music workflow for patterns, rhythms, melodies, and shareable browser URLs
+      description_zh: Strudel 现场编程音乐工作流：创建节奏、旋律与可分享的浏览器链接

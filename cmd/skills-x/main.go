@@ -10,6 +10,7 @@ import (
 	"github.com/castle-x/skills-x/cmd/skills-x/command/list"
 	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
+	"github.com/castle-x/skills-x/cmd/skills-x/tui"
 	"github.com/castle-x/skills-x/pkg/versioncheck"
 	"github.com/spf13/cobra"
 )
@@ -29,11 +30,24 @@ func main() {
 		Short:   i18n.T("app_desc"),
 		Long:    i18n.T("app_long_desc"),
 		Version: Version,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Run TUI by default when no arguments provided
+			cwd, err := os.Getwd()
+			if err != nil {
+				return fmt.Errorf("%s: %w", i18n.T("error_get_cwd"), err)
+			}
+			opts := tui.TUIOptions{
+				Version:   Version,
+				TargetDir: cwd,
+			}
+			return tui.RunTUI(opts)
+		},
 	}
 
 	// Register subcommands
 	rootCmd.AddCommand(list.NewCommand())    // list
 	rootCmd.AddCommand(initcmd.NewCommand()) // init
+	rootCmd.AddCommand(tui.TUICommand(Version)) // tui
 
 	// Disable cobra's default error output
 	rootCmd.SilenceErrors = true

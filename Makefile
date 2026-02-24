@@ -60,6 +60,12 @@ install-local:
 	$(GOBUILD) $(LDFLAGS) -o ~/.local/bin/$(BINARY_NAME) ./$(CMD_DIR)
 	@echo "Installed: ~/.local/bin/$(BINARY_NAME)"
 
+# 开发安装：构建并安装到本地全局环境
+install-dev: build
+	@mkdir -p ~/.local/bin
+	@cp $(OUT_DIR)/$(BINARY_NAME) ~/.local/bin/
+	@echo "Installed to: ~/.local/bin/$(BINARY_NAME)"
+
 # 清理
 clean:
 	@rm -rf $(OUT_DIR)

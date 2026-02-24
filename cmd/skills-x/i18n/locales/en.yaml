@@ -230,3 +230,22 @@ err_copy_failed_sol2: "Check directory permissions"
 err_no_skills_embedded: "No skills data embedded"
 err_no_skills_embedded_detail: "Skills directory not properly embedded during compilation"
 err_no_skills_embedded_sol1: "Re-download or recompile skills-x"
+
+# ============================================================================
+# TUI Messages
+# ============================================================================
+tui_title: "Select AI Tool"
+tui_select_product: "Select AI Tool"
+tui_select_skills: "Select skills to install"
+tui_search_hint: "Search skills..."
+tui_status_bar: "(Total %d, selected %d)"
+tui_install_progress: "Installing (%d/%d): %s..."
+tui_install_complete: "Installation complete"
+tui_install_failed: "Installation failed"
+tui_hint_select: "↑/↓ select | Enter confirm | q quit"
+tui_hint_skills: "↑/↓ scroll | Space select | A select all | Enter install | b back | q quit"
+tui_installed: "[✓ Installed]"
+tui_no_skills: "No matching skills found"
+tui_cancelled: "Operation cancelled"
+selected_skills_count: "Will install"
+unselected_skills_count: "Will uninstall"

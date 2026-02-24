@@ -1,6 +1,6 @@
 # Skills-X
 
-[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://go.dev/)
+[![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go)](https://go.dev/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)](https://github.com/castle-x/skills-x)
 [![npm](https://img.shields.io/npm/v/skills-x?color=CB3837&logo=npm)](https://www.npmjs.com/package/skills-x)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -36,6 +36,12 @@ npm install -g skills-x@latest
 ### Usage
 
 ```bash
+# Launch interactive TUI (default when no arguments)
+skills-x
+
+# Or explicitly
+skills-x tui
+
 # List all available skills
 skills-x list
 
@@ -54,9 +60,18 @@ skills-x init pdf -f
 skills-x init --all --force
 ```
 
-### Setup for AI IDEs
+### Interactive TUI
 
-We only provide skills download, you need to specify the skills directory for your AI IDE:
+Running `skills-x` with no arguments launches the interactive TUI mode:
+
+1. **Select AI Tool** — Choose your IDE (Claude Code, Cursor, Windsurf, CodeBuddy, Codex)
+2. **Select Target** — Install to global or project scope
+3. **Select Skills** — Browse, search, select/deselect skills with keyboard
+4. **Install/Uninstall** — See real-time progress with per-skill status (✓/✗)
+
+### Setup for AI IDEs (CLI mode)
+
+You can also use the CLI to specify the skills directory directly:
 
 ```bash
 # For Claude Code
@@ -78,8 +93,11 @@ skills-x init --all --target .windsurf/skills
 
 ```
 skills-x/
-├── skills/         # 🏰 Original Skills (embedded in binary)
-└── pkg/registry/   # Skill sources registry
+├── cmd/skills-x/tui/   # Interactive TUI (Bubble Tea + Lipgloss)
+├── pkg/products/        # AI IDE product definitions
+├── pkg/registry/        # Skill sources registry
+├── pkg/gitutil/         # Git clone with caching
+└── skills/              # 🏰 Original Skills (embedded in binary)
 ```
 
 ## Collected Skills
@@ -152,6 +170,12 @@ $ skills-x list
 📦 github.com/nextlevelbuilder/ui-ux-pro-max-skill (MIT)
    ui-ux-pro-max         UI/UX design intelligence - 50 styles, 97 palettes...
 
+📦 github.com/axtonliu/axton-obsidian-visual-skills (MIT)
+   excalidraw-diagram  Generate Excalidraw diagrams from text
+
+📦 github.com/bfollington/terma (CC-BY-SA-4.0)
+   strudel             Strudel live-coding music for patterns, rhythms, melodies, and shareable URLs
+
 📦 skills-x (Original)
    baidu-speech-to-text       Baidu speech-to-text (optimized for China mainland)
    go-embedded-spa            Go embedded SPA (single-binary deployment)
@@ -160,8 +184,9 @@ $ skills-x list
    newapi-deploy-config       New API deploy (host network) and channel configuration
    openclaw-session-header-fix Fix missing session header causing transcript overwrite
    skills-x                   Contribute skills to skills-x collection
+   tui-design                 TUI design specification for CLI terminal UI
 
-Total: 52 skills from 10 sources
+Total: 55 skills from 12 sources
 ```
 
 ---
@@ -181,4 +206,4 @@ X skills are **original Skills** by the project author, stored in the `skills/` 
 They are displayed separately in the list with a ⭐ marker to distinguish them from community skills.
 
 To contribute a new X skill, use the `skills-x` skill for guidance.
-After creating a new skill, ask whether to add a `REAEDME.md` background summary document.
+After creating a new skill, ask whether to add a `README.md` background summary document.

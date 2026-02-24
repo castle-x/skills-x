@@ -53,38 +53,40 @@ func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
 // CloneRepoWithRefresh clones a git repository with optional cache refresh
 // If refresh is true, it will fetch the latest changes even if cache exists
 func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneResult, error) {
-	// Create a deterministic temp directory based on repo name
-	// This allows caching/reuse across invocations
 	tempDir := getTempDir(repoName)
 
-	// If directory already exists and has content
-	if dirExists(tempDir) && hasGitContent(tempDir) {
-		if refresh {
-			// Force refresh: update the cached repo
-			if err := updateShallowRepo(tempDir); err != nil {
-				// If update fails, remove and re-clone
-				os.RemoveAll(tempDir)
+	if dirExists(tempDir) {
+		if hasGitContent(tempDir) {
+			if refresh {
+				if err := updateShallowRepo(tempDir); err != nil {
+					os.RemoveAll(tempDir)
+				} else {
+					return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
+				}
 			} else {
-				return &CloneResult{
-					TempDir: tempDir,
-					Repo:    repoName,
-				}, nil
+				return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
 			}
 		} else {
-			// Use cache directly - no network request
-			return &CloneResult{
-				TempDir: tempDir,
-				Repo:    repoName,
-			}, nil
+			// Cache exists but is corrupted — try to remove
+			if err := os.RemoveAll(tempDir); err != nil {
+				// Cannot remove (e.g. owned by another user), use fallback path
+				tempDir = getUserTempDir(repoName)
+				if dirExists(tempDir) && hasGitContent(tempDir) {
+					if !refresh {
+						return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
+					}
+					os.RemoveAll(tempDir)
+				} else if dirExists(tempDir) {
+					os.RemoveAll(tempDir)
+				}
+			}
 		}
 	}
 
-	// Ensure parent directory exists
 	if err := os.MkdirAll(filepath.Dir(tempDir), 0755); err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
 
-	// Clone with retry logic for transient network failures
 	var lastErr error
 	for attempt := 1; attempt <= MaxRetries; attempt++ {
 		result, err := cloneWithTimeout(gitURL, tempDir)
@@ -94,15 +96,12 @@ func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneR
 
 		lastErr = err
 
-		// Don't retry on auth errors - they won't succeed
 		if cloneErr, ok := err.(*CloneError); ok && cloneErr.IsAuthError {
 			return nil, err
 		}
 
-		// Clean up failed attempt
 		os.RemoveAll(tempDir)
 
-		// Wait before retrying (except on last attempt)
 		if attempt < MaxRetries {
 			time.Sleep(RetryDelay)
 		}
@@ -147,19 +146,23 @@ func cloneWithTimeout(gitURL string, tempDir string) (*CloneResult, error) {
 // SparseCloneRepo clones only specific directories from a git repository
 // This is much faster for large repositories when you only need specific paths
 func SparseCloneRepo(gitURL string, repoName string, sparsePaths []string) (*CloneResult, error) {
-	// Create a deterministic temp directory based on repo name + sparse paths
 	tempDir := getTempDirSparse(repoName, sparsePaths)
 
-	// If directory already exists and has content, reuse it
-	if dirExists(tempDir) && hasGitContent(tempDir) {
-		// For sparse checkout, we don't pull - just reuse
-		return &CloneResult{
-			TempDir: tempDir,
-			Repo:    repoName,
-		}, nil
+	if dirExists(tempDir) {
+		if hasGitContent(tempDir) {
+			return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
+		}
+		if err := os.RemoveAll(tempDir); err != nil {
+			tempDir = getUserTempDirSparse(repoName, sparsePaths)
+			if dirExists(tempDir) && hasGitContent(tempDir) {
+				return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
+			}
+			if dirExists(tempDir) {
+				os.RemoveAll(tempDir)
+			}
+		}
 	}
 
-	// Ensure parent directory exists
 	if err := os.MkdirAll(filepath.Dir(tempDir), 0755); err != nil {
 		return nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
@@ -305,6 +308,34 @@ func getTempDirSparse(repoName string, sparsePaths []string) string {
 	return filepath.Join(os.TempDir(), TempDirPrefix+safeName+"-sparse-"+shortHash)
 }
 
+// userCacheDir returns a cache directory under the user's home that we always own
+func userCacheDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return filepath.Join(os.TempDir(), "skills-user-cache")
+	}
+	return filepath.Join(home, ".cache", "skills-x")
+}
+
+// getUserTempDir returns a fallback temp directory under user's home
+func getUserTempDir(repoName string) string {
+	hash := sha256.Sum256([]byte(repoName))
+	shortHash := fmt.Sprintf("%x", hash[:4])
+	safeName := strings.ReplaceAll(repoName, "/", "-")
+	safeName = strings.ReplaceAll(safeName, ".", "-")
+	return filepath.Join(userCacheDir(), TempDirPrefix+safeName+"-"+shortHash)
+}
+
+// getUserTempDirSparse returns a fallback temp directory for sparse checkout
+func getUserTempDirSparse(repoName string, sparsePaths []string) string {
+	hashInput := repoName + ":" + strings.Join(sparsePaths, ",")
+	hash := sha256.Sum256([]byte(hashInput))
+	shortHash := fmt.Sprintf("%x", hash[:4])
+	safeName := strings.ReplaceAll(repoName, "/", "-")
+	safeName = strings.ReplaceAll(safeName, ".", "-")
+	return filepath.Join(userCacheDir(), TempDirPrefix+safeName+"-sparse-"+shortHash)
+}
+
 // dirExists checks if a directory exists
 func dirExists(path string) bool {
 	info, err := os.Stat(path)
@@ -314,10 +345,15 @@ func dirExists(path string) bool {
 	return info.IsDir()
 }
 
-// hasGitContent checks if directory has .git folder
+// hasGitContent checks if directory is a valid git clone
+// by verifying .git/HEAD exists (not just an empty .git directory)
 func hasGitContent(path string) bool {
-	gitDir := filepath.Join(path, ".git")
-	return dirExists(gitDir)
+	headFile := filepath.Join(path, ".git", "HEAD")
+	info, err := os.Stat(headFile)
+	if err != nil {
+		return false
+	}
+	return !info.IsDir()
 }
 
 // pullRepo pulls latest changes in a repo (for non-shallow clones)
@@ -379,6 +415,10 @@ func GetCachedDir(repoName string) (string, bool) {
 	if dirExists(tempDir) && hasGitContent(tempDir) {
 		return tempDir, true
 	}
+	userDir := getUserTempDir(repoName)
+	if dirExists(userDir) && hasGitContent(userDir) {
+		return userDir, true
+	}
 	return "", false
 }
 
@@ -387,6 +427,10 @@ func GetCachedDirSparse(repoName string, sparsePaths []string) (string, bool) {
 	tempDir := getTempDirSparse(repoName, sparsePaths)
 	if dirExists(tempDir) && hasGitContent(tempDir) {
 		return tempDir, true
+	}
+	userDir := getUserTempDirSparse(repoName, sparsePaths)
+	if dirExists(userDir) && hasGitContent(userDir) {
+		return userDir, true
 	}
 	return "", false
 }
