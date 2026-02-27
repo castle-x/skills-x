@@ -8,6 +8,7 @@ import (
 
 	"github.com/castle-x/skills-x/cmd/skills-x/command/initcmd"
 	"github.com/castle-x/skills-x/cmd/skills-x/command/list"
+	"github.com/castle-x/skills-x/cmd/skills-x/command/updatecmd"
 	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/castle-x/skills-x/cmd/skills-x/tui"
@@ -47,7 +48,7 @@ func main() {
 	// Register subcommands
 	rootCmd.AddCommand(list.NewCommand())    // list
 	rootCmd.AddCommand(initcmd.NewCommand()) // init
-	rootCmd.AddCommand(tui.TUICommand(Version)) // tui
+	rootCmd.AddCommand(updatecmd.NewCommand()) // update
 
 	// Disable cobra's default error output
 	rootCmd.SilenceErrors = true

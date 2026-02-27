@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/castle-x/skills-x/cmd/skills-x/skills"
@@ -19,108 +20,49 @@ import (
 
 // InstallerModel represents the installation state
 type InstallerModel struct {
-	skills           []SkillItem
-	deselectedSkills []SkillItem // skills to uninstall
-	targetDir        string
-	currentIdx       int
-	completed        int
-	failed           int
-	quitting         bool
-	finished         bool
-	err              error
-	progressMsg      string
-	phase            string // "install" or "uninstall"
-	installResults   []string // per-skill result: "ok", "fail", "skip"
-	uninstallResults []string // per-skill result for uninstalls
+	installSkills   []SkillItem
+	updateSkills    []SkillItem
+	uninstallSkills []SkillItem
+	targetDir       string
+	currentIdx      int
+	completed       int
+	failed          int
+	quitting        bool
+	finished        bool
+	err             error
+	progressMsg     string
+	phase           string   // "install", "update", or "uninstall"
+	installResults  []string // per-skill result: "ok", "fail"
+	updateResults   []string
+	uninstallResults []string
 }
 
-// NewInstallerModel creates a new installer model
-func NewInstallerModel(skills []SkillItem, deselectedSkills []SkillItem, targetDir string) InstallerModel {
+// NewInstallerModel creates a new installer model with three operation lists
+func NewInstallerModel(installSkills, uninstallSkills, updateSkills []SkillItem, targetDir string) InstallerModel {
 	phase := "install"
-	if len(skills) == 0 && len(deselectedSkills) > 0 {
-		phase = "uninstall"
+	if len(installSkills) == 0 {
+		phase = "update"
+		if len(updateSkills) == 0 {
+			phase = "uninstall"
+		}
 	}
 	return InstallerModel{
-		skills:           skills,
-		deselectedSkills: deselectedSkills,
+		installSkills:    installSkills,
+		updateSkills:     updateSkills,
+		uninstallSkills:  uninstallSkills,
 		targetDir:        targetDir,
 		currentIdx:       0,
 		completed:        0,
 		failed:           0,
 		phase:            phase,
-		installResults:   make([]string, len(skills)),
-		uninstallResults: make([]string, len(deselectedSkills)),
+		installResults:   make([]string, len(installSkills)),
+		updateResults:    make([]string, len(updateSkills)),
+		uninstallResults: make([]string, len(uninstallSkills)),
 	}
 }
 
 func (m InstallerModel) Init() tea.Cmd {
 	return m.installNext
-}
-
-// installNext executes the current install/uninstall operation and returns a progress message.
-// All state transitions (phase switching, finished) are handled by Update, not here.
-func (m *InstallerModel) installNext() tea.Msg {
-	if m.phase == "install" {
-		if m.currentIdx >= len(m.skills) {
-			return nil
-		}
-
-		skill := m.skills[m.currentIdx]
-
-		var progress, result string
-		var completed, failed int
-		err := m.installSkill(skill)
-		if err != nil {
-			failed = 1
-			result = "fail"
-			progress = fmt.Sprintf("Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.skills), skill.FullName, err)
-		} else {
-			completed = 1
-			result = "ok"
-			progress = fmt.Sprintf("Installed (%d/%d): %s", m.currentIdx+1, len(m.skills), skill.FullName)
-		}
-
-		return installProgressMsg{
-			current:      m.currentIdx + 1,
-			completedAdd: completed,
-			failedAdd:    failed,
-			skill:        skill.FullName,
-			progress:     progress,
-			result:       result,
-		}
-	}
-
-	if m.phase == "uninstall" {
-		if m.currentIdx >= len(m.deselectedSkills) {
-			return nil
-		}
-
-		skill := m.deselectedSkills[m.currentIdx]
-
-		var progress, result string
-		var completed, failed int
-		err := m.uninstallSkill(skill)
-		if err != nil {
-			failed = 1
-			result = "fail"
-			progress = fmt.Sprintf("Uninstall Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.deselectedSkills), skill.FullName, err)
-		} else {
-			completed = 1
-			result = "ok"
-			progress = fmt.Sprintf("Uninstalled (%d/%d): %s", m.currentIdx+1, len(m.deselectedSkills), skill.FullName)
-		}
-
-		return installProgressMsg{
-			current:      m.currentIdx + 1,
-			completedAdd: completed,
-			failedAdd:    failed,
-			skill:        skill.FullName,
-			progress:     progress,
-			result:       result,
-		}
-	}
-
-	return nil
 }
 
 // installProgressMsg is a message sent during installation progress
@@ -133,15 +75,100 @@ type installProgressMsg struct {
 	result       string // "ok" or "fail"
 }
 
+// installNext executes the current operation and returns a progress message
+func (m *InstallerModel) installNext() tea.Msg {
+	switch m.phase {
+	case "install":
+		if m.currentIdx >= len(m.installSkills) {
+			return nil
+		}
+		skill := m.installSkills[m.currentIdx]
+		var progress, result string
+		var completed, failed int
+
+		tempDir, err := m.installSkill(skill)
+		if err != nil {
+			failed = 1
+			result = "fail"
+			progress = fmt.Sprintf("Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.installSkills), skill.FullName, err)
+		} else {
+			completed = 1
+			result = "ok"
+			progress = fmt.Sprintf("Installed (%d/%d): %s", m.currentIdx+1, len(m.installSkills), skill.FullName)
+			m.writeMetaForSkill(skill, tempDir)
+		}
+		return installProgressMsg{
+			current: m.currentIdx + 1, completedAdd: completed, failedAdd: failed,
+			skill: skill.FullName, progress: progress, result: result,
+		}
+
+	case "update":
+		if m.currentIdx >= len(m.updateSkills) {
+			return nil
+		}
+		skill := m.updateSkills[m.currentIdx]
+		var progress, result string
+		var completed, failed int
+
+		tempDir, err := m.updateSkill(skill)
+		if err != nil {
+			failed = 1
+			result = "fail"
+			progress = fmt.Sprintf("Update Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.updateSkills), skill.FullName, err)
+		} else {
+			completed = 1
+			result = "ok"
+			progress = fmt.Sprintf("Updated (%d/%d): %s", m.currentIdx+1, len(m.updateSkills), skill.FullName)
+			m.writeMetaForSkill(skill, tempDir)
+		}
+		return installProgressMsg{
+			current: m.currentIdx + 1, completedAdd: completed, failedAdd: failed,
+			skill: skill.FullName, progress: progress, result: result,
+		}
+
+	case "uninstall":
+		if m.currentIdx >= len(m.uninstallSkills) {
+			return nil
+		}
+		skill := m.uninstallSkills[m.currentIdx]
+		var progress, result string
+		var completed, failed int
+
+		err := m.uninstallSkill(skill)
+		if err != nil {
+			failed = 1
+			result = "fail"
+			progress = fmt.Sprintf("Uninstall Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.uninstallSkills), skill.FullName, err)
+		} else {
+			completed = 1
+			result = "ok"
+			progress = fmt.Sprintf("Uninstalled (%d/%d): %s", m.currentIdx+1, len(m.uninstallSkills), skill.FullName)
+		}
+		return installProgressMsg{
+			current: m.currentIdx + 1, completedAdd: completed, failedAdd: failed,
+			skill: skill.FullName, progress: progress, result: result,
+		}
+	}
+	return nil
+}
+
 func (m InstallerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case installProgressMsg:
-		// Record per-skill result
 		idx := msg.current - 1
-		if m.phase == "install" && idx >= 0 && idx < len(m.installResults) {
-			m.installResults[idx] = msg.result
-		} else if m.phase == "uninstall" && idx >= 0 && idx < len(m.uninstallResults) {
-			m.uninstallResults[idx] = msg.result
+		switch m.phase {
+		case "install":
+			if idx >= 0 && idx < len(m.installResults) {
+				m.installResults[idx] = msg.result
+			}
+		case "update":
+			if idx >= 0 && idx < len(m.updateResults) {
+				m.updateResults[idx] = msg.result
+			}
+		case "uninstall":
+			if idx >= 0 && idx < len(m.uninstallResults) {
+				m.uninstallResults[idx] = msg.result
+			}
 		}
 
 		m.currentIdx = msg.current
@@ -149,21 +176,43 @@ func (m InstallerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.failed += msg.failedAdd
 		m.progressMsg = msg.progress
 
-		if m.phase == "install" && m.currentIdx < len(m.skills) {
-			return m, m.installNext
-		}
-		if m.phase == "uninstall" && m.currentIdx < len(m.deselectedSkills) {
-			return m, m.installNext
-		}
-
-		if m.phase == "install" && len(m.deselectedSkills) > 0 {
-			m.phase = "uninstall"
-			m.currentIdx = 0
-			return m, m.installNext
+		// Continue current phase if not done
+		switch m.phase {
+		case "install":
+			if m.currentIdx < len(m.installSkills) {
+				return m, m.installNext
+			}
+			// Transition to update phase
+			if len(m.updateSkills) > 0 {
+				m.phase = "update"
+				m.currentIdx = 0
+				return m, m.installNext
+			}
+			// Transition to uninstall phase
+			if len(m.uninstallSkills) > 0 {
+				m.phase = "uninstall"
+				m.currentIdx = 0
+				return m, m.installNext
+			}
+		case "update":
+			if m.currentIdx < len(m.updateSkills) {
+				return m, m.installNext
+			}
+			// Transition to uninstall phase
+			if len(m.uninstallSkills) > 0 {
+				m.phase = "uninstall"
+				m.currentIdx = 0
+				return m, m.installNext
+			}
+		case "uninstall":
+			if m.currentIdx < len(m.uninstallSkills) {
+				return m, m.installNext
+			}
 		}
 
 		m.finished = true
 		return m, nil
+
 	case tea.KeyMsg:
 		if msg.String() == "q" || msg.String() == "ctrl+c" {
 			m.quitting = true
@@ -179,7 +228,7 @@ func (m InstallerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m InstallerModel) View() string {
 	var b strings.Builder
 
-	totalItems := len(m.skills) + len(m.deselectedSkills)
+	totalItems := len(m.installSkills) + len(m.updateSkills) + len(m.uninstallSkills)
 
 	b.WriteString(titleStyle.Render("Installing Skills"))
 	b.WriteString("\n\n")
@@ -187,25 +236,21 @@ func (m InstallerModel) View() string {
 	// Progress bar
 	barWidth := 40
 	currentTotal := m.currentIdx
-	if m.phase == "uninstall" {
-		currentTotal = len(m.skills) + m.currentIdx
+	switch m.phase {
+	case "update":
+		currentTotal = len(m.installSkills) + m.currentIdx
+	case "uninstall":
+		currentTotal = len(m.installSkills) + len(m.updateSkills) + m.currentIdx
 	}
 	if m.finished {
 		currentTotal = totalItems
 	}
 
-	progressPercent := 0
+	progressPercent := 100
+	filled := barWidth
 	if totalItems > 0 {
 		progressPercent = (currentTotal * 100) / totalItems
-	} else {
-		progressPercent = 100
-	}
-
-	filled := 0
-	if totalItems > 0 {
 		filled = (currentTotal * barWidth) / totalItems
-	} else {
-		filled = barWidth
 	}
 
 	b.WriteString("Progress: [")
@@ -222,9 +267,9 @@ func (m InstallerModel) View() string {
 	b.WriteString(fmt.Sprintf("Completed: %d | Failed: %d\n", m.completed, m.failed))
 
 	// Install list
-	if len(m.skills) > 0 {
+	if len(m.installSkills) > 0 {
 		b.WriteString("\n")
-		for i, skill := range m.skills {
+		for i, skill := range m.installSkills {
 			status := "  "
 			if i < len(m.installResults) && m.installResults[i] != "" {
 				switch m.installResults[i] {
@@ -240,12 +285,33 @@ func (m InstallerModel) View() string {
 		}
 	}
 
+	// Update list
+	if len(m.updateSkills) > 0 {
+		b.WriteString("\n")
+		b.WriteString(updateStyle.Render("Updating:"))
+		b.WriteString("\n")
+		for i, skill := range m.updateSkills {
+			status := "  "
+			if i < len(m.updateResults) && m.updateResults[i] != "" {
+				switch m.updateResults[i] {
+				case "ok":
+					status = successStyle.Render("✓ ")
+				case "fail":
+					status = errorStyle.Render("✗ ")
+				}
+			} else if m.phase == "update" && i == m.currentIdx {
+				status = hintStyle.Render("▸ ")
+			}
+			b.WriteString(fmt.Sprintf("  %s%s\n", status, skill.FullName))
+		}
+	}
+
 	// Uninstall list
-	if len(m.deselectedSkills) > 0 {
+	if len(m.uninstallSkills) > 0 {
 		b.WriteString("\n")
 		b.WriteString(hintStyle.Render("Uninstalling:"))
 		b.WriteString("\n")
-		for i, skill := range m.deselectedSkills {
+		for i, skill := range m.uninstallSkills {
 			status := "  "
 			if i < len(m.uninstallResults) && m.uninstallResults[i] != "" {
 				switch m.uninstallResults[i] {
@@ -296,30 +362,73 @@ func (m InstallerModel) Error() error {
 	return m.err
 }
 
-// installSkill installs a single skill
-func (m *InstallerModel) installSkill(item SkillItem) error {
-	// If target directory is empty, use current directory
+// writeMetaForSkill writes .skills-x-meta.json after a successful install/update
+func (m *InstallerModel) writeMetaForSkill(item SkillItem, tempDir string) {
+	dstPath := filepath.Join(m.targetDir, item.Name)
+
+	commit := ""
+	if tempDir != "" {
+		commit, _ = gitutil.GetRepoHeadCommit(tempDir)
+	}
+
+	meta := SkillMeta{
+		Skill:       item.Name,
+		Source:      item.SourceName,
+		Repo:        item.Source,
+		Commit:      commit,
+		InstalledAt: time.Now().UTC().Format(time.RFC3339),
+	}
+	_ = WriteSkillMeta(dstPath, meta)
+}
+
+// installSkill installs a single skill, returns the temp/cache dir for meta writing
+func (m *InstallerModel) installSkill(item SkillItem) (string, error) {
 	targetDir := m.targetDir
 	if targetDir == "" {
 		cwd, err := os.Getwd()
 		if err != nil {
-			return err
+			return "", err
 		}
 		targetDir = cwd
 	}
 
-	// Create target directory if not exists
 	if err := os.MkdirAll(targetDir, 0755); err != nil {
-		return err
+		return "", err
 	}
 
-	// Check if it's an X (self-developed) skill
 	if item.IsX || skills.XSkillExists(item.Name) {
-		return m.installXSkill(item.Name, targetDir)
+		if err := m.installXSkill(item.Name, targetDir); err != nil {
+			return "", err
+		}
+		return "", nil // X skills don't have a temp dir
 	}
 
-	// Otherwise, treat as a registry skill
 	return m.installRegistrySkill(item, targetDir)
+}
+
+// updateSkill updates a single skill using refresh=true
+func (m *InstallerModel) updateSkill(item SkillItem) (string, error) {
+	targetDir := m.targetDir
+	if targetDir == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return "", err
+		}
+		targetDir = cwd
+	}
+
+	if err := os.MkdirAll(targetDir, 0755); err != nil {
+		return "", err
+	}
+
+	if item.IsX || skills.XSkillExists(item.Name) {
+		if err := m.installXSkill(item.Name, targetDir); err != nil {
+			return "", err
+		}
+		return "", nil
+	}
+
+	return m.installRegistrySkillWithRefresh(item, targetDir, true)
 }
 
 // installXSkill installs an x (self-developed) skill from embedded filesystem
@@ -330,7 +439,6 @@ func (m *InstallerModel) installXSkill(name, targetDir string) error {
 	}
 
 	dstPath := filepath.Join(targetDir, name)
-
 	os.RemoveAll(dstPath)
 
 	if err := copyFromEmbedFS(embedFS, skillPath, dstPath); err != nil {
@@ -352,7 +460,6 @@ func (m *InstallerModel) uninstallSkill(item SkillItem) error {
 	}
 
 	skillPath := filepath.Join(targetDir, item.Name)
-
 	if _, err := os.Stat(skillPath); os.IsNotExist(err) {
 		return nil
 	}
@@ -360,28 +467,28 @@ func (m *InstallerModel) uninstallSkill(item SkillItem) error {
 	if err := os.RemoveAll(skillPath); err != nil {
 		return fmt.Errorf("failed to remove skill directory: %w", err)
 	}
-
 	return nil
 }
 
-// installRegistrySkill installs a skill from the registry
-func (m *InstallerModel) installRegistrySkill(item SkillItem, targetDir string) error {
-	// Load registry
+// installRegistrySkill installs a registry skill (refresh=false)
+func (m *InstallerModel) installRegistrySkill(item SkillItem, targetDir string) (string, error) {
+	return m.installRegistrySkillWithRefresh(item, targetDir, false)
+}
+
+// installRegistrySkillWithRefresh installs/updates a registry skill
+func (m *InstallerModel) installRegistrySkillWithRefresh(item SkillItem, targetDir string, refresh bool) (string, error) {
 	reg, err := registry.Load()
 	if err != nil {
-		return fmt.Errorf("failed to load registry: %w", err)
+		return "", fmt.Errorf("failed to load registry: %w", err)
 	}
 
-	// Find skill in registry
 	matches := reg.FindSkillsWithConflict(item.Name)
 	if len(matches) == 0 {
-		return fmt.Errorf("skill not found in registry: %s", item.Name)
+		return "", fmt.Errorf("skill not found in registry: %s", item.Name)
 	}
 
-	// Find the matching skill
 	var skill *registry.Skill
 	var source *registry.Source
-
 	for _, match := range matches {
 		if match.Source.Name == item.SourceName {
 			skill = match.Skill
@@ -389,35 +496,27 @@ func (m *InstallerModel) installRegistrySkill(item SkillItem, targetDir string) 
 			break
 		}
 	}
-
 	if skill == nil || source == nil {
-		// Fall back to first match
 		skill = matches[0].Skill
 		source = matches[0].Source
 	}
 
-	// Clone the repository
 	var result *gitutil.CloneResult
-
-	// For large repos (marked with skip_fetch), use sparse checkout
 	if source.SkipFetch && skill.Path != "" {
 		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
 	} else {
-		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, false)
+		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, refresh)
 	}
 	if err != nil {
-		return fmt.Errorf("clone failed: %w", err)
+		return "", fmt.Errorf("clone failed: %w", err)
 	}
 
-	// Find the skill in the cloned repo
 	var skillPath string
 	if skill.Path != "" {
 		skillPath = filepath.Join(result.TempDir, skill.Path)
 	} else {
-		// Try to discover the skill
 		discovered, err := discover.DiscoverSkillByPath(result.TempDir, skill.Name)
 		if err != nil || discovered == nil {
-			// Fallback: search in common locations
 			discovered, _ = findSkillInRepo(result.TempDir, skill.Name)
 		}
 		if discovered != nil {
@@ -426,24 +525,22 @@ func (m *InstallerModel) installRegistrySkill(item SkillItem, targetDir string) 
 	}
 
 	if skillPath == "" || !dirExists(skillPath) {
-		return fmt.Errorf("skill path not found: %s", skill.Name)
+		return "", fmt.Errorf("skill path not found: %s", skill.Name)
 	}
 
 	dstPath := filepath.Join(targetDir, skill.Name)
-
 	os.RemoveAll(dstPath)
 
 	if err := copyDir(skillPath, dstPath); err != nil {
 		os.RemoveAll(dstPath)
-		return fmt.Errorf("copy failed: %w", err)
+		return "", fmt.Errorf("copy failed: %w", err)
 	}
 
-	return nil
+	return result.TempDir, nil
 }
 
 // findSkillInRepo searches for a skill by name in common locations
 func findSkillInRepo(repoPath string, skillName string) (*discover.DiscoveredSkill, error) {
-	// First, try exact path matches
 	commonPaths := []string{
 		filepath.Join("skills", skillName),
 		filepath.Join("packages", "docs", "skills", skillName),
@@ -460,7 +557,6 @@ func findSkillInRepo(repoPath string, skillName string) (*discover.DiscoveredSki
 		}
 	}
 
-	// Fall back to discovery
 	discovered, err := discover.DiscoverSkills(repoPath, nil)
 	if err != nil {
 		return nil, err
@@ -509,18 +605,15 @@ func copyDir(srcPath string, dstPath string) error {
 
 		targetPath := filepath.Join(dstPath, relPath)
 
-		// Handle symlinks
 		if d.Type()&os.ModeSymlink != 0 {
 			realPath, err := filepath.EvalSymlinks(path)
 			if err != nil {
 				return nil
 			}
-
 			info, err := os.Stat(realPath)
 			if err != nil {
 				return nil
 			}
-
 			if info.IsDir() {
 				return copyDir(realPath, targetPath)
 			}
@@ -559,18 +652,13 @@ func copyFile(srcPath string, dstPath string) error {
 
 // copyFromEmbedFS copies a directory from embedded filesystem to target path
 func copyFromEmbedFS(embedFS fs.FS, srcPath string, dstPath string) error {
-	// Remove existing directory
 	os.RemoveAll(dstPath)
 
-	// Walk through embedded filesystem
-	// Note: embed.FS always uses "/" as separator, regardless of OS
 	return fs.WalkDir(embedFS, srcPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		// Calculate relative path using string operations
-		// Note: embed.FS paths always use "/", not filepath functions (which use "\" on Windows)
 		relPath := path
 		if len(path) > len(srcPath) {
 			relPath = strings.TrimPrefix(path, srcPath+"/")
@@ -578,32 +666,28 @@ func copyFromEmbedFS(embedFS fs.FS, srcPath string, dstPath string) error {
 			relPath = "."
 		}
 
-		// Convert to OS-specific path for target filesystem
 		targetPath := filepath.Join(dstPath, filepath.FromSlash(relPath))
 
 		if d.IsDir() {
 			return os.MkdirAll(targetPath, 0755)
 		}
 
-		// Read file from embedded filesystem using fs.ReadFile
 		data, err := fs.ReadFile(embedFS, path)
 		if err != nil {
 			return err
 		}
 
-		// Ensure parent directory exists
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 			return err
 		}
 
-		// Write file to target
 		return os.WriteFile(targetPath, data, 0644)
 	})
 }
 
-// RunInstaller runs the installer UI
-func RunInstaller(skills []SkillItem, deselectedSkills []SkillItem, targetDir string) (completed, failed int, err error) {
-	m := NewInstallerModel(skills, deselectedSkills, targetDir)
+// RunInstaller runs the installer UI with three operation lists
+func RunInstaller(installSkills, uninstallSkills, updateSkills []SkillItem, targetDir string) (completed, failed int, err error) {
+	m := NewInstallerModel(installSkills, uninstallSkills, updateSkills, targetDir)
 	p := tea.NewProgram(m)
 
 	finalModel, err := p.Run()

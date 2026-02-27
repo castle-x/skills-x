@@ -249,3 +249,20 @@ tui_no_skills: "No matching skills found"
 tui_cancelled: "Operation cancelled"
 selected_skills_count: "Will install"
 unselected_skills_count: "Will uninstall"
+
+# ============================================================================
+# Update Command
+# ============================================================================
+cmd_update_short: "Update installed skills"
+cmd_update_long: |
+  Update installed skills to the latest version from their source repositories.
+
+  Examples:
+    skills-x update pdf                    Update specific skill
+    skills-x update pdf brand-guidelines   Update multiple skills
+    skills-x update --all                  Update all installed skills
+    skills-x update --all --check          Check for updates without installing
+    skills-x update --target .claude/skills
+cmd_update_flag_all: "Update all installed skills"
+cmd_update_flag_check: "Check for updates only, do not install"
+cmd_update_flag_target: "Target directory containing installed skills"

@@ -45,4 +45,4 @@ local_skills/
 local_scripts/
 
 # Local site (memos management app)
-site/
+site/\n# Build output (root)\nskills-x

@@ -77,6 +77,14 @@ var (
 	installedStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#00FF00"))
 
+	// 更新标记样式
+	updateStyle = lipgloss.NewStyle().
+		Foreground(blueColor)
+
+	// 警告样式
+	warningStyle = lipgloss.NewStyle().
+		Foreground(yellowColor)
+
 	// 搜索框样式
 	searchStyle = lipgloss.NewStyle().
 			Foreground(whiteColor).

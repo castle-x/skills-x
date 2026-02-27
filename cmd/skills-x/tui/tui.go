@@ -3,12 +3,10 @@ package tui
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/castle-x/skills-x/pkg/products"
-	"github.com/spf13/cobra"
 )
 
 // ============================================================================
@@ -77,7 +75,7 @@ func runTUIFlow(opts TUIOptions) error {
 	}
 
 	fmt.Print(ClearScreen)
-	selectedSkills, deselectedSkills, err := RunSkillsSelect(product, allSkills, opts.Version, targetDir)
+	installSkills, uninstallSkills, updateSkills, err := RunSkillsSelect(product, allSkills, opts.Version, targetDir)
 	if err != nil {
 		if err.Error() == "quit" {
 			return nil
@@ -88,15 +86,15 @@ func runTUIFlow(opts TUIOptions) error {
 		return fmt.Errorf("%s: %w", i18n.T("error_skills_select"), err)
 	}
 
-	if len(selectedSkills) == 0 && len(deselectedSkills) == 0 {
+	if len(installSkills) == 0 && len(uninstallSkills) == 0 && len(updateSkills) == 0 {
 		return nil
 	}
 
 	// =========================================================================
-	// Level 4: Install/Uninstall Skills
+	// Level 4: Install/Update/Uninstall Skills
 	// =========================================================================
 	fmt.Print(ClearScreen)
-	completed, failed, err := RunInstaller(selectedSkills, deselectedSkills, targetDir)
+	completed, failed, err := RunInstaller(installSkills, uninstallSkills, updateSkills, targetDir)
 	if err != nil {
 		return fmt.Errorf("%s: %w", i18n.T("error_installation"), err)
 	}
@@ -120,40 +118,3 @@ func LoadSkillsForProduct(product *products.Product, targetDir string) ([]SkillI
 	return skills, nil
 }
 
-// TUICommand returns a cobra command for the TUI
-func TUICommand(version string) *cobra.Command {
-	var targetDir string
-
-	cmd := &cobra.Command{
-		Use:   "tui",
-		Short: i18n.T("tui_desc"),
-		Long:  i18n.T("tui_long_desc"),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// Get target directory
-			if targetDir == "" {
-				// Use current working directory
-				cwd, err := os.Getwd()
-				if err != nil {
-					return fmt.Errorf("%s: %w", i18n.T("error_get_cwd"), err)
-				}
-				targetDir = cwd
-			}
-
-			// Run TUI
-			opts := TUIOptions{
-				Version:   version,
-				TargetDir: targetDir,
-			}
-
-			if err := RunTUI(opts); err != nil {
-				return err
-			}
-
-			return nil
-		},
-	}
-
-	cmd.Flags().StringVarP(&targetDir, "dir", "d", "", i18n.T("tui_flag_dir"))
-
-	return cmd
-}
