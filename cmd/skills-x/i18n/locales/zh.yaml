@@ -254,6 +254,68 @@ unselected_skills_count: "将卸载"
 tui_global: "全局"
 tui_project: "项目"
 
+# LV1 ProductModel
+tui_col_ai_tool: "AI 工具"
+tui_install_target_title: "选择安装位置"
+
+# LV3 SkillsModel
+tui_skills_for: "Skills For"
+tui_search_placeholder: "输入 # 快速筛选分类，或输入 skill 名称查找"
+tui_search_idle: " 输入 / 搜索技能"
+tui_legend: "[ ]未安装  [●]已安装  [+]安装  [-]卸载  [↑]更新  [↻]检测中"
+tui_tag_picker_hint: "↑/↓ 选择分类 | Enter 确认 | Esc 取消"
+tui_status_ops: "安装: %d | 更新: %d | 卸载: %d"
+tui_update_badge: "⚠ 有新版"
+tui_hint_searching: "输入搜索 | Esc 退出搜索 | Enter 确认"
+tui_hint_main: "空格 选择 | f 收藏 | u 检测更新 | A 全选 | Enter 确认 | b 返回 | q 退出"
+tui_select_required: "请用空格选择要操作的技能，或按 Q 退出"
+tui_only_installed_check: "仅已安装 skill 可检测更新"
+tui_update_available_fmt: "✓ %s 有新版可用 (%s → %s)"
+tui_update_available_new: "✓ %s 有新版可用 (→ %s)"
+tui_update_up_to_date: "%s 已是最新 (%s)"
+tui_builtin_skill_msg: "内置 skill 随程序更新"
+tui_check_failed: "检测失败: %v"
+tui_err_fetch_repo: "获取仓库失败: %v"
+tui_err_get_commit: "获取提交信息失败: %v"
+tui_err_not_in_registry: "注册表中未找到此 skill"
+tui_tag_search_hint: "分类: #星标  #常用  #AI效能  #规划  #前端  #小程序  #后端  #测试  #审查  #文件  #设计  #写作  #多媒体  #skills"
+
+# Tag picker labels
+tui_tag_starred: "星标"
+tui_tag_featured: "常用"
+tui_tag_ai_efficiency: "AI效能"
+tui_tag_planning: "规划"
+tui_tag_frontend: "前端"
+tui_tag_mobile: "小程序"
+tui_tag_backend: "后端"
+tui_tag_testing: "测试"
+tui_tag_code_review: "审查"
+tui_tag_office: "文件"
+tui_tag_design: "设计"
+tui_tag_writing: "写作"
+tui_tag_media: "多媒体"
+tui_tag_skills_meta: "skills"
+
+# Installer
+tui_installer_title: "安装技能"
+tui_installer_progress_label: "进度:"
+tui_installer_summary: "成功: %d | 失败: %d"
+tui_installer_updating: "更新中:"
+tui_installer_uninstalling: "卸载中:"
+tui_installer_done: "完成! 成功 %d 个。按任意键退出。"
+tui_installer_done_failed: "完成! 成功 %d 个，失败 %d 个。按任意键退出。"
+tui_installer_cancel: "按 q 取消"
+tui_installer_progress_install: "已安装 (%d/%d): %s"
+tui_installer_fail_install: "安装失败 (%d/%d): %s - %v"
+tui_installer_progress_update: "已更新 (%d/%d): %s"
+tui_installer_fail_update: "更新失败 (%d/%d): %s - %v"
+tui_installer_progress_uninstall: "已卸载 (%d/%d): %s"
+tui_installer_fail_uninstall: "卸载失败 (%d/%d): %s - %v"
+
+# styles.go helpers
+tui_status_bar_full: "(共 %d 个，已安装 %d 个，将安装 %d 个，将卸载 %d 个)"
+tui_install_progress_text: "正在安装 (%d/%d): %s..."
+
 # ============================================================================
 # 更新命令
 # ============================================================================

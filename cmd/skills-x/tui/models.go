@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/castle-x/skills-x/pkg/products"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -95,12 +96,12 @@ func (m ProductModel) View() string {
 	// 1. Logo 区域
 	b.WriteString(RenderLogo(m.version))
 
-	// 2. 表头: AI 工具 | 全局 | 项目
-	headerName := padRight("AI 工具", 22)
+	// 2. 表头: AI Tool | Global | Project
+	headerName := padRight(i18n.T("tui_col_ai_tool"), 22)
 	b.WriteString(fmt.Sprintf("  %s  %s  %s\n",
 		titleStyle.Render(headerName),
-		titleStyle.Render(padRight("全局", 4)),
-		titleStyle.Render(padRight("项目", 4))))
+		titleStyle.Render(padRight(i18n.T("tui_global"), 4)),
+		titleStyle.Render(padRight(i18n.T("tui_project"), 4))))
 	b.WriteString(separatorStyle.Render(strings.Repeat("─", SeparatorWidth)))
 	b.WriteString("\n")
 
@@ -141,7 +142,7 @@ func (m ProductModel) View() string {
 	}
 
 	// 4. 提示区域
-	b.WriteString(RenderHint("↑/↓ 选择 | Enter 确定 | q 退出"))
+	b.WriteString(RenderHint(i18n.T("tui_hint_select")))
 
 	return b.String()
 }
@@ -238,11 +239,11 @@ func (m InstallTargetModel) View() string {
 	b.WriteString("\n")
 
 	// 标题
-	b.WriteString(titleStyle.Render("选择安装位置"))
+	b.WriteString(titleStyle.Render(i18n.T("tui_install_target_title")))
 	b.WriteString("\n\n")
 
 	// 选项
-	targets := []string{"全局", "项目"}
+	targets := []string{i18n.T("tui_global"), i18n.T("tui_project")}
 	for i, target := range targets {
 		prefix := "  "
 		style := selectableStyle
@@ -265,7 +266,7 @@ func (m InstallTargetModel) View() string {
 	}
 
 	// 提示
-	b.WriteString(RenderHint("↑/↓ 选择 | Enter 确定 | q 退出"))
+	b.WriteString(RenderHint(i18n.T("tui_hint_select")))
 
 	return b.String()
 }

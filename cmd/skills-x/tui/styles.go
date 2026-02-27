@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	"github.com/charmbracelet/lipgloss"
 	"golang.org/x/term"
 )
@@ -202,7 +203,7 @@ func RenderHint(hint string) string {
 func RenderStatusBar(total, installed, newSelected, deselected int) string {
 	var b strings.Builder
 	b.WriteString("\n")
-	statusText := fmt.Sprintf("(共 %d 个，已安装 %d 个，将安装 %d 个，将卸载 %d 个)", total, installed, newSelected, deselected)
+	statusText := i18n.Tf("tui_status_bar_full", total, installed, newSelected, deselected)
 	b.WriteString(hintStyle.Render(statusText))
 	return b.String()
 }
@@ -211,7 +212,7 @@ func RenderStatusBar(total, installed, newSelected, deselected int) string {
 func RenderInstallProgress(current, total int, skillName string) string {
 	var b strings.Builder
 	b.WriteString("\n")
-	progressText := fmt.Sprintf("正在安装 (%d/%d): %s...", current, total, skillName)
+	progressText := i18n.Tf("tui_install_progress_text", current, total, skillName)
 	b.WriteString(successStyle.Render(progressText))
 	return b.String()
 }

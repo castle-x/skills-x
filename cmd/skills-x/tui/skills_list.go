@@ -7,9 +7,20 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
 	xskills "github.com/castle-x/skills-x/cmd/skills-x/skills"
 	"github.com/castle-x/skills-x/pkg/registry"
 )
+
+// xSkillTags provides tags for X (self-developed) skills since they are not in registry.yaml
+var xSkillTags = map[string][]string{
+	"baidu-speech-to-text": {"backend", "media"},
+	"go-embedded-spa":      {"backend", "web-frontend"},
+	"go-i18n":              {"backend"},
+	"minimal-ui-design":    {"design"},
+	"skills-x":             {"skills-meta"},
+	"tui-design":           {"design"},
+}
 
 // LoadSkillsFromRegistry loads skills from registry and checks installed status
 // targetDir: the directory to check for installation status
@@ -18,6 +29,8 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	starredSet := LoadStarred()
 
 	var skills []SkillItem
 
@@ -29,7 +42,7 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 			skillDir := filepath.Join(targetDir, skill.Name)
 			installed := targetDir != "" && isSkillDir(skillDir)
 
-			description := skill.GetDescription("")
+			description := skill.GetDescription(i18n.GetLanguage())
 
 			item := SkillItem{
 				Name:        skill.Name,
@@ -37,7 +50,9 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 				Source:      source.Repo,
 				SourceName:  source.Name,
 				Description: description,
+				Tags:        skill.Tags,
 				Installed:   installed,
+				Starred:     starredSet[fullName],
 			}
 			if installed {
 				item.Meta, _ = ReadSkillMeta(skillDir)
@@ -50,17 +65,20 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 	xSkills, err := xskills.ListXSkills()
 	if err == nil {
 		for _, xSkill := range xSkills {
+			fullName := "skills-x/" + xSkill.Name
 			skillDir := filepath.Join(targetDir, xSkill.Name)
 			installed := targetDir != "" && isSkillDir(skillDir)
 
 			item := SkillItem{
 				Name:        xSkill.Name,
-				FullName:    "skills-x/" + xSkill.Name,
+				FullName:    fullName,
 				Source:      "skills-x",
 				SourceName:  "skills-x",
 				Description: xSkill.Description,
+				Tags:        xSkillTags[xSkill.Name],
 				Installed:   installed,
 				IsX:         true,
+				Starred:     starredSet[fullName],
 			}
 			if installed {
 				item.Meta, _ = ReadSkillMeta(skillDir)
@@ -69,8 +87,11 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 		}
 	}
 
-	// Sort by FullName (source/skill-name format)
+	// Sort: starred first, then alphabetical by FullName
 	sort.Slice(skills, func(i, j int) bool {
+		if skills[i].Starred != skills[j].Starred {
+			return skills[i].Starred
+		}
 		return strings.ToLower(skills[i].FullName) < strings.ToLower(skills[j].FullName)
 	})
 
@@ -108,28 +129,48 @@ func GetSkillByFullName(skills []SkillItem, fullName string) *SkillItem {
 	return nil
 }
 
-// SortSkills sorts skills by FullName
+// SortSkills sorts skills: starred first, then alphabetical by FullName
 func SortSkills(skills []SkillItem) {
 	sort.Slice(skills, func(i, j int) bool {
+		if skills[i].Starred != skills[j].Starred {
+			return skills[i].Starred
+		}
 		return strings.ToLower(skills[i].FullName) < strings.ToLower(skills[j].FullName)
 	})
 }
 
 // FilterSkills filters skills based on search query
+// Supports #tag prefix for tag-based filtering
 func FilterSkills(skills []SkillItem, query string) []SkillItem {
 	if query == "" {
 		return skills
 	}
 
-	query = strings.ToLower(strings.TrimSpace(query))
+	query = strings.TrimSpace(query)
 	var filtered []SkillItem
 
-	for _, s := range skills {
-		if strings.Contains(strings.ToLower(s.FullName), query) ||
-			strings.Contains(strings.ToLower(s.SourceName), query) ||
-			strings.Contains(strings.ToLower(s.Name), query) ||
-			strings.Contains(strings.ToLower(s.Description), query) {
-			filtered = append(filtered, s)
+	if strings.HasPrefix(query, "#") {
+		tagQuery := strings.ToLower(query[1:])
+		if tagQuery == "" {
+			return skills
+		}
+		for _, s := range skills {
+			for _, t := range s.Tags {
+				if strings.ToLower(t) == tagQuery {
+					filtered = append(filtered, s)
+					break
+				}
+			}
+		}
+	} else {
+		queryLower := strings.ToLower(query)
+		for _, s := range skills {
+			if strings.Contains(strings.ToLower(s.FullName), queryLower) ||
+				strings.Contains(strings.ToLower(s.SourceName), queryLower) ||
+				strings.Contains(strings.ToLower(s.Name), queryLower) ||
+				strings.Contains(strings.ToLower(s.Description), queryLower) {
+				filtered = append(filtered, s)
+			}
 		}
 	}
 

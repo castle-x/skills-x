@@ -8,6 +8,7 @@
 #     repo: github.com/owner/repo
 #     path: path/to/skill (optional, defaults to skill name)
 #     license: license type
+#     tags: [tag1, tag2] (optional, for TUI search filtering)
 #     description: brief description (English)
 #     description_zh: brief description (Chinese, optional)
 
@@ -21,81 +22,97 @@ anthropic:
   skills:
     - name: algorithmic-art
       path: skills/algorithmic-art
+      tags: [design, media]
       description: Creating algorithmic art using p5.js with seeded randomness
       description_zh: 使用 p5.js 和种子随机数创建算法艺术
 
     - name: brand-guidelines
       path: skills/brand-guidelines
+      tags: [design]
       description: Apply Anthropic brand colors and typography
       description_zh: 应用 Anthropic 品牌色彩和排版
 
     - name: canvas-design
       path: skills/canvas-design
+      tags: [design]
       description: Create visual art in PNG and PDF using design philosophy
       description_zh: 使用设计理念创建 PNG 和 PDF 视觉艺术
 
     - name: frontend-design
       path: skills/frontend-design
+      tags: [web-frontend, design]
       description: Frontend design best practices
       description_zh: 前端设计最佳实践
 
     - name: internal-comms
       path: skills/internal-comms
+      tags: [writing]
       description: Internal communications templates
       description_zh: 内部沟通模板
 
     - name: mcp-builder
       path: skills/mcp-builder
+      tags: [backend]
       description: Generate MCP (Model Context Protocol) servers
       description_zh: 生成 MCP (模型上下文协议) 服务器
 
     - name: skill-creator
       path: skills/skill-creator
+      tags: [featured, skills-meta]
       description: Create new agent skills
       description_zh: 创建新的 agent skills
 
     - name: slack-gif-creator
       path: skills/slack-gif-creator
+      tags: [media]
       description: Create animated GIFs optimized for Slack
       description_zh: 创建针对 Slack 优化的动画 GIF
 
     - name: theme-factory
       path: skills/theme-factory
+      tags: [design]
       description: Toolkit for styling artifacts with themes
       description_zh: 使用主题样式化 artifacts 的工具包
 
     - name: webapp-testing
       path: skills/webapp-testing
+      tags: [testing]
       description: Test web applications
       description_zh: 测试 Web 应用程序
 
     - name: web-artifacts-builder
       path: skills/web-artifacts-builder
+      tags: [web-frontend]
       description: Build web artifacts with React
       description_zh: 使用 React 构建 Web artifacts
 
     - name: doc-coauthoring
       path: skills/doc-coauthoring
+      tags: [writing, office]
       description: Collaborative document editing
       description_zh: 协作文档编辑
 
     - name: pdf
       path: skills/pdf
+      tags: [office]
       description: PDF manipulation - extract, fill forms, merge documents
       description_zh: PDF 操作 - 提取、填写表单、合并文档
 
     - name: docx
       path: skills/docx
+      tags: [office]
       description: Word document creation, editing and analysis
       description_zh: Word 文档创建、编辑和分析
 
     - name: pptx
       path: skills/pptx
+      tags: [office]
       description: PowerPoint presentation creation and editing
       description_zh: PowerPoint 演示文稿创建和编辑
 
     - name: xlsx
       path: skills/xlsx
+      tags: [office]
       description: Excel spreadsheet creation, formulas and charts
       description_zh: Excel 电子表格创建、公式和图表
 
@@ -109,16 +126,19 @@ vercel:
   skills:
     - name: react-best-practices
       path: skills/react-best-practices
+      tags: [web-frontend]
       description: React and Next.js performance optimization from Vercel Engineering
       description_zh: 来自 Vercel 工程团队的 React 和 Next.js 性能优化指南
 
     - name: web-design-guidelines
       path: skills/web-design-guidelines
+      tags: [web-frontend, design]
       description: 100+ rules for accessibility, performance and UX
       description_zh: 100+ 条可访问性、性能和用户体验规则
 
     - name: react-native-skills
       path: skills/react-native-skills
+      tags: [mobile]
       description: React Native best practices for AI agents
       description_zh: AI agents 的 React Native 最佳实践
 
@@ -132,6 +152,7 @@ remotion:
   skills:
     - name: remotion
       path: skills/remotion
+      tags: [media, web-frontend]
       description: Best practices for Remotion - Video creation in React
       description_zh: Remotion 最佳实践 - 使用 React 创建视频
 
@@ -145,6 +166,7 @@ ui-ux-pro-max:
   skills:
     - name: ui-ux-pro-max
       path: .claude/skills/ui-ux-pro-max
+      tags: [design, web-frontend]
       description: UI/UX design intelligence - 50 styles, 97 palettes, 57 fonts, 9 stacks
       description_zh: UI/UX 设计智能 - 50 种风格、97 色板、57 字体、9 技术栈
 
@@ -158,66 +180,79 @@ superpowers:
   skills:
     - name: brainstorming
       path: skills/brainstorming
+      tags: [featured, ai-efficiency, planning]
       description: Brainstorm before any creative work - features, designs, architecture
       description_zh: 创意工作前头脑风暴 - 功能、设计、架构
 
     - name: dispatching-parallel-agents
       path: skills/dispatching-parallel-agents
+      tags: [featured, ai-efficiency]
       description: Dispatch 2+ independent tasks to work on in parallel
       description_zh: 分派 2+ 个独立任务并行处理
 
     - name: executing-plans
       path: skills/executing-plans
+      tags: [featured, planning]
       description: Execute written implementation plans step by step
       description_zh: 逐步执行书面实施计划
 
     - name: finishing-a-development-branch
       path: skills/finishing-a-development-branch
+      tags: [featured, code-review]
       description: Complete development branch when tests pass
       description_zh: 测试通过后完成开发分支
 
     - name: receiving-code-review
       path: skills/receiving-code-review
+      tags: [featured, code-review]
       description: Handle code review feedback before implementing changes
       description_zh: 在实施更改前处理代码审查反馈
 
     - name: requesting-code-review
       path: skills/requesting-code-review
+      tags: [featured, code-review]
       description: Request code review when completing tasks or features
       description_zh: 完成任务或功能时请求代码审查
 
     - name: subagent-driven-development
       path: skills/subagent-driven-development
+      tags: [featured, ai-efficiency]
       description: Execute plans with independent tasks using subagents
       description_zh: 使用子代理执行独立任务的计划
 
     - name: systematic-debugging
       path: skills/systematic-debugging
+      tags: [featured, testing]
       description: Systematic approach to bugs, test failures, unexpected behavior
       description_zh: 系统化调试 - 处理 bug、测试失败、异常行为
 
     - name: test-driven-development
       path: skills/test-driven-development
+      tags: [featured, testing]
       description: TDD workflow - write tests before implementation
       description_zh: TDD 工作流 - 先写测试再实现
 
     - name: using-superpowers
       path: skills/using-superpowers
+      tags: [featured, ai-efficiency]
       description: How to find and use superpowers skills effectively
       description_zh: 如何有效查找和使用 superpowers 技能
 
     - name: verification-before-completion
       path: skills/verification-before-completion
+      tags: [featured, ai-efficiency]
       description: Verify work is complete, fixed, or passing before claiming done
       description_zh: 完成前验证工作已完成、修复或通过
 
     - name: writing-plans
       path: skills/writing-plans
+      tags: [featured, planning]
       description: Write implementation plans for multi-step tasks from specs
       description_zh: 根据规格编写多步骤任务的实施计划
 
     - name: writing-skills
       path: skills/writing-skills
+      tags: [featured, skills-meta]
       description: Create, edit, and verify skills
       description_zh: 创建、编辑和验证 skills
 
@@ -230,22 +265,26 @@ developer-kit:
   license: MIT
   skills:
     - name: react-patterns
-      path: skills/react
+      path: plugins/developer-kit-typescript/skills/react-patterns
+      tags: [web-frontend]
       description: React 19 patterns covering Server Components, Actions, hooks, Suspense and TypeScript
       description_zh: React 19 模式 - 服务器组件、Actions、hooks、Suspense 和 TypeScript
 
     - name: shadcn-ui
-      path: skills/shadcn-ui
+      path: plugins/developer-kit-typescript/skills/shadcn-ui
+      tags: [web-frontend, design]
       description: shadcn/ui component library with Radix UI and Tailwind CSS
       description_zh: shadcn/ui 组件库 - 基于 Radix UI 和 Tailwind CSS
 
     - name: tailwind-css-patterns
-      path: skills/tailwind-css
+      path: plugins/developer-kit-typescript/skills/tailwind-css-patterns
+      tags: [web-frontend, design]
       description: Tailwind CSS utility-first styling patterns for responsive design
       description_zh: Tailwind CSS 实用优先样式模式 - 响应式设计
 
     - name: typescript-docs
-      path: skills/typescript-docs
+      path: plugins/developer-kit-typescript/skills/typescript-docs
+      tags: [backend, writing]
       description: TypeScript documentation with JSDoc, TypeDoc and ADR patterns
       description_zh: TypeScript 文档 - JSDoc、TypeDoc 和 ADR 模式
 
@@ -259,6 +298,7 @@ vercel-labs-skills:
   skills:
     - name: find-skills
       path: skills/find-skills
+      tags: [featured, skills-meta]
       description: Find and install agent skills using the Skills CLI
       description_zh: 使用 Skills CLI 查找并安装技能
 
@@ -272,6 +312,7 @@ masayuki-kono:
   skills:
     - name: implementation-plan
       path: skills/implementation-plan
+      tags: [planning]
       description: Guide for creating implementation plans
       description_zh: 编写实施/开发方案的指南
 
@@ -285,26 +326,31 @@ tencentcloudbase:
   skills:
     - name: miniprogram-development
       path: skills/miniprogram-development
+      tags: [mobile]
       description: WeChat Mini Program development with CloudBase - login-free auth, AI models, and deployment
       description_zh: 微信小程序开发 - 免登录认证、AI模型集成、部署发布
 
     - name: auth-wechat
       path: skills/auth-wechat
+      tags: [mobile, backend]
       description: WeChat Mini Program authentication - automatic OPENID/UNIONID injection
       description_zh: 微信小程序认证 - 自动注入 OPENID/UNIONID
 
     - name: ai-model-wechat
       path: skills/ai-model-wechat
+      tags: [mobile, ai-efficiency]
       description: AI models in Mini Programs - Hunyuan and DeepSeek with streaming support
       description_zh: 小程序 AI 模型 - 混元和 DeepSeek，支持流式响应
 
     - name: no-sql-wx-mp-sdk
       path: skills/no-sql-wx-mp-sdk
+      tags: [mobile, backend]
       description: CloudBase document database for Mini Programs - CRUD, queries, pagination, geo
       description_zh: 小程序文档数据库 - 增删改查、复杂查询、分页、地理位置
 
     - name: cloudbase-guidelines
       path: skills/cloudbase-guidelines
+      tags: [mobile, backend]
       description: Essential CloudBase development guidelines for web, mini programs, and backend
       description_zh: 腾讯云开发指南 - Web、小程序、后端服务开发规范
 
@@ -318,6 +364,7 @@ axton-obsidian-visual-skills:
   skills:
     - name: excalidraw-diagram
       path: excalidraw-diagram
+      tags: [design]
       description: Generate Excalidraw diagrams from text with Obsidian, standard, and animated outputs
       description_zh: 根据文本生成 Excalidraw 图，支持 Obsidian/标准/动画三种输出
 
@@ -331,5 +378,34 @@ terma:
   skills:
     - name: strudel
       path: plugins/tsal/skills/strudel
+      tags: [media]
       description: Strudel live-coding music workflow for patterns, rhythms, melodies, and shareable browser URLs
       description_zh: Strudel 现场编程音乐工作流：创建节奏、旋律与可分享的浏览器链接
+
+# =============================================================================
+# Affaan-M Everything Claude Code
+# https://github.com/affaan-m/everything-claude-code
+# =============================================================================
+affaan-m:
+  repo: github.com/affaan-m/everything-claude-code
+  license: MIT
+  skills:
+    - name: golang-testing
+      path: skills/golang-testing
+      tags: [featured, testing, backend]
+      description: Go testing patterns - table-driven tests, subtests, benchmarks, fuzzing, and TDD workflow
+      description_zh: Go 测试模式 - 表格驱动测试、子测试、基准测试、模糊测试与 TDD 工作流
+
+# =============================================================================
+# Bob Matnyc Claude MPM Skills
+# https://github.com/bobmatnyc/claude-mpm-skills
+# =============================================================================
+bobmatnyc:
+  repo: github.com/bobmatnyc/claude-mpm-skills
+  license: MIT
+  skills:
+    - name: golang-cli-cobra-viper
+      path: toolchains/golang/cli
+      tags: [featured, backend]
+      description: Go CLI development with Cobra and Viper - commands, config management, shell completion
+      description_zh: Go CLI 开发 - Cobra + Viper 命令结构、配置管理与 Shell 补全

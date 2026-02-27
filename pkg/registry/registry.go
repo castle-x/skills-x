@@ -23,11 +23,12 @@ type Source struct {
 
 // Skill represents a skill entry in the registry
 type Skill struct {
-	Name          string `yaml:"name"`           // Skill name
-	Path          string `yaml:"path"`           // Path in repository
-	Description   string `yaml:"description"`    // Short description (English)
-	DescriptionZh string `yaml:"description_zh"` // Short description (Chinese)
-	Version       string `yaml:"version"`        // Version (optional)
+	Name          string   `yaml:"name"`           // Skill name
+	Path          string   `yaml:"path"`           // Path in repository
+	Tags          []string `yaml:"tags"`           // Tags for filtering (e.g., featured, web-frontend)
+	Description   string   `yaml:"description"`    // Short description (English)
+	DescriptionZh string   `yaml:"description_zh"` // Short description (Chinese)
+	Version       string   `yaml:"version"`        // Version (optional)
 }
 
 // GetDescription returns the description based on language
@@ -50,11 +51,12 @@ type registryYAML map[string]struct {
 	License   string `yaml:"license"`
 	SkipFetch bool   `yaml:"skip_fetch"`
 	Skills    []struct {
-		Name          string `yaml:"name"`
-		Path          string `yaml:"path"`
-		Description   string `yaml:"description"`
-		DescriptionZh string `yaml:"description_zh"`
-		Version       string `yaml:"version"`
+		Name          string   `yaml:"name"`
+		Path          string   `yaml:"path"`
+		Tags          []string `yaml:"tags"`
+		Description   string   `yaml:"description"`
+		DescriptionZh string   `yaml:"description_zh"`
+		Version       string   `yaml:"version"`
 	} `yaml:"skills"`
 }
 
@@ -92,6 +94,7 @@ func Parse(data []byte) (*Registry, error) {
 			skill := Skill{
 				Name:          s.Name,
 				Path:          s.Path,
+				Tags:          s.Tags,
 				Description:   s.Description,
 				DescriptionZh: s.DescriptionZh,
 				Version:       s.Version,

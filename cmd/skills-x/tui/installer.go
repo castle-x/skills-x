@@ -90,11 +90,11 @@ func (m *InstallerModel) installNext() tea.Msg {
 		if err != nil {
 			failed = 1
 			result = "fail"
-			progress = fmt.Sprintf("Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.installSkills), skill.FullName, err)
+			progress = i18n.Tf("tui_installer_fail_install", m.currentIdx+1, len(m.installSkills), skill.FullName, err)
 		} else {
 			completed = 1
 			result = "ok"
-			progress = fmt.Sprintf("Installed (%d/%d): %s", m.currentIdx+1, len(m.installSkills), skill.FullName)
+			progress = i18n.Tf("tui_installer_progress_install", m.currentIdx+1, len(m.installSkills), skill.FullName)
 			m.writeMetaForSkill(skill, tempDir)
 		}
 		return installProgressMsg{
@@ -114,11 +114,11 @@ func (m *InstallerModel) installNext() tea.Msg {
 		if err != nil {
 			failed = 1
 			result = "fail"
-			progress = fmt.Sprintf("Update Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.updateSkills), skill.FullName, err)
+			progress = i18n.Tf("tui_installer_fail_update", m.currentIdx+1, len(m.updateSkills), skill.FullName, err)
 		} else {
 			completed = 1
 			result = "ok"
-			progress = fmt.Sprintf("Updated (%d/%d): %s", m.currentIdx+1, len(m.updateSkills), skill.FullName)
+			progress = i18n.Tf("tui_installer_progress_update", m.currentIdx+1, len(m.updateSkills), skill.FullName)
 			m.writeMetaForSkill(skill, tempDir)
 		}
 		return installProgressMsg{
@@ -138,11 +138,11 @@ func (m *InstallerModel) installNext() tea.Msg {
 		if err != nil {
 			failed = 1
 			result = "fail"
-			progress = fmt.Sprintf("Uninstall Failed (%d/%d): %s - %v", m.currentIdx+1, len(m.uninstallSkills), skill.FullName, err)
+			progress = i18n.Tf("tui_installer_fail_uninstall", m.currentIdx+1, len(m.uninstallSkills), skill.FullName, err)
 		} else {
 			completed = 1
 			result = "ok"
-			progress = fmt.Sprintf("Uninstalled (%d/%d): %s", m.currentIdx+1, len(m.uninstallSkills), skill.FullName)
+			progress = i18n.Tf("tui_installer_progress_uninstall", m.currentIdx+1, len(m.uninstallSkills), skill.FullName)
 		}
 		return installProgressMsg{
 			current: m.currentIdx + 1, completedAdd: completed, failedAdd: failed,
@@ -230,7 +230,7 @@ func (m InstallerModel) View() string {
 
 	totalItems := len(m.installSkills) + len(m.updateSkills) + len(m.uninstallSkills)
 
-	b.WriteString(titleStyle.Render("Installing Skills"))
+	b.WriteString(titleStyle.Render(i18n.T("tui_installer_title")))
 	b.WriteString("\n\n")
 
 	// Progress bar
@@ -253,7 +253,7 @@ func (m InstallerModel) View() string {
 		filled = (currentTotal * barWidth) / totalItems
 	}
 
-	b.WriteString("Progress: [")
+	b.WriteString(i18n.T("tui_installer_progress_label") + " [")
 	for i := 0; i < barWidth; i++ {
 		if i < filled {
 			b.WriteString("=")
@@ -264,7 +264,7 @@ func (m InstallerModel) View() string {
 		}
 	}
 	b.WriteString(fmt.Sprintf("] %d%% (%d/%d)\n", progressPercent, currentTotal, totalItems))
-	b.WriteString(fmt.Sprintf("Completed: %d | Failed: %d\n", m.completed, m.failed))
+	b.WriteString(i18n.Tf("tui_installer_summary", m.completed, m.failed) + "\n")
 
 	// Install list
 	if len(m.installSkills) > 0 {
@@ -288,7 +288,7 @@ func (m InstallerModel) View() string {
 	// Update list
 	if len(m.updateSkills) > 0 {
 		b.WriteString("\n")
-		b.WriteString(updateStyle.Render("Updating:"))
+		b.WriteString(updateStyle.Render(i18n.T("tui_installer_updating")))
 		b.WriteString("\n")
 		for i, skill := range m.updateSkills {
 			status := "  "
@@ -309,7 +309,7 @@ func (m InstallerModel) View() string {
 	// Uninstall list
 	if len(m.uninstallSkills) > 0 {
 		b.WriteString("\n")
-		b.WriteString(hintStyle.Render("Uninstalling:"))
+		b.WriteString(hintStyle.Render(i18n.T("tui_installer_uninstalling")))
 		b.WriteString("\n")
 		for i, skill := range m.uninstallSkills {
 			status := "  "
@@ -331,12 +331,12 @@ func (m InstallerModel) View() string {
 	b.WriteString("\n")
 	if m.finished {
 		if m.failed == 0 {
-			b.WriteString(RenderHint(fmt.Sprintf("Done! %d completed. Press any key to exit.", m.completed)))
+			b.WriteString(RenderHint(i18n.Tf("tui_installer_done", m.completed)))
 		} else {
-			b.WriteString(RenderHint(fmt.Sprintf("Done! %d completed, %d failed. Press any key to exit.", m.completed, m.failed)))
+			b.WriteString(RenderHint(i18n.Tf("tui_installer_done_failed", m.completed, m.failed)))
 		}
 	} else {
-		b.WriteString(RenderHint("Press q to cancel"))
+		b.WriteString(RenderHint(i18n.T("tui_installer_cancel")))
 	}
 
 	return b.String()

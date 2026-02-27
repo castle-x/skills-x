@@ -250,6 +250,68 @@ tui_cancelled: "Operation cancelled"
 selected_skills_count: "Will install"
 unselected_skills_count: "Will uninstall"
 
+# LV1 ProductModel
+tui_col_ai_tool: "AI Tool"
+tui_install_target_title: "Select Install Location"
+
+# LV3 SkillsModel
+tui_skills_for: "Skills For"
+tui_search_placeholder: "Type # to filter by tag, or type a skill name to search"
+tui_search_idle: " Press / to search"
+tui_legend: "[ ]Not installed  [●]Installed  [+]Install  [-]Uninstall  [↑]Update  [↻]Checking"
+tui_tag_picker_hint: "↑/↓ select tag | Enter confirm | Esc cancel"
+tui_status_ops: "Install: %d | Update: %d | Uninstall: %d"
+tui_update_badge: "⚠ Update"
+tui_hint_searching: "Type to search | Esc exit | Enter confirm"
+tui_hint_main: "Space select | f star | u check update | A select all | Enter confirm | b back | q quit"
+tui_select_required: "Use Space to select skills, or press Q to quit"
+tui_only_installed_check: "Only installed skills can be checked for updates"
+tui_update_available_fmt: "✓ %s has update (%s → %s)"
+tui_update_available_new: "✓ %s has update (→ %s)"
+tui_update_up_to_date: "%s is up to date (%s)"
+tui_builtin_skill_msg: "Built-in skills update with the app"
+tui_check_failed: "Check failed: %v"
+tui_err_fetch_repo: "Failed to fetch repository: %v"
+tui_err_get_commit: "Failed to get commit info: %v"
+tui_err_not_in_registry: "Skill not found in registry"
+tui_tag_search_hint: "Tags: #starred  #featured  #ai-efficiency  #planning  #frontend  #mobile  #backend  #testing  #review  #docs  #design  #writing  #media  #skills"
+
+# Tag picker labels
+tui_tag_starred: "Starred"
+tui_tag_featured: "Featured"
+tui_tag_ai_efficiency: "AI Efficiency"
+tui_tag_planning: "Planning"
+tui_tag_frontend: "Frontend"
+tui_tag_mobile: "Mini Program"
+tui_tag_backend: "Backend"
+tui_tag_testing: "Testing"
+tui_tag_code_review: "Code Review"
+tui_tag_office: "Documents"
+tui_tag_design: "Design"
+tui_tag_writing: "Writing"
+tui_tag_media: "Media"
+tui_tag_skills_meta: "skills"
+
+# Installer
+tui_installer_title: "Installing Skills"
+tui_installer_progress_label: "Progress:"
+tui_installer_summary: "Completed: %d | Failed: %d"
+tui_installer_updating: "Updating:"
+tui_installer_uninstalling: "Uninstalling:"
+tui_installer_done: "Done! %d completed. Press any key to exit."
+tui_installer_done_failed: "Done! %d completed, %d failed. Press any key to exit."
+tui_installer_cancel: "Press q to cancel"
+tui_installer_progress_install: "Installed (%d/%d): %s"
+tui_installer_fail_install: "Failed (%d/%d): %s - %v"
+tui_installer_progress_update: "Updated (%d/%d): %s"
+tui_installer_fail_update: "Update Failed (%d/%d): %s - %v"
+tui_installer_progress_uninstall: "Uninstalled (%d/%d): %s"
+tui_installer_fail_uninstall: "Uninstall Failed (%d/%d): %s - %v"
+
+# styles.go helpers
+tui_status_bar_full: "(Total %d, installed %d, to install %d, to uninstall %d)"
+tui_install_progress_text: "Installing (%d/%d): %s..."
+
 # ============================================================================
 # Update Command
 # ============================================================================
