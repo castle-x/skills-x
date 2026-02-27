@@ -30,7 +30,9 @@ video/
 .cursor/
 
 # Local docs (personal notes, not for distribution)
-docs/
+docs/plans/
+docs/*.svg
+docs/2*.md
 
 # Local skills (not for distribution)
 # (keep only local_skills/ below)

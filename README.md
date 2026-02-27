@@ -29,137 +29,20 @@ npm install -g skills-x@latest
 
 ## Interactive TUI (Default Mode)
 
-Running `skills-x` with no arguments launches the full interactive TUI — the recommended way to browse, install, update, and uninstall skills.
+Running `skills-x` with no arguments launches the interactive TUI — the recommended way to browse, install, update, and uninstall skills.
 
 ```bash
 skills-x
 ```
 
-### How the TUI works
+**Features:**
+- 4-level navigation: select IDE → install target → browse skills → progress
+- Search by name (`/`) or filter by tag (`#`) with an interactive tag picker
+- Star skills (`f`) — persisted to `~/.config/skills-x/starred.json`, sorted to the top
+- Check for updates (`u`) — shows commit comparison for installed skills
+- Bilingual UI — switches between Chinese and English based on `SKILLS_LANG`
 
-The TUI has three levels of navigation:
-
-#### Level 1 — Select AI Tool
-
-Choose which IDE you are managing skills for. Each row shows the number of skills installed globally and at the project level.
-
-```
-Skills-X  AI Agent Skills Manager  v0.2.15
-
-  ███████╗██╗  ██╗██╗██╗     ██╗     ███████╗     ██╗  ██╗
-  ...
-
-──────────────────────────────────────────────────────────
-AI Tool              Global  Project
-──────────────────────────────────────────────────────────
-❯ Claude Code            45        3
-  Cursor                  0        0
-  Windsurf                0        0
-  Codex                   2        0
-  ...
-──────────────────────────────────────────────────────────
-↑/↓ navigate  |  Enter confirm  |  q quit
-```
-
-| Key | Action |
-|-----|--------|
-| `↑` / `↓` | Move cursor |
-| `Enter` | Select tool and go to Level 2 |
-| `q` | Quit |
-
-#### Level 2 — Select Install Target
-
-Choose whether to install skills globally (your home config dir) or at the project level (current working directory).
-
-| Key | Action |
-|-----|--------|
-| `↑` / `↓` | Move cursor |
-| `Enter` | Confirm target and go to Level 3 |
-| `b` | Go back to Level 1 |
-| `q` | Quit |
-
-#### Level 3 — Browse & Select Skills
-
-The main skill management screen. Skills are listed with their current state. Use keyboard shortcuts to search, filter, star, and select skills.
-
-```
-Skills For Cursor  /home/user/.cursor/skills
-──────────────────────────────────────────────────────────
- 输入 / 搜索技能
-──────────────────────────────────────────────────────────
-[ ]Not installed  [●]Installed  [+]Install  [-]Uninstall  [↑]Update  [↻]Checking
-──────────────────────────────────────────────────────────
-❯ [●] anthropic/algorithmic-art        2026-01-15  ★
-  [●] anthropic/brand-guidelines       2026-01-15
-  [ ] anthropic/canvas-design
-  [●] superpowers/brainstorming        2026-02-10
-  ...
-
-1/53 ↓
-Install: 0 | Update: 1 | Uninstall: 0
-──────────────────────────────────────────────────────────
-Space select | f star | u check update | A select all | Enter confirm | b back | q quit
-```
-
-**Navigation & Selection**
-
-| Key | Action |
-|-----|--------|
-| `↑` / `↓` | Move cursor |
-| `Space` | Toggle install / uninstall for the focused skill |
-| `A` | Cycle select-all: (1) all Install/Update → (2) all Uninstall → (3) reset |
-| `Enter` | Confirm and start installation/uninstall |
-| `b` | Go back to Level 2 |
-| `q` | Quit |
-
-**Search & Filter**
-
-| Key | Action |
-|-----|--------|
-| `/` or `、` | Enter search mode |
-| `#` | Open the tag picker (interactive category filter) |
-| `Esc` | Exit search / cancel tag picker |
-
-When the tag picker opens, navigate with `↑`/`↓` and press `Enter` to apply a tag filter instantly. Available tags:
-
-`#starred` `#featured` `#ai-efficiency` `#planning` `#web-frontend` `#mobile` `#backend` `#testing` `#code-review` `#office` `#design` `#writing` `#media` `#skills`
-
-**Skill Actions**
-
-| Key | Action |
-|-----|--------|
-| `f` | Star / unstar the focused skill (persists across sessions) |
-| `u` | Check for updates on the focused skill (installed skills only) |
-
-- Starred skills show a `★` marker and always sort to the top of the list.
-- Starred skills are saved in `~/.config/skills-x/starred.json`.
-- Skills with an available update show a `⚠ Update` badge.
-- The focused skill's description is shown in the message area.
-
-**Status Bar Legend**
-
-```
-[ ] Not installed    [●] Installed    [+] Will install
-[-] Will uninstall   [↑] Will update  [↻] Checking for update
-```
-
-#### Level 4 — Installation Progress
-
-After confirming, a progress screen shows real-time per-skill status:
-
-```
-Installing Skills
-
-Progress: [==================>                     ] 45% (5/11)
-Completed: 5 | Failed: 0
-
-  ✓ anthropic/skill-creator
-  ✓ superpowers/brainstorming
-  ✓ superpowers/test-driven-development
-  ...
-
-Press any key to exit
-```
+> See [docs/tui-guide.md](docs/tui-guide.md) for a detailed walkthrough of each screen.
 
 ---
 
@@ -224,7 +107,7 @@ SKILLS_LANG=zh skills-x
 
 ---
 
-## Collected Skills (49 skills from 13 sources)
+## Collected Skills (47 skills from 13 sources)
 
 ```
 📦 github.com/anthropics/skills (Apache-2.0)
@@ -303,14 +186,12 @@ SKILLS_LANG=zh skills-x
    strudel   Strudel live-coding music - patterns, rhythms, melodies
 
 📦 skills-x (Original)
-   baidu-speech-to-text        Baidu speech-to-text (China mainland)
-   go-embedded-spa             Go embedded SPA (single-binary deployment)
-   go-i18n                     Go CLI i18n rules
-   minimal-ui-design           Minimal UI design - low-noise, icon-forward
-   newapi-deploy-config        New API deploy and channel configuration
-   openclaw-session-header-fix Fix missing session header
-   skills-x                    Contribute skills to skills-x collection
-   tui-design                  TUI design specification for CLI terminal UI
+   baidu-speech-to-text  Baidu speech-to-text (China mainland)
+   go-embedded-spa       Go embedded SPA (single-binary deployment)
+   go-i18n               Go CLI i18n rules
+   minimal-ui-design     Minimal UI design - low-noise, icon-forward
+   skills-x              Contribute skills to skills-x collection
+   tui-design            TUI design specification for CLI terminal UI
 ```
 
 ---
