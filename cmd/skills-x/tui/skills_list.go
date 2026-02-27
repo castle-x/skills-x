@@ -26,18 +26,23 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 		for _, skill := range source.Skills {
 			fullName := source.Name + "/" + skill.Name
 
-			installed := targetDir != "" && isSkillDir(filepath.Join(targetDir, skill.Name))
+			skillDir := filepath.Join(targetDir, skill.Name)
+			installed := targetDir != "" && isSkillDir(skillDir)
 
 			description := skill.GetDescription("")
 
-			skills = append(skills, SkillItem{
+			item := SkillItem{
 				Name:        skill.Name,
 				FullName:    fullName,
 				Source:      source.Repo,
 				SourceName:  source.Name,
 				Description: description,
 				Installed:   installed,
-			})
+			}
+			if installed {
+				item.Meta, _ = ReadSkillMeta(skillDir)
+			}
+			skills = append(skills, item)
 		}
 	}
 
@@ -45,9 +50,10 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 	xSkills, err := xskills.ListXSkills()
 	if err == nil {
 		for _, xSkill := range xSkills {
-			installed := targetDir != "" && isSkillDir(filepath.Join(targetDir, xSkill.Name))
+			skillDir := filepath.Join(targetDir, xSkill.Name)
+			installed := targetDir != "" && isSkillDir(skillDir)
 
-			skills = append(skills, SkillItem{
+			item := SkillItem{
 				Name:        xSkill.Name,
 				FullName:    "skills-x/" + xSkill.Name,
 				Source:      "skills-x",
@@ -55,7 +61,11 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 				Description: xSkill.Description,
 				Installed:   installed,
 				IsX:         true,
-			})
+			}
+			if installed {
+				item.Meta, _ = ReadSkillMeta(skillDir)
+			}
+			skills = append(skills, item)
 		}
 	}
 

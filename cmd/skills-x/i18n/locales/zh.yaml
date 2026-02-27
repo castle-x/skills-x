@@ -253,3 +253,20 @@ selected_skills_count: "将安装"
 unselected_skills_count: "将卸载"
 tui_global: "全局"
 tui_project: "项目"
+
+# ============================================================================
+# 更新命令
+# ============================================================================
+cmd_update_short: "更新已安装的 skills"
+cmd_update_long: |
+  将已安装的 skills 更新到源仓库的最新版本。
+
+  示例:
+    skills-x update pdf                    更新指定 skill
+    skills-x update pdf brand-guidelines   更新多个 skills
+    skills-x update --all                  更新所有已安装 skills
+    skills-x update --all --check          仅检查更新，不安装
+    skills-x update --target .claude/skills
+cmd_update_flag_all: "更新所有已安装的 skills"
+cmd_update_flag_check: "仅检查更新，不执行安装"
+cmd_update_flag_target: "包含已安装 skills 的目标目录"
