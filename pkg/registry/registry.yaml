@@ -409,3 +409,17 @@ bobmatnyc:
       tags: [featured, backend]
       description: Go CLI development with Cobra and Viper - commands, config management, shell completion
       description_zh: Go CLI 开发 - Cobra + Viper 命令结构、配置管理与 Shell 补全
+
+# =============================================================================
+# Brian Lovin Claude Config
+# https://github.com/brianlovin/claude-config
+# =============================================================================
+brianlovin:
+  repo: github.com/brianlovin/claude-config
+  license: Unlicensed
+  skills:
+    - name: simplify
+      path: skills/simplify
+      tags: [code-review]
+      description: Simplify and refine recently modified code for clarity and consistency
+      description_zh: 简化和优化最近修改的代码，提升可读性和一致性

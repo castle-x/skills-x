@@ -166,6 +166,9 @@ skill_using-superpowers: "How to use skills"
 skill_skills-x: "Contribute skills to skills-x collection"
 skill_go-i18n: "Go CLI i18n rules (author use)"
 
+# Brian Lovin
+skill_simplify: "Simplify and refine code for clarity and consistency"
+
 init_refresh_warning: "⚠ Refresh mode: fetching latest from repositories (this may be slower)"
 init_downloading: "Installing: %s"
 init_success: "Installed: %s"
@@ -327,3 +330,82 @@ cmd_update_long: |
 cmd_update_flag_all: "Update all installed skills"
 cmd_update_flag_check: "Check for updates only, do not install"
 cmd_update_flag_target: "Target directory containing installed skills"
+
+# ============================================================================
+# registry command
+# ============================================================================
+cmd_registry_short: "Manage user-local skill registry"
+cmd_registry_long: |
+  Manage the user-local registry stored at ~/.config/skills-x/user-registry.yaml.
+  Supports validating, adding, listing, and removing custom skill sources.
+
+cmd_registry_check_short: "Validate a skill against the collection standards"
+cmd_registry_check_long: |
+  Validate a skill from a GitHub repository or local path, checking that
+  SKILL.md exists and meets the specification. Does not write to the registry.
+
+  Examples:
+    skills-x registry check github.com/owner/repo skills/my-skill
+    skills-x registry check /home/user/my-skills/my-skill
+
+cmd_registry_add_short: "Add a skill to the user-local registry"
+cmd_registry_add_long: |
+  Validate a skill then write it to ~/.config/skills-x/user-registry.yaml.
+  If the skill name conflicts with a built-in skill, a warning is shown and
+  the user entry takes precedence.
+
+  Examples:
+    skills-x registry add github.com/owner/repo skills/my-skill
+    skills-x registry add /home/user/my-skills/my-skill
+
+cmd_registry_list_short: "List all skills in the user-local registry"
+cmd_registry_remove_short: "Remove a skill from the user-local registry"
+
+# registry runtime messages
+registry_checking: "Validating %s %s ..."
+registry_check_passed: "Validation passed"
+registry_check_failed: "Validation failed"
+registry_check_not_valid: "Skill does not meet collection standards, aborted"
+registry_add_aborted_invalid: "Skill validation failed, aborted. Use --force to add anyway"
+registry_add_failed: "Failed to write to user registry"
+registry_add_success: "Added %s to user registry (source: %s)"
+registry_remove_failed: "Remove failed"
+registry_remove_success: "Removed %s from user registry"
+registry_load_user_failed: "Failed to read user registry"
+registry_conflict_warn: "skill %q conflicts with built-in skill from %q; user entry takes precedence"
+registry_list_empty: "User registry is empty"
+registry_list_empty_hint: "Use 'skills-x registry add <repo> <path>' to add a custom skill"
+registry_list_header: "User Registry"
+registry_list_source: "source"
+
+# registry field labels
+registry_field_name: "Name"
+registry_field_desc: "Description"
+registry_field_license: "License"
+registry_field_path: "Path"
+registry_error: "Error"
+registry_warning: "Warning"
+
+# registry discover mode
+registry_scanning: "Scanning"
+registry_scan_failed: "Scan failed"
+registry_scan_empty: "No skills found in %s"
+registry_scan_found: "Found"
+registry_scan_skills: "Skills:"
+registry_scan_builtin: "(in built-in registry)"
+registry_field_status: "Status"
+registry_skill_found: "Found"
+registry_skill_not_found: "Skill %q not found in %s"
+registry_input_path_hint: "Enter the full path to the skill in the repository (e.g. skills/golang-testing):"
+registry_add_confirm: "Add to user registry?"
+registry_add_cancelled: "Cancelled"
+registry_add_prompt: "Enter numbers to add (comma-separated, all=add all, q=cancel):"
+registry_add_prompt_hint: "Example: 1,3,5 or all"
+registry_add_no_selection: "No skills selected"
+registry_add_batch_summary: "Done: added %d, skipped %d"
+
+# registry command flags
+flag_registry_desc: "Override the English description of the skill"
+flag_registry_desc_zh: "Override the Chinese description of the skill"
+flag_registry_force: "Force add even if validation fails"
+flag_registry_all: "Add all valid discovered skills"
