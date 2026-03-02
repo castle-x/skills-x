@@ -4,7 +4,6 @@ package tui
 import (
 	"fmt"
 	"path/filepath"
-	"sort"
 	"strings"
 	"time"
 
@@ -877,9 +876,8 @@ func (m SkillsModel) IsGoBack() bool {
 
 // RunSkillsSelect runs the skills selection page, returns three action lists
 func RunSkillsSelect(product *products.Product, allSkills []SkillItem, version string, targetDir string) (install, uninstall, update []SkillItem, err error) {
-	sort.Slice(allSkills, func(i, j int) bool {
-		return allSkills[i].FullName < allSkills[j].FullName
-	})
+	// Sort with starred skills first, then alphabetical
+	SortSkills(allSkills)
 
 	m := NewSkillsModel(product, allSkills, version, targetDir)
 	p := tea.NewProgram(m)
