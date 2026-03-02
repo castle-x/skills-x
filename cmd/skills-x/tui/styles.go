@@ -90,6 +90,10 @@ var (
 	searchStyle = lipgloss.NewStyle().
 			Foreground(whiteColor).
 			Background(lipgloss.Color("#333333"))
+
+	// 描述文本样式 (作为基础样式，会被渐变覆盖)
+	descriptionStyle = lipgloss.NewStyle().
+			Foreground(primaryColor)
 )
 
 // ASCII Logo for Skills-X
@@ -254,4 +258,42 @@ func PrintWelcome(version string) {
 	fmt.Print(ClearScreen)
 	fmt.Print(RenderLogo(version))
 	fmt.Println()
+}
+
+// ============================================================================
+// Description Gradient Rendering
+// ============================================================================
+
+// gradientColors defines the color gradient for descriptions
+var gradientColors = []lipgloss.Color{
+	lipgloss.Color("#5A9FB8"), // 起始: 柔和青色
+	lipgloss.Color("#4ECDC4"), // 浅青色
+	lipgloss.Color("#00D4AA"), // 青绿色 (主色)
+	lipgloss.Color("#00F5BD"), // 更亮的青绿色
+	lipgloss.Color("#4ECDC4"), // 回到浅青色
+	lipgloss.Color("#5A9FB8"), // 回到柔和青色
+}
+
+// RenderDescriptionGradient 渲染带彩色渐变的描述文本
+func RenderDescriptionGradient(desc string) string {
+	if desc == "" {
+		return ""
+	}
+
+	runes := []rune(desc)
+	var result strings.Builder
+
+	for i, r := range runes {
+		// 根据位置选择梯度颜色
+		colorIdx := (i * len(gradientColors)) / len(runes)
+		if colorIdx >= len(gradientColors) {
+			colorIdx = len(gradientColors) - 1
+		}
+
+		color := gradientColors[colorIdx]
+		style := lipgloss.NewStyle().Foreground(color)
+		result.WriteString(style.Render(string(r)))
+	}
+
+	return result.String()
 }

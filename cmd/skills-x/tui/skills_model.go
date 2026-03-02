@@ -818,7 +818,7 @@ func (m SkillsModel) View() string {
 	} else if m.cursor >= 0 && m.cursor < len(m.filtered) {
 		desc := m.filtered[m.cursor].Description
 		if desc != "" {
-			b.WriteString(hintStyle.Render(desc))
+			b.WriteString(RenderDescriptionGradient(desc))
 		}
 	}
 
