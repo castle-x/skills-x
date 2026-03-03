@@ -3,11 +3,11 @@ package list
 
 import (
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
-	"github.com/castle-x/skills-x/cmd/skills-x/skills"
 	"github.com/castle-x/skills-x/pkg/discover"
 	"github.com/castle-x/skills-x/pkg/gitutil"
 	"github.com/castle-x/skills-x/pkg/registry"
@@ -63,16 +63,19 @@ type skillDisplay struct {
 
 func runList(cmd *cobra.Command, args []string) error {
 	// Load registry
-	reg, err := registry.Load()
+	reg, warnings, err := registry.LoadWithUser()
 	if err != nil {
 		return fmt.Errorf("failed to load registry: %w", err)
+	}
+	for _, w := range warnings {
+		fmt.Fprintf(os.Stderr, "⚠ %s\n", w)
 	}
 
 	// Title removed as requested - no need to display "Available Skills from Registry" or "注册表中的 Skills"
 
 	// Get all sources
 	sources := reg.GetAllSources()
-	
+
 	// Sort sources by name
 	sort.Slice(sources, func(i, j int) bool {
 		// Put "anthropic" first, then alphabetically
@@ -108,21 +111,6 @@ func runList(cmd *cobra.Command, args []string) error {
 
 		// Print skills
 		for _, skill := range skills {
-			printSkill(skill)
-		}
-		fmt.Println()
-	}
-
-	// Print x (self-developed) skills if available
-	xSkills := getXSkills()
-	if len(xSkills) > 0 {
-		totalSources++
-		totalSkills += len(xSkills)
-		
-		fmt.Printf("%s📦 %sskills-x%s %s(Original)%s\n",
-			colorBold, colorCyan, colorReset, colorGray, colorReset)
-		
-		for _, skill := range xSkills {
 			printSkill(skill)
 		}
 		fmt.Println()
@@ -168,12 +156,12 @@ func getSkillsFromRegistry(source *registry.Source) []skillDisplay {
 			FromRepo:    false,
 		})
 	}
-	
+
 	// Sort by name
 	sort.Slice(skills, func(i, j int) bool {
 		return skills[i].Name < skills[j].Name
 	})
-	
+
 	return skills
 }
 
@@ -217,25 +205,6 @@ func fetchSkillsFromRepo(source *registry.Source) ([]skillDisplay, error) {
 	})
 
 	return skills, nil
-}
-
-// getXSkills returns x (self-developed) skills
-func getXSkills() []skillDisplay {
-	// Load from embedded x/ directory via skills package
-	xSkillsList, err := skills.ListXSkills()
-	if err != nil {
-		return nil
-	}
-
-	result := make([]skillDisplay, 0, len(xSkillsList))
-	for _, s := range xSkillsList {
-		result = append(result, skillDisplay{
-			Name:        s.Name,
-			Description: s.Description,
-			FromRepo:    false,
-		})
-	}
-	return result
 }
 
 // printSourceHeader prints the source header

@@ -39,7 +39,6 @@ cmd_init_flag_all: "Install all skills"
 cmd_init_flag_target: "Target directory (default: current directory)"
 cmd_init_flag_force: "Force overwrite existing skills"
 cmd_init_flag_refresh: "Force refresh cached repositories (slower, fetches latest)"
-cmd_init_flag_include_x: "Include skills-x (self-developed) skills when using --all"
 
 # ============================================================================
 # Update Check
@@ -185,17 +184,9 @@ init_cloning: "Cloning repository"
 init_clone_failed: "Clone failed"
 init_skill_path_not_found: "Skill path not found in repository"
 init_from_source: "From: %s"
-init_from_embedded: "From: embedded (x skill)"
 init_conflict_found: "Found %d skills named '%s' from different sources:"
 init_choose_source: "Choose source"
 init_cancelled: "Installation cancelled"
-
-# Meta Warning for skills-x
-meta_warning_title: "⚠️  Meta Warning"
-meta_warning_line1: "This skill is the contribution guide for skills-x project."
-meta_warning_line2: "🤔 For regular users, installing it is useless."
-meta_warning_line3: "👉 Unless you want to contribute to skills-x."
-meta_warning_confirm: "Continue anyway? [y/N]: "
 
 # ============================================================================
 # Error Messages
@@ -227,11 +218,6 @@ err_copy_failed: "Copy failed"
 err_copy_failed_detail: "Cannot copy skill '%s' to target directory"
 err_copy_failed_sol1: "Check disk space"
 err_copy_failed_sol2: "Check directory permissions"
-
-# NoSkillsEmbedded
-err_no_skills_embedded: "No skills data embedded"
-err_no_skills_embedded_detail: "Skills directory not properly embedded during compilation"
-err_no_skills_embedded_sol1: "Re-download or recompile skills-x"
 
 # ============================================================================
 # TUI Messages
@@ -271,7 +257,6 @@ tui_only_installed_check: "Only installed skills can be checked for updates"
 tui_update_available_fmt: "✓ %s has update (%s → %s)"
 tui_update_available_new: "✓ %s has update (→ %s)"
 tui_update_up_to_date: "%s is up to date (%s)"
-tui_builtin_skill_msg: "Built-in skills update with the app"
 tui_check_failed: "Check failed: %v"
 tui_err_fetch_repo: "Failed to fetch repository: %v"
 tui_err_get_commit: "Failed to get commit info: %v"

@@ -437,3 +437,47 @@ castle-x-gve:
       tags: [backend, web-frontend]
       description: Go + Vite fullstack CLI - scaffold, develop, build and ship as one self-contained binary
       description_zh: Go + Vite 全栈 CLI - 脚手架、开发、构建并打包为单一可执行文件
+
+# =============================================================================
+# Skills-X Original Skills
+# https://github.com/castle-x/skills-x
+# =============================================================================
+castle-x-skills-x:
+  repo: github.com/castle-x/skills-x
+  license: MIT
+  skills:
+    - name: baidu-speech-to-text
+      path: skills/baidu-speech-to-text
+      tags: [backend, media]
+      description: Baidu speech-to-text (optimized for China mainland)
+      description_zh: 百度语音识别 - 语音转文本（国内环境优化）
+
+    - name: go-embedded-spa
+      path: skills/go-embedded-spa
+      tags: [backend, web-frontend]
+      description: Go embedded SPA (single-binary deployment)
+      description_zh: Go 内嵌 SPA（单二进制部署）
+
+    - name: go-i18n
+      path: skills/go-i18n
+      tags: [backend]
+      description: Go CLI i18n rules (author use)
+      description_zh: Go CLI 多语言规则（作者自用）
+
+    - name: minimal-ui-design
+      path: skills/minimal-ui-design
+      tags: [design]
+      description: Minimal UI design - low-noise, icon-forward
+      description_zh: 极简 UI 设计 - 低噪声、图标优先
+
+    - name: skills-x
+      path: skills/skills-x
+      tags: [skills-meta]
+      description: Contribute skills to skills-x collection
+      description_zh: 向 skills-x 贡献 skills
+
+    - name: tui-design
+      path: skills/tui-design
+      tags: [design]
+      description: TUI design specification for CLI terminal UI
+      description_zh: TUI 终端交互界面设计规范

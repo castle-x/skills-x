@@ -39,7 +39,6 @@ cmd_init_flag_all: "安装全部 skills"
 cmd_init_flag_target: "目标目录 (默认: 当前目录)"
 cmd_init_flag_force: "强制覆盖已存在的 skills"
 cmd_init_flag_refresh: "强制刷新缓存仓库（较慢，获取最新版本）"
-cmd_init_flag_include_x: "配合 --all 时包含 skills-x 自研技能"
 
 # ============================================================================
 # 更新检查
@@ -185,17 +184,9 @@ init_cloning: "正在克隆仓库"
 init_clone_failed: "克隆失败"
 init_skill_path_not_found: "在仓库中未找到 skill 路径"
 init_from_source: "来源: %s"
-init_from_embedded: "来源: 嵌入 (x 自研技能)"
 init_conflict_found: "发现 %d 个名为 '%s' 的 skill 来自不同源:"
 init_choose_source: "请选择来源"
 init_cancelled: "已取消安装"
-
-# Meta Warning for skills-x
-meta_warning_title: "⚠️  套娃警告"
-meta_warning_line1: "这个 skill 是 skills-x 项目自己用的贡献指南。"
-meta_warning_line2: "🤔 对普通用户来说，安装它没什么用。"
-meta_warning_line3: "👉 除非你想为 skills-x 贡献新的 skill。"
-meta_warning_confirm: "继续安装？[y/N]: "
 
 # ============================================================================
 # 错误消息
@@ -227,11 +218,6 @@ err_copy_failed: "复制失败"
 err_copy_failed_detail: "无法复制 skill '%s' 到目标目录"
 err_copy_failed_sol1: "检查磁盘空间"
 err_copy_failed_sol2: "检查目录权限"
-
-# NoSkillsEmbedded
-err_no_skills_embedded: "未嵌入 skills 数据"
-err_no_skills_embedded_detail: "程序编译时未正确嵌入 skills 目录"
-err_no_skills_embedded_sol1: "重新下载或编译 skills-x"
 
 # ============================================================================
 # TUI 消息
@@ -275,7 +261,6 @@ tui_only_installed_check: "仅已安装 skill 可检测更新"
 tui_update_available_fmt: "✓ %s 有新版可用 (%s → %s)"
 tui_update_available_new: "✓ %s 有新版可用 (→ %s)"
 tui_update_up_to_date: "%s 已是最新 (%s)"
-tui_builtin_skill_msg: "内置 skill 随程序更新"
 tui_check_failed: "检测失败: %v"
 tui_err_fetch_repo: "获取仓库失败: %v"
 tui_err_get_commit: "获取提交信息失败: %v"

@@ -8,24 +8,12 @@ import (
 	"strings"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
-	xskills "github.com/castle-x/skills-x/cmd/skills-x/skills"
-	"github.com/castle-x/skills-x/pkg/registry"
 )
-
-// xSkillTags provides tags for X (self-developed) skills since they are not in registry.yaml
-var xSkillTags = map[string][]string{
-	"baidu-speech-to-text": {"backend", "media"},
-	"go-embedded-spa":      {"backend", "web-frontend"},
-	"go-i18n":              {"backend"},
-	"minimal-ui-design":    {"design"},
-	"skills-x":             {"skills-meta"},
-	"tui-design":           {"design"},
-}
 
 // LoadSkillsFromRegistry loads skills from registry and checks installed status
 // targetDir: the directory to check for installation status
 func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
-	reg, err := registry.Load()
+	reg, err := loadMergedRegistry()
 	if err != nil {
 		return nil, err
 	}
@@ -52,32 +40,6 @@ func LoadSkillsFromRegistry(targetDir string) ([]SkillItem, error) {
 				Description: description,
 				Tags:        skill.Tags,
 				Installed:   installed,
-				Starred:     starredSet[fullName],
-			}
-			if installed {
-				item.Meta, _ = ReadSkillMeta(skillDir)
-			}
-			skills = append(skills, item)
-		}
-	}
-
-	// Load X (self-developed) skills
-	xSkills, err := xskills.ListXSkills()
-	if err == nil {
-		for _, xSkill := range xSkills {
-			fullName := "skills-x/" + xSkill.Name
-			skillDir := filepath.Join(targetDir, xSkill.Name)
-			installed := targetDir != "" && isSkillDir(skillDir)
-
-			item := SkillItem{
-				Name:        xSkill.Name,
-				FullName:    fullName,
-				Source:      "skills-x",
-				SourceName:  "skills-x",
-				Description: xSkill.Description,
-				Tags:        xSkillTags[xSkill.Name],
-				Installed:   installed,
-				IsX:         true,
 				Starred:     starredSet[fullName],
 			}
 			if installed {

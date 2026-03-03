@@ -4,14 +4,12 @@ package tui
 import (
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
-	"github.com/castle-x/skills-x/cmd/skills-x/skills"
 	"github.com/castle-x/skills-x/pkg/discover"
 	"github.com/castle-x/skills-x/pkg/gitutil"
 	"github.com/castle-x/skills-x/pkg/registry"
@@ -20,20 +18,20 @@ import (
 
 // InstallerModel represents the installation state
 type InstallerModel struct {
-	installSkills   []SkillItem
-	updateSkills    []SkillItem
-	uninstallSkills []SkillItem
-	targetDir       string
-	currentIdx      int
-	completed       int
-	failed          int
-	quitting        bool
-	finished        bool
-	err             error
-	progressMsg     string
-	phase           string   // "install", "update", or "uninstall"
-	installResults  []string // per-skill result: "ok", "fail"
-	updateResults   []string
+	installSkills    []SkillItem
+	updateSkills     []SkillItem
+	uninstallSkills  []SkillItem
+	targetDir        string
+	currentIdx       int
+	completed        int
+	failed           int
+	quitting         bool
+	finished         bool
+	err              error
+	progressMsg      string
+	phase            string   // "install", "update", or "uninstall"
+	installResults   []string // per-skill result: "ok", "fail"
+	updateResults    []string
 	uninstallResults []string
 }
 
@@ -396,13 +394,6 @@ func (m *InstallerModel) installSkill(item SkillItem) (string, error) {
 		return "", err
 	}
 
-	if item.IsX || skills.XSkillExists(item.Name) {
-		if err := m.installXSkill(item.Name, targetDir); err != nil {
-			return "", err
-		}
-		return "", nil // X skills don't have a temp dir
-	}
-
 	return m.installRegistrySkill(item, targetDir)
 }
 
@@ -421,31 +412,7 @@ func (m *InstallerModel) updateSkill(item SkillItem) (string, error) {
 		return "", err
 	}
 
-	if item.IsX || skills.XSkillExists(item.Name) {
-		if err := m.installXSkill(item.Name, targetDir); err != nil {
-			return "", err
-		}
-		return "", nil
-	}
-
 	return m.installRegistrySkillWithRefresh(item, targetDir, true)
-}
-
-// installXSkill installs an x (self-developed) skill from embedded filesystem
-func (m *InstallerModel) installXSkill(name, targetDir string) error {
-	embedFS, skillPath, ok := skills.GetXSkillFS(name)
-	if !ok || skillPath == "" {
-		return fmt.Errorf("%s: %s", i18n.T("init_skill_path_not_found"), name)
-	}
-
-	dstPath := filepath.Join(targetDir, name)
-	os.RemoveAll(dstPath)
-
-	if err := copyFromEmbedFS(embedFS, skillPath, dstPath); err != nil {
-		os.RemoveAll(dstPath)
-		return err
-	}
-	return nil
 }
 
 // uninstallSkill removes a skill from the target directory
@@ -477,7 +444,7 @@ func (m *InstallerModel) installRegistrySkill(item SkillItem, targetDir string) 
 
 // installRegistrySkillWithRefresh installs/updates a registry skill
 func (m *InstallerModel) installRegistrySkillWithRefresh(item SkillItem, targetDir string, refresh bool) (string, error) {
-	reg, err := registry.Load()
+	reg, err := loadMergedRegistry()
 	if err != nil {
 		return "", fmt.Errorf("failed to load registry: %w", err)
 	}
@@ -648,41 +615,6 @@ func copyFile(srcPath string, dstPath string) error {
 
 	_, err = io.Copy(dstFile, srcFile)
 	return err
-}
-
-// copyFromEmbedFS copies a directory from embedded filesystem to target path
-func copyFromEmbedFS(embedFS fs.FS, srcPath string, dstPath string) error {
-	os.RemoveAll(dstPath)
-
-	return fs.WalkDir(embedFS, srcPath, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		relPath := path
-		if len(path) > len(srcPath) {
-			relPath = strings.TrimPrefix(path, srcPath+"/")
-		} else if path == srcPath {
-			relPath = "."
-		}
-
-		targetPath := filepath.Join(dstPath, filepath.FromSlash(relPath))
-
-		if d.IsDir() {
-			return os.MkdirAll(targetPath, 0755)
-		}
-
-		data, err := fs.ReadFile(embedFS, path)
-		if err != nil {
-			return err
-		}
-
-		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
-			return err
-		}
-
-		return os.WriteFile(targetPath, data, 0644)
-	})
 }
 
 // RunInstaller runs the installer UI with three operation lists

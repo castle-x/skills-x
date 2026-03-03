@@ -147,15 +147,3 @@ func CopyFailed(skillName string) *Error {
 		},
 	}
 }
-
-// NoSkillsEmbedded returns an error when no skills data is embedded
-func NoSkillsEmbedded() *Error {
-	return &Error{
-		Title:  i18n.T("err_no_skills_embedded"),
-		Detail: i18n.T("err_no_skills_embedded_detail"),
-		Solutions: []string{
-			i18n.T("err_no_skills_embedded_sol1"),
-		},
-		DocURL: "https://github.com/castle-x/skills-x",
-	}
-}

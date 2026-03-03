@@ -33,7 +33,6 @@ type SkillItem struct {
 	Description string
 	Tags        []string    // tags for filtering (e.g., featured, web-frontend)
 	Installed   bool        // installed in target directory
-	IsX         bool        // true if from x (self-developed)
 	Action      SkillAction // intended operation
 	Meta        *SkillMeta  // nil if not installed or no meta
 	Checking    bool        // true while u-key check is in progress
@@ -56,15 +55,15 @@ var tagAliases = map[string]string{
 	"ai效能":   "ai-efficiency",
 	"规划":     "planning",
 	"前端":     "web-frontend",
-	"小程序":   "mobile",
+	"小程序":    "mobile",
 	"后端":     "backend",
 	"测试":     "testing",
 	"审查":     "code-review",
 	"文件":     "office",
 	"设计":     "design",
 	"写作":     "writing",
-	"多媒体":   "media",
-	"skills":  "skills-meta",
+	"多媒体":    "media",
+	"skills": "skills-meta",
 }
 
 // allTagNames lists English tag names for direct match
@@ -333,14 +332,7 @@ func checkUpdateForSkill(item SkillItem, targetDir string) tea.Cmd {
 		skillDir := filepath.Join(targetDir, item.Name)
 		meta, _ := ReadSkillMeta(skillDir)
 
-		if item.IsX {
-			return checkUpdateResultMsg{
-				skillFullName: item.FullName,
-				err:           fmt.Errorf("%s", i18n.T("tui_builtin_skill_msg")),
-			}
-		}
-
-		reg, err := registry.Load()
+		reg, err := loadMergedRegistry()
 		if err != nil {
 			return checkUpdateResultMsg{
 				skillFullName: item.FullName,
@@ -544,10 +536,10 @@ func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			if m.cursor >= 0 && m.cursor < len(m.filtered) {
 				item := &m.filtered[m.cursor]
-		if !item.Installed {
-				m.errMsg = i18n.T("tui_only_installed_check")
-				return m, nil
-			}
+				if !item.Installed {
+					m.errMsg = i18n.T("tui_only_installed_check")
+					return m, nil
+				}
 				if item.Action == ActionUpdate {
 					item.Action = ActionNone
 					m.syncToAllSkills(item.FullName, ActionNone)
@@ -591,10 +583,10 @@ func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					updateCount++
 				}
 			}
-		if installCount == 0 && uninstallCount == 0 && updateCount == 0 {
-			m.errMsg = i18n.T("tui_select_required")
-			return m, nil
-		}
+			if installCount == 0 && uninstallCount == 0 && updateCount == 0 {
+				m.errMsg = i18n.T("tui_select_required")
+				return m, nil
+			}
 			m.errMsg = ""
 			return m, tea.Quit
 		case "backspace":

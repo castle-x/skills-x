@@ -17,7 +17,7 @@ This skill provides a standardized workflow for contributing new skills to the s
 - Creating x original skills
 - Updating existing skills with new versions
 - Validating skill format compliance before submission
- - After creating a new skill, ask whether to generate a REAEDME (background summary)
+- After creating a new skill, ask whether to generate a README (background summary)
 
 ## Project Structure Overview
 
@@ -25,8 +25,8 @@ This skill provides a standardized workflow for contributing new skills to the s
 skills-x/
 ├── pkg/registry/        # Skill registry definition
 │   └── registry.yaml    # Indexes skills from external sources
-├── skills/              # Self-developed skills (自研)
-│   └── skills-x/        # This skill (embedded in binary)
+├── skills/              # First-party skill sources (自研)
+│   └── skills-x/        # This contribution skill source
 ├── cmd/skills-x/        # Go source code
 │   ├── command/         # CLI commands (list, init)
 │   └── i18n/
@@ -37,9 +37,9 @@ skills-x/
 ```
 
 **Key Changes:**
-- **No local `skills/` directory** - Skills are fetched directly from external repositories
-- **Central registry** - All skill sources defined in `pkg/registry/registry.yaml`
-- **Dynamic fetching** - Skills are cloned on-demand, not bundled with binary
+- **Registry-first architecture** - All installable skills are indexed in `pkg/registry/registry.yaml`
+- **Merged registry view** - Runtime uses built-in registry + user registry for list/init/update flows
+- **Remote source install** - Skills are fetched from repository paths on demand (no embedded skill payloads)
 
 ---
 
@@ -103,22 +103,16 @@ msg := i18n.Tf("my_format_msg", arg1, arg2)
 
 ### Rule 4: Adding New Skill Descriptions
 
-When adding a new skill, you MUST add descriptions to BOTH language files:
+For installable skills, descriptions should be defined in `pkg/registry/registry.yaml`:
 
-**Step 1:** Add English description to `en.yaml`:
 ```yaml
-skill_new-skill: "Brief description in English"
+- name: new-skill
+  path: skills/new-skill
+  description: "Brief English description"
+  description_zh: "简短的中文描述"
 ```
 
-**Step 2:** Add Chinese description to `zh.yaml`:
-```yaml
-skill_new-skill: "简短的中文描述"
-```
-
-**Step 3:** The code automatically picks up translations via:
-```go
-desc := i18n.T("skill_" + skillName)
-```
+Only add `i18n` keys when introducing new CLI/TUI message keys.
 
 ### Rule 5: Testing Bilingual Output
 
@@ -296,7 +290,7 @@ metadata:
 
 2. Add `LICENSE.txt` (copy from project root or create)
 
-3. Ask the user whether to add a summary document named `REAEDME.md`.
+3. Ask the user whether to add a summary document named `README.md`.
    - Purpose: describe the skill’s background, the problem it solves, and the author's goals.
    - Do NOT include any secrets or API keys.
 
@@ -308,7 +302,7 @@ Same as community skills - add to both `en.yaml` and `zh.yaml`:
 skill_new-skill: "Description"
 ```
 
-Note: Self-developed skills are automatically assigned category `skills-x` and marked with `IsX: true`.
+Note: Self-developed skills are treated as normal registry skills. Keep `registry.yaml` entries accurate (`repo`, `path`, tags, descriptions).
 
 ---
 
@@ -505,11 +499,11 @@ cd npm && npm publish --access public
 | Issue | Solution |
 |-------|----------|
 | Open source skill not in list | Check registry.yaml entry (repo, path, name fields) |
-| Self-developed skill not in list | Check i18n translations and skill directory in `skills/` |
+| Self-developed skill not in list | Check `pkg/registry/registry.yaml` source entry, skill path, and source repository accessibility |
 | Mixed language output | Ensure ALL strings use `i18n.T()`, no hardcoded text |
 | Missing translation | Add keys to BOTH `en.yaml` and `zh.yaml` |
 | init fails | Verify SKILL.md exists and has valid frontmatter |
-| Windows fails | Ensure using `/` not `\` for embed.FS paths |
+| Windows fails | Ensure registry `path` uses `/` separators and target directories are writable |
 | Version mismatch | Check `npm/package.json` version matches build |
 | **Release has no assets** | **MUST include binary files when running `gh release create`** |
 | **Skill not in README** | **MUST update BOTH `README.md` and `README_ZH.md` with new skill** |
@@ -521,11 +515,11 @@ cd npm && npm publish --access public
 | Skill Type | Storage Location | Description Source | Workflow |
 |------------|------------------|--------------------|----------|
 | **Open Source Skills** (from external repositories) | **Remote repositories only** - no local copy | Directly in `registry.yaml` (`description` and `description_zh` fields) | Edit `pkg/registry/registry.yaml` to add source and skills |
-| **Self-Developed Skills** (自研) | `skills/<name>/` directory (embedded in binary) | `i18n/locales/` files (`skill_<name>` keys) | 1. Create skill in `skills/<name>/`<br>2. Add i18n translations<br>3. Build binary |
+| **Self-Developed Skills** (自研) | `skills/<name>/` directory + corresponding registry source entry | Primarily `registry.yaml` (`description` and `description_zh` fields) | 1. Create skill in `skills/<name>/`<br>2. Add/update `pkg/registry/registry.yaml` entry<br>3. Verify list/init/update |
 
 **Key Differences:**
-- **Open Source Skills**: Descriptions stored in registry.yaml, fetched on-demand from remote repos
-- **Self-Developed Skills**: Descriptions stored in i18n files, embedded in binary during build
+- **Open Source Skills**: Managed by repository/path entries in registry.yaml
+- **Self-Developed Skills**: Also managed through registry source entries; no embedded-skill install path
 
 ---
 
@@ -551,9 +545,8 @@ Before submitting a PR for new self-developed skills, verify:
 
 - [ ] Skill directory created in `skills/<name>/`
 - [ ] `SKILL.md` file with proper YAML frontmatter
-- [ ] `skill_<name>` key added to `en.yaml`
-- [ ] `skill_<name>` key added to `zh.yaml`
-- [ ] No mixed Chinese/English in any single string
-- [ ] Tested with `SKILLS_LANG=zh` - shows Chinese
-- [ ] Tested with `SKILLS_LANG=en` - shows English
-- [ ] Skill appears in `list` output under "skills-x (Original)" section
+- [ ] `pkg/registry/registry.yaml` contains correct source/path entry for the skill
+- [ ] Registry description fields (`description` / `description_zh`) are complete
+- [ ] `skills-x list` shows the skill under `github.com/castle-x/skills-x`
+- [ ] `skills-x init <name> --target <tmp>` installs successfully
+- [ ] `skills-x update <name> --target <tmp> --check` runs successfully

@@ -70,9 +70,12 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("target directory does not exist: %s", targetDir)
 	}
 
-	reg, err := registry.Load()
+	reg, warnings, err := registry.LoadWithUser()
 	if err != nil {
 		return fmt.Errorf("failed to load registry: %w", err)
+	}
+	for _, w := range warnings {
+		fmt.Fprintf(os.Stderr, "⚠ %s\n", w)
 	}
 
 	// Find installed skills in target directory
@@ -82,10 +85,10 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	}
 
 	type installedSkill struct {
-		name       string
-		meta       *tui.SkillMeta
-		source     *registry.Source
-		skill      *registry.Skill
+		name   string
+		meta   *tui.SkillMeta
+		source *registry.Source
+		skill  *registry.Skill
 	}
 
 	var installed []installedSkill

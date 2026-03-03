@@ -133,10 +133,16 @@ func (r *Registry) GetSource(name string) *Source {
 // Returns the skill and its source, or nil if not found
 func (r *Registry) FindSkill(skillName string) (*Skill, *Source) {
 	skillNameLower := strings.ToLower(skillName)
-	for _, src := range r.Sources {
-		for i := range src.Skills {
-			if strings.ToLower(src.Skills[i].Name) == skillNameLower {
-				return &src.Skills[i], src
+	// User registry entries should override built-ins for direct lookups.
+	for _, userFirst := range []bool{true, false} {
+		for _, src := range r.Sources {
+			if src.IsUser != userFirst {
+				continue
+			}
+			for i := range src.Skills {
+				if strings.ToLower(src.Skills[i].Name) == skillNameLower {
+					return &src.Skills[i], src
+				}
 			}
 		}
 	}

@@ -107,7 +107,7 @@ SKILLS_LANG=zh skills-x
 
 ---
 
-## Collected Skills (47 skills from 13 sources)
+## Collected Skills (run `skills-x list` for the latest totals)
 
 ```
 📦 github.com/anthropics/skills (Apache-2.0)
@@ -185,7 +185,7 @@ SKILLS_LANG=zh skills-x
 📦 github.com/bfollington/terma (CC-BY-SA-4.0)
    strudel   Strudel live-coding music - patterns, rhythms, melodies
 
-📦 skills-x (Original)
+📦 github.com/castle-x/skills-x (MIT)
    baidu-speech-to-text  Baidu speech-to-text (China mainland)
    go-embedded-spa       Go embedded SPA (single-binary deployment)
    go-i18n               Go CLI i18n rules
@@ -206,7 +206,7 @@ SKILLS_LANG=zh skills-x
 
 ## 🏰 About X Skills
 
-X skills are **original skills** by the project author, stored in the `skills/` directory and embedded in the binary.
-They are listed separately with a ⭐ marker to distinguish them from community skills.
+X skills are **original skills** by the project author, maintained in the `skills/` directory and published through the built-in registry source (`github.com/castle-x/skills-x`).
+They now follow the same install/update flow as all other registry skills.
 
-To contribute a new X skill, use the `skills-x` skill for guidance.
+To contribute a new X skill, use the `skills-x` skill for guidance. For private forks or custom sources, use `skills-x registry add`.

@@ -107,7 +107,7 @@ SKILLS_LANG=zh skills-x
 
 ---
 
-## 收藏的 Skills（47 个，来自 13 个源）
+## 收藏的 Skills（最新总数请运行 `skills-x list` 查看）
 
 ```
 📦 github.com/anthropics/skills (Apache-2.0)
@@ -185,7 +185,7 @@ SKILLS_LANG=zh skills-x
 📦 github.com/bfollington/terma (CC-BY-SA-4.0)
    strudel   Strudel 现场编程音乐：节奏、旋律与可分享链接
 
-📦 skills-x (Original)
+📦 github.com/castle-x/skills-x (MIT)
    baidu-speech-to-text  百度语音识别 - 语音转文本（国内环境优化）
    go-embedded-spa       Go 内嵌 SPA（单二进制部署）
    go-i18n               Go CLI 多语言规则（作者自用）
@@ -206,7 +206,7 @@ SKILLS_LANG=zh skills-x
 
 ## 🏰 关于 X Skills
 
-X skills 是**项目作者的原创 Skills**，存放在 `skills/` 目录下并嵌入到二进制中。
-在列表中单独显示并带有 ⭐ 标记以区分社区 skills。
+X skills 是**项目作者的原创 Skills**，维护在 `skills/` 目录，并通过内置注册表源（`github.com/castle-x/skills-x`）分发。
+它们现在与其他注册表 skills 使用同一套安装/更新流程。
 
-要贡献新的 X skill，请参考 `skills-x` skill 的指南。
+要贡献新的 X skill，请参考 `skills-x` skill 的指南。若需私有分叉或自定义来源，可使用 `skills-x registry add`。

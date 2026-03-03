@@ -3,17 +3,14 @@ package initcmd
 
 import (
 	"bufio"
-	"embed"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/errmsg"
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
-	"github.com/castle-x/skills-x/cmd/skills-x/skills"
 	"github.com/castle-x/skills-x/pkg/discover"
 	"github.com/castle-x/skills-x/pkg/gitutil"
 	"github.com/castle-x/skills-x/pkg/registry"
@@ -36,7 +33,6 @@ var (
 	flagTarget  string
 	flagForce   bool
 	flagRefresh bool
-	flagIncludeX bool
 )
 
 // NewCommand creates the init command
@@ -52,7 +48,6 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&flagTarget, "target", "t", "", i18n.T("cmd_init_flag_target"))
 	cmd.Flags().BoolVarP(&flagForce, "force", "f", false, i18n.T("cmd_init_flag_force"))
 	cmd.Flags().BoolVar(&flagRefresh, "refresh", false, i18n.T("cmd_init_flag_refresh"))
-	cmd.Flags().BoolVar(&flagIncludeX, "include-x", false, i18n.T("cmd_init_flag_include_x"))
 
 	return cmd
 }
@@ -82,10 +77,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Println()
 
-	// Load registry
-	reg, err := registry.Load()
+	// Load merged registry (built-in + user registry)
+	reg, warnings, err := registry.LoadWithUser()
 	if err != nil {
 		return fmt.Errorf("failed to load registry: %w", err)
+	}
+	for _, w := range warnings {
+		fmt.Fprintf(os.Stderr, "⚠ %s\n", w)
 	}
 
 	if flagAll {
@@ -96,50 +94,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return errmsg.MissingArgument("skill_name")
 	}
 
-	return initSkill(reg, args[0], targetDir)
-}
-
-func initSkill(reg *registry.Registry, name string, targetDir string) error {
-	// First check if it's an X (self-developed) skill
-	if skills.XSkillExists(name) {
-		return initXSkill(name, targetDir)
-	}
-
-	// Otherwise, treat as a registry skill
-	return initRegistrySkill(reg, name, targetDir)
-}
-
-func initXSkill(name string, targetDir string) error {
-	// Get the embedded filesystem for this skill
-	embedFS, skillPath, ok := skills.GetXSkillFS(name)
-	if !ok || skillPath == "" {
-		return fmt.Errorf("%s: %s", i18n.T("init_skill_path_not_found"), name)
-	}
-
-	dstPath := filepath.Join(targetDir, name)
-
-	// Check if already exists
-	if dirExists(dstPath) {
-		if !flagForce {
-			if !confirmOverwrite(name) {
-				fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_skipped", name), colorReset)
-				return nil
-			}
-		}
-		fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_overwrite", name), colorReset)
-	} else {
-		fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_downloading", name), colorReset)
-	}
-
-	// Copy skill from embedded filesystem to target
-	if err := copyFromEmbedFS(embedFS, skillPath, dstPath); err != nil {
-		return errmsg.CopyFailed(name)
-	}
-
-	fmt.Printf("%s✓ %s%s\n", colorGreen, i18n.Tf("init_success", name), colorReset)
-	fmt.Printf("  %s%s%s\n", colorGray, i18n.T("init_from_embedded"), colorReset)
-
-	return nil
+	return initRegistrySkill(reg, args[0], targetDir)
 }
 
 func initRegistrySkill(reg *registry.Registry, name string, targetDir string) error {
@@ -156,7 +111,7 @@ func initRegistrySkill(reg *registry.Registry, name string, targetDir string) er
 	if len(matches) > 1 {
 		// Multiple skills with same name - prompt user to choose
 		fmt.Printf("%s%s%s\n\n", colorYellow, i18n.Tf("init_conflict_found", name, len(matches)), colorReset)
-		
+
 		for i, m := range matches {
 			fmt.Printf("  %d. %s%s%s from %s%s%s\n",
 				i+1,
@@ -243,7 +198,7 @@ func initRegistrySkill(reg *registry.Registry, name string, targetDir string) er
 
 func initAll(reg *registry.Registry, targetDir string) error {
 	sources := reg.GetAllSources()
-	
+
 	count := 0
 	skipped := 0
 	errors := 0
@@ -341,42 +296,6 @@ func initAll(reg *registry.Registry, targetDir string) error {
 		}
 	}
 
-	if flagIncludeX {
-		fmt.Printf("\n%s📦 %sskills-x%s %s(Original)%s\n",
-			colorBold, colorCyan, colorReset, colorGray, colorReset)
-
-		xSkills, err := skills.ListXSkills()
-		if err != nil {
-			fmt.Printf("%s  ⚠ %s: %v%s\n", colorYellow, "skills-x", err, colorReset)
-			errors++
-		} else {
-			for _, s := range xSkills {
-				embedFS, skillPath, ok := skills.GetXSkillFS(s.Name)
-				if !ok || skillPath == "" {
-					fmt.Printf("%s  ⚠ %s: %s%s\n", colorYellow, s.Name, i18n.T("init_skill_path_not_found"), colorReset)
-					errors++
-					continue
-				}
-
-				dstPath := filepath.Join(targetDir, s.Name)
-				if dirExists(dstPath) && !flagForce {
-					fmt.Printf("%s  - %s%s\n", colorGray, i18n.Tf("init_skipped", s.Name), colorReset)
-					skipped++
-					continue
-				}
-
-				if err := copyFromEmbedFS(embedFS, skillPath, dstPath); err != nil {
-					fmt.Printf("%s  ✗ %s: %v%s\n", colorRed, s.Name, err, colorReset)
-					errors++
-					continue
-				}
-
-				fmt.Printf("%s  ✓ %s%s\n", colorGreen, s.Name, colorReset)
-				count++
-			}
-		}
-	}
-
 	fmt.Printf("\n%s%s%s\n", colorGreen, i18n.Tf("init_all_success", count), colorReset)
 	if skipped > 0 {
 		fmt.Printf("%s%s%s\n", colorYellow, i18n.Tf("init_all_skipped", skipped), colorReset)
@@ -461,16 +380,16 @@ func promptChoice(max int) int {
 		return -1
 	}
 	response = strings.TrimSpace(response)
-	
+
 	var choice int
 	if _, err := fmt.Sscanf(response, "%d", &choice); err != nil {
 		return -1
 	}
-	
+
 	if choice < 1 || choice > max {
 		return -1
 	}
-	
+
 	return choice - 1
 }
 
@@ -547,48 +466,4 @@ func copyFile(srcPath string, dstPath string) error {
 	// Copy content
 	_, err = io.Copy(dstFile, srcFile)
 	return err
-}
-
-// copyFromEmbedFS copies a directory from embedded filesystem to target path
-func copyFromEmbedFS(embedFS embed.FS, srcPath string, dstPath string) error {
-	// Remove existing directory
-	os.RemoveAll(dstPath)
-
-	// Walk through embedded filesystem
-	// Note: embed.FS always uses "/" as separator, regardless of OS
-	return fs.WalkDir(embedFS, srcPath, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// Calculate relative path using string operations
-		// Note: embed.FS paths always use "/", not filepath functions (which use "\" on Windows)
-		relPath := path
-		if len(path) > len(srcPath) {
-			relPath = strings.TrimPrefix(path, srcPath+"/")
-		} else if path == srcPath {
-			relPath = "."
-		}
-
-		// Convert to OS-specific path for target filesystem
-		targetPath := filepath.Join(dstPath, filepath.FromSlash(relPath))
-
-		if d.IsDir() {
-			return os.MkdirAll(targetPath, 0755)
-		}
-
-		// Read file from embedded FS
-		data, err := embedFS.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		// Ensure parent directory exists
-		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
-			return err
-		}
-
-		// Write file to target
-		return os.WriteFile(targetPath, data, 0644)
-	})
 }
