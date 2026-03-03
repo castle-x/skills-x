@@ -4,6 +4,7 @@ package registry
 import (
 	"embed"
 	"fmt"
+	"os"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -19,6 +20,7 @@ type Source struct {
 	License   string  `yaml:"license"`    // License type
 	SkipFetch bool    `yaml:"skip_fetch"` // Skip dynamic fetching (for large repos)
 	Skills    []Skill `yaml:"skills"`     // Skills in this source
+	IsUser    bool    // True when loaded from user-registry.yaml
 }
 
 // Skill represents a skill entry in the registry
@@ -43,6 +45,11 @@ func (s *Skill) GetDescription(lang string) string {
 // Registry holds all sources from registry.yaml
 type Registry struct {
 	Sources map[string]*Source
+}
+
+// IsUserSource returns true when a Source was added from the user registry.
+func (s *Source) IsUserSource() bool {
+	return s.IsUser
 }
 
 // registryYAML is the raw YAML structure
@@ -185,4 +192,86 @@ func (s *Source) GetRepoShortName() string {
 		return strings.TrimPrefix(s.Repo, "github.com/")
 	}
 	return s.Repo
+}
+
+// LoadWithUser loads the built-in registry and merges in entries from the user
+// registry file (~/.config/skills-x/user-registry.yaml).
+//
+// Conflict rules:
+//   - If a user skill shares a name with a built-in skill, a warning is emitted
+//     (printed to stderr) and the user entry takes precedence in FindSkill.
+//   - Source keys from the user registry are prefixed with "user:" to avoid
+//     collisions with built-in source names.
+//
+// The returned ConflictWarnings slice (one entry per conflict) is intended for
+// both CLI and TUI callers to surface to the user.
+func LoadWithUser() (*Registry, []string, error) {
+	reg, err := Load()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Import here to avoid an import cycle — userregistry depends on nothing
+	// in pkg/registry, and we keep it that way by doing a YAML re-parse here.
+	userPath := userRegistryFilePath()
+	data, err := os.ReadFile(userPath)
+	if os.IsNotExist(err) {
+		return reg, nil, nil
+	}
+	if err != nil {
+		return nil, nil, fmt.Errorf("reading user registry: %w", err)
+	}
+
+	userReg, err := Parse(data)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing user registry: %w", err)
+	}
+
+	// Build a set of built-in skill names for conflict detection.
+	builtinNames := make(map[string]string) // lower-name → sourceName
+	for srcName, src := range reg.Sources {
+		for _, sk := range src.Skills {
+			builtinNames[strings.ToLower(sk.Name)] = srcName
+		}
+	}
+
+	var warnings []string
+	for srcKey, src := range userReg.Sources {
+		src.IsUser = true
+		userKey := "user:" + srcKey
+		for _, sk := range src.Skills {
+			if builtinSrc, conflict := builtinNames[strings.ToLower(sk.Name)]; conflict {
+				warnings = append(warnings,
+					fmt.Sprintf("user skill %q overrides built-in skill from %q", sk.Name, builtinSrc))
+			}
+		}
+		reg.Sources[userKey] = src
+	}
+
+	return reg, warnings, nil
+}
+
+// BuiltinSkillNameMap returns a map of lowercase skill name → []sourceName for
+// all skills in the built-in registry. Used by pkg/userregistry for conflict
+// detection without importing pkg/registry (avoids circular deps).
+func (r *Registry) BuiltinSkillNameMap() map[string][]string {
+	out := make(map[string][]string)
+	for srcName, src := range r.Sources {
+		for _, sk := range src.Skills {
+			key := strings.ToLower(sk.Name)
+			out[key] = append(out[key], srcName)
+		}
+	}
+	return out
+}
+
+// userRegistryFilePath returns the path to the user registry file.
+// Duplicated here to avoid an import cycle with pkg/userregistry.
+func userRegistryFilePath() string {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		home, _ := os.UserHomeDir()
+		configDir = home + "/.config"
+	}
+	return configDir + "/skills-x/user-registry.yaml"
 }

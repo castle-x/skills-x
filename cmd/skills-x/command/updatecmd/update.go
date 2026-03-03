@@ -201,14 +201,12 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 
 		if localCommit == "" {
 			results = append(results, skillCheckResult{
-				name:   is.name,
-				status: "no_meta",
+				name:         is.name,
+				status:       "no_meta",
+				remoteCommit: remoteCommit,
 			})
 			updateAvailable++
-			continue
-		}
-
-		if localCommit == remoteCommit {
+		} else if localCommit == remoteCommit {
 			results = append(results, skillCheckResult{
 				name:         is.name,
 				status:       "up_to_date",

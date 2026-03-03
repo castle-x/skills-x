@@ -6,6 +6,7 @@ bin/
 # npm package (published separately)
 npm/bin/
 npm/node_modules/
+npm/.npmrc
 
 # IDE cache
 .codebuddy/

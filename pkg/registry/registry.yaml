@@ -423,3 +423,17 @@ brianlovin:
       tags: [code-review]
       description: Simplify and refine recently modified code for clarity and consistency
       description_zh: 简化和优化最近修改的代码，提升可读性和一致性
+
+# =============================================================================
+# GVE - Go + Vite Fullstack CLI
+# https://github.com/castle-x/gve
+# =============================================================================
+castle-x-gve:
+  repo: github.com/castle-x/gve
+  license: MIT
+  skills:
+    - name: gve
+      path: skills/gve
+      tags: [backend, web-frontend]
+      description: Go + Vite fullstack CLI - scaffold, develop, build and ship as one self-contained binary
+      description_zh: Go + Vite 全栈 CLI - 脚手架、开发、构建并打包为单一可执行文件
