@@ -12,11 +12,11 @@ import (
 
 func TestParseInput(t *testing.T) {
 	tests := []struct {
-		name      string
-		input     string
-		wantKind  InputKind
-		wantRepo  string
-		wantHint  string
+		name     string
+		input    string
+		wantKind InputKind
+		wantRepo string
+		wantHint string
 	}{
 		{
 			name:     "owner/repo → repo scan",
@@ -282,6 +282,34 @@ func TestDiscover_RealRepo(t *testing.T) {
 			t.Errorf("skill at path %q has empty name", s.Path)
 		}
 	}
+
+	t.Run("discovers root-level skill", func(t *testing.T) {
+		rootRepo := "github.com/Kevin7Qi/codex-collab"
+		found, err := Discover(rootRepo)
+		if err != nil {
+			t.Fatalf("Discover failed for root-level skill repo: %v", err)
+		}
+		if len(found) == 0 {
+			t.Fatal("expected to discover at least one skill in root-level repo")
+		}
+
+		var root *DiscoveredSkill
+		for i := range found {
+			if found[i].Name == "codex-collab" {
+				root = &found[i]
+				break
+			}
+		}
+		if root == nil {
+			t.Fatalf("expected to find codex-collab in %s", rootRepo)
+		}
+		if root.Path != "" {
+			t.Errorf("Path = %q; want empty path for repo-root skill", root.Path)
+		}
+		if !root.Valid {
+			t.Errorf("expected valid root-level skill, got errors: %v", root.Errors)
+		}
+	})
 }
 
 // ---------------------------------------------------------------------------
@@ -336,6 +364,43 @@ func TestFindSkill_RealRepo(t *testing.T) {
 			t.Errorf("expected nil for nonexistent skill, got %+v", ds)
 		}
 	})
+
+	t.Run("finds root-level skill by name", func(t *testing.T) {
+		rootRepo := "github.com/Kevin7Qi/codex-collab"
+		ds, err := FindSkill(rootRepo, "codex-collab")
+		if err != nil {
+			t.Fatalf("FindSkill failed for root-level repo: %v", err)
+		}
+		if ds == nil {
+			t.Fatal("expected to find codex-collab at repo root")
+		}
+		if ds.Name != "codex-collab" {
+			t.Errorf("Name = %q; want %q", ds.Name, "codex-collab")
+		}
+		if ds.Path != "" {
+			t.Errorf("Path = %q; want empty path for repo-root skill", ds.Path)
+		}
+	})
+}
+
+func TestValidate_GitHubRootPathDot(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	result, err := Validate(ValidateRequest{
+		Repo: "github.com/Kevin7Qi/codex-collab",
+		Path: ".",
+	})
+	if err != nil {
+		t.Fatalf("Validate returned unexpected error: %v", err)
+	}
+	if !result.Valid {
+		t.Fatalf("expected valid result for repo root path '.', got errors: %v", result.Errors)
+	}
+	if result.SkillName != "codex-collab" {
+		t.Errorf("SkillName = %q; want %q", result.SkillName, "codex-collab")
+	}
 }
 
 // ---------------------------------------------------------------------------

@@ -439,6 +439,19 @@ castle-x-gve:
       description_zh: Go + Vite 全栈 CLI - 脚手架、开发、构建并打包为单一可执行文件
 
 # =============================================================================
+# Codex Collab
+# https://github.com/Kevin7Qi/codex-collab
+# =============================================================================
+kevin7qi-codex-collab:
+  repo: github.com/Kevin7Qi/codex-collab
+  license: MIT
+  skills:
+    - name: codex-collab
+      tags: [ai-efficiency, code-review]
+      description: Delegate collaboration tasks to Codex for implementation, review, and research workflows
+      description_zh: 将实现、代码评审、调研等协作任务委托给 Codex
+
+# =============================================================================
 # Skills-X Original Skills
 # https://github.com/castle-x/skills-x
 # =============================================================================

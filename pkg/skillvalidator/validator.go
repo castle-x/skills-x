@@ -167,7 +167,8 @@ func Discover(repo string) ([]DiscoveredSkill, error) {
 		dir := filepath.Dir(path)
 		relPath, _ := filepath.Rel(cloneResult.TempDir, dir)
 		if relPath == "." {
-			return nil
+			// Normalize repo-root skills to empty path so registry entries can omit path.
+			relPath = ""
 		}
 
 		fm, fmErr := parseFrontmatter(path)
@@ -218,6 +219,13 @@ func FindSkill(repo, skillHint string) (*DiscoveredSkill, error) {
 			return buildDiscoveredSkill(skillMD, skillHint), nil
 		}
 	}
+	// Explicit root path hint.
+	if skillHint == "." || skillHint == "" {
+		rootSkill := filepath.Join(cloneResult.TempDir, "SKILL.md")
+		if _, err := os.Stat(rootSkill); err == nil {
+			return buildDiscoveredSkill(rootSkill, ""), nil
+		}
+	}
 
 	// Try common locations.
 	baseName := filepath.Base(skillHint)
@@ -234,6 +242,16 @@ func FindSkill(repo, skillHint string) (*DiscoveredSkill, error) {
 		skillMD := filepath.Join(cloneResult.TempDir, cand, "SKILL.md")
 		if _, err := os.Stat(skillMD); err == nil {
 			return buildDiscoveredSkill(skillMD, cand), nil
+		}
+	}
+
+	// Root-level skill match by frontmatter name or repo basename.
+	rootSkill := filepath.Join(cloneResult.TempDir, "SKILL.md")
+	if _, err := os.Stat(rootSkill); err == nil {
+		root := buildDiscoveredSkill(rootSkill, "")
+		repoBase := filepath.Base(repoName)
+		if strings.EqualFold(root.Name, baseName) || strings.EqualFold(repoBase, baseName) {
+			return root, nil
 		}
 	}
 
@@ -361,8 +379,13 @@ func resolveGitHub(repo, skillPath string) (string, SourceType, error) {
 	var cloneResult *gitutil.CloneResult
 	var err error
 
-	if skillPath != "" {
-		cloneResult, err = gitutil.SparseCloneRepo(gitURL, repoName, []string{skillPath})
+	normalizedPath := strings.TrimSpace(skillPath)
+	if filepath.Clean(normalizedPath) == "." {
+		normalizedPath = ""
+	}
+
+	if normalizedPath != "" {
+		cloneResult, err = gitutil.SparseCloneRepo(gitURL, repoName, []string{normalizedPath})
 	} else {
 		cloneResult, err = gitutil.CloneRepo(gitURL, repoName)
 	}
@@ -370,7 +393,10 @@ func resolveGitHub(repo, skillPath string) (string, SourceType, error) {
 		return "", SourceTypeGitHub, fmt.Errorf("failed to clone %s: %w", repo, err)
 	}
 
-	skillDir := filepath.Join(cloneResult.TempDir, skillPath)
+	skillDir := cloneResult.TempDir
+	if normalizedPath != "" {
+		skillDir = filepath.Join(cloneResult.TempDir, normalizedPath)
+	}
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return "", SourceTypeGitHub,
 			fmt.Errorf("skill path %q not found in repository %s", skillPath, repo)
