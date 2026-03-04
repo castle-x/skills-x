@@ -477,6 +477,12 @@ castle-x-skills-x:
       description: Go CLI i18n rules (author use)
       description_zh: Go CLI 多语言规则（作者自用）
 
+    - name: go-pocketbase-integration
+      path: skills/go-pocketbase-integration
+      tags: [backend, web-frontend]
+      description: Integrate PocketBase into Go as a library for single-binary full-stack applications
+      description_zh: 在 Go 中以内嵌库方式集成 PocketBase，构建单二进制全栈应用
+
     - name: minimal-ui-design
       path: skills/minimal-ui-design
       tags: [design]
