@@ -143,6 +143,88 @@ vercel:
       description_zh: AI agents 的 React Native 最佳实践
 
 # =============================================================================
+# Vercel Next.js Skills
+# https://github.com/vercel/next.js
+# =============================================================================
+vercel-nextjs:
+  repo: github.com/vercel/next.js
+  license: MIT
+  skills:
+    - name: cache-components
+      path: .claude-plugin/plugins/cache-components/skills/cache-components
+      tags: [web-frontend]
+      description: Next.js cache components best practices for Partial Prerendering and caching workflows
+      description_zh: Next.js 缓存组件最佳实践，涵盖 Partial Prerendering 与缓存工作流
+
+    - name: update-docs
+      path: .claude/skills/update-docs
+      tags: [writing, web-frontend]
+      description: Update Next.js documentation based on source code changes with a guided workflow
+      description_zh: 基于源码变更更新 Next.js 文档的引导式工作流
+
+# =============================================================================
+# Google Gemini CLI Skills
+# https://github.com/google-gemini/gemini-cli
+# =============================================================================
+google-gemini:
+  repo: github.com/google-gemini/gemini-cli
+  license: Apache-2.0
+  skills:
+    - name: code-reviewer
+      path: .gemini/skills/code-reviewer
+      tags: [code-review]
+      description: Review local changes or pull requests with structured, high-signal feedback
+      description_zh: 审查本地改动或 PR，并输出结构化高价值反馈
+
+    - name: pr-creator
+      path: .gemini/skills/pr-creator
+      tags: [ai-efficiency, code-review]
+      description: Create high-quality pull requests with templates and preflight checks
+      description_zh: 基于模板与预检流程创建高质量 Pull Request
+
+# =============================================================================
+# LangGenius Dify Skills
+# https://github.com/langgenius/dify
+# =============================================================================
+langgenius-dify:
+  repo: github.com/langgenius/dify
+  license: Other
+  skills:
+    - name: frontend-code-review
+      path: .agents/skills/frontend-code-review
+      tags: [code-review, web-frontend]
+      description: Frontend-focused code review for quality, performance, and business logic issues
+      description_zh: 面向前端的代码审查，覆盖质量、性能与业务逻辑问题
+
+# =============================================================================
+# Shubhamsaboo Awesome LLM Apps Skills
+# https://github.com/Shubhamsaboo/awesome-llm-apps
+# =============================================================================
+shubhamsaboo-awesome-llm-apps:
+  repo: github.com/Shubhamsaboo/awesome-llm-apps
+  license: MIT
+  skills:
+    - name: fullstack-developer
+      path: awesome_agent_skills/fullstack-developer
+      tags: [backend, web-frontend]
+      description: Fullstack web development skill using React/Next.js, Node.js, and databases
+      description_zh: 使用 React/Next.js、Node.js 与数据库进行全栈 Web 开发
+
+# =============================================================================
+# Facebook React Skills
+# https://github.com/facebook/react
+# =============================================================================
+facebook-react:
+  repo: github.com/facebook/react
+  license: MIT
+  skills:
+    - name: fix
+      path: .claude/skills/fix
+      tags: [ai-efficiency]
+      description: Run formatting and lint checks to quickly fix code quality issues before CI
+      description_zh: 在 CI 前执行格式化与 lint 检查，快速修复代码质量问题
+
+# =============================================================================
 # Remotion
 # https://github.com/remotion-dev/skills
 # =============================================================================

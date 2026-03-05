@@ -151,6 +151,23 @@ SKILLS_LANG=zh skills-x
 📦 github.com/vercel-labs/skills (MIT)
    find-skills   使用 Skills CLI 查找并安装技能
 
+📦 github.com/vercel/next.js (MIT)
+   cache-components  Next.js 缓存组件最佳实践（PPR 与缓存工作流）
+   update-docs       基于源码变更更新 Next.js 文档
+
+📦 github.com/google-gemini/gemini-cli (Apache-2.0)
+   code-reviewer  审查本地改动或 PR，并输出结构化反馈
+   pr-creator     基于模板与预检流程创建高质量 Pull Request
+
+📦 github.com/langgenius/dify (Other)
+   frontend-code-review  面向前端的代码审查（质量、性能、业务逻辑）
+
+📦 github.com/Shubhamsaboo/awesome-llm-apps (MIT)
+   fullstack-developer  使用 React/Next.js、Node.js 与数据库进行全栈开发
+
+📦 github.com/facebook/react (MIT)
+   fix  在 CI 前执行格式化与 lint 检查，快速修复代码质量问题
+
 📦 github.com/giuseppe-trisciuoglio/developer-kit (MIT)
    react-patterns         React 19 模式 - 服务器组件、Actions、hooks
    shadcn-ui              shadcn/ui 组件库 - Radix UI + Tailwind CSS

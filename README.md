@@ -151,6 +151,23 @@ SKILLS_LANG=zh skills-x
 📦 github.com/vercel-labs/skills (MIT)
    find-skills            Find and install agent skills using the Skills CLI
 
+📦 github.com/vercel/next.js (MIT)
+   cache-components       Next.js cache components best practices for PPR and caching workflows
+   update-docs            Update Next.js docs based on source code changes
+
+📦 github.com/google-gemini/gemini-cli (Apache-2.0)
+   code-reviewer          Review local changes or pull requests with structured feedback
+   pr-creator             Create high-quality pull requests with templates and preflight checks
+
+📦 github.com/langgenius/dify (Other)
+   frontend-code-review   Frontend code review for quality, performance, and business logic issues
+
+📦 github.com/Shubhamsaboo/awesome-llm-apps (MIT)
+   fullstack-developer    Fullstack web development with React/Next.js, Node.js, and databases
+
+📦 github.com/facebook/react (MIT)
+   fix                    Run format/lint checks and fix code quality issues before CI
+
 📦 github.com/giuseppe-trisciuoglio/developer-kit (MIT)
    react-patterns         React 19 patterns - Server Components, Actions, hooks
    shadcn-ui              shadcn/ui with Radix UI and Tailwind CSS
