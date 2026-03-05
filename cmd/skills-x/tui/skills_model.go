@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/castle-x/skills-x/cmd/skills-x/i18n"
@@ -13,6 +14,56 @@ import (
 	"github.com/castle-x/skills-x/pkg/registry"
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+// repoUpdateCache caches the result of a repo update check within a session
+// to avoid repeated network fetches for skills from the same repo.
+type repoUpdateCache struct {
+	mu      sync.Mutex
+	entries map[string]*repoCacheEntry // keyed by repo name
+}
+
+type repoCacheEntry struct {
+	headCommit string
+	checkedAt  time.Time
+	err        error
+}
+
+func newRepoUpdateCache() *repoUpdateCache {
+	return &repoUpdateCache{entries: make(map[string]*repoCacheEntry)}
+}
+
+func (c *repoUpdateCache) get(repo string) (*repoCacheEntry, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	entry, ok := c.entries[repo]
+	return entry, ok
+}
+
+func (c *repoUpdateCache) set(repo string, entry *repoCacheEntry) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.entries[repo] = entry
+}
+
+func (c *repoUpdateCache) invalidate(repo string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.entries, repo)
+}
+
+// spinnerFrames defines the animation frames for the checking indicator
+var spinnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
+
+const spinnerInterval = 80 * time.Millisecond
+
+// spinnerTickMsg drives the spinner animation
+type spinnerTickMsg struct{}
+
+func spinnerTick() tea.Cmd {
+	return tea.Tick(spinnerInterval, func(time.Time) tea.Msg {
+		return spinnerTickMsg{}
+	})
+}
 
 // SkillAction represents the intended operation for a skill
 type SkillAction string
@@ -118,6 +169,8 @@ type SkillsModel struct {
 	targetDir      string // current working directory for project-level skills
 	errMsg         string // error message to display
 	selectAllState int    // 0=none, 1=install/update, 2=none/uninstall
+	updateCache    *repoUpdateCache // session-level cache for repo update checks
+	spinnerFrame   int  // current animation frame index for checking indicator
 }
 
 // NewSkillsModel creates a new skills selection model
@@ -126,15 +179,16 @@ func NewSkillsModel(product *products.Product, allSkills []SkillItem, version st
 		allSkills[i].Action = ActionNone
 	}
 	return SkillsModel{
-		product:   product,
-		allSkills: allSkills,
-		filtered:  allSkills,
-		cursor:    0,
-		offset:    0,
-		search:    "",
-		version:   version,
-		pageSize:  10,
-		targetDir: targetDir,
+		product:     product,
+		allSkills:   allSkills,
+		filtered:    allSkills,
+		cursor:      0,
+		offset:      0,
+		search:      "",
+		version:     version,
+		pageSize:    10,
+		targetDir:   targetDir,
+		updateCache: newRepoUpdateCache(),
 	}
 }
 
@@ -326,8 +380,9 @@ func (m *SkillsModel) updateOffset() {
 	}
 }
 
-// checkUpdateForSkill creates a command that checks for updates
-func checkUpdateForSkill(item SkillItem, targetDir string) tea.Cmd {
+// checkUpdateForSkill creates a command that checks for updates.
+// If forceRefresh is false, it uses the session cache to avoid repeated network fetches.
+func checkUpdateForSkill(item SkillItem, targetDir string, cache *repoUpdateCache, forceRefresh bool) tea.Cmd {
 	return func() tea.Msg {
 		skillDir := filepath.Join(targetDir, item.Name)
 		meta, _ := ReadSkillMeta(skillDir)
@@ -362,13 +417,49 @@ func checkUpdateForSkill(item SkillItem, targetDir string) tea.Cmd {
 			source = matches[0].Source
 		}
 
-		var result *gitutil.CloneResult
-		if source.SkipFetch && skill.Path != "" {
-			result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
-		} else {
-			result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, false)
+		// Check session cache (unless force refresh)
+		if !forceRefresh && cache != nil {
+			if entry, ok := cache.get(source.Repo); ok {
+				if entry.err != nil {
+					return checkUpdateResultMsg{
+						skillFullName: item.FullName,
+						err:           entry.err,
+					}
+				}
+				localCommit := ""
+				if meta != nil {
+					localCommit = meta.Commit
+				}
+				hasUpdate := localCommit == "" || localCommit != entry.headCommit
+				return checkUpdateResultMsg{
+					skillFullName: item.FullName,
+					hasUpdate:     hasUpdate,
+					localCommit:   localCommit,
+					remoteCommit:  entry.headCommit,
+				}
+			}
 		}
+
+		// Invalidate cache entry when force refreshing
+		if forceRefresh && cache != nil {
+			cache.invalidate(source.Repo)
+		}
+
+		var result *gitutil.CloneResult
+			if source.SkipFetch && skill.Path != "" {
+				result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
+			} else {
+				// Always refresh on explicit update checks to avoid stale cache false negatives.
+				result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, true)
+			}
 		if err != nil {
+			// Cache the error so subsequent checks for the same repo don't retry
+			if cache != nil {
+				cache.set(source.Repo, &repoCacheEntry{
+					err:       fmt.Errorf(i18n.T("tui_err_fetch_repo"), err),
+					checkedAt: time.Now(),
+				})
+			}
 			return checkUpdateResultMsg{
 				skillFullName: item.FullName,
 				err:           fmt.Errorf(i18n.T("tui_err_fetch_repo"), err),
@@ -381,6 +472,14 @@ func checkUpdateForSkill(item SkillItem, targetDir string) tea.Cmd {
 				skillFullName: item.FullName,
 				err:           fmt.Errorf(i18n.T("tui_err_get_commit"), err),
 			}
+		}
+
+		// Cache the successful result
+		if cache != nil {
+			cache.set(source.Repo, &repoCacheEntry{
+				headCommit: remoteCommit,
+				checkedAt:  time.Now(),
+			})
 		}
 
 		localCommit := ""
@@ -401,6 +500,21 @@ func checkUpdateForSkill(item SkillItem, targetDir string) tea.Cmd {
 
 func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case spinnerTickMsg:
+		// Advance spinner frame if any skill is still checking
+		anyChecking := false
+		for _, s := range m.allSkills {
+			if s.Checking {
+				anyChecking = true
+				break
+			}
+		}
+		if anyChecking {
+			m.spinnerFrame = (m.spinnerFrame + 1) % len(spinnerFrames)
+			return m, spinnerTick()
+		}
+		return m, nil
+
 	case checkUpdateResultMsg:
 		for i := range m.allSkills {
 			if m.allSkills[i].FullName == msg.skillFullName {
@@ -472,6 +586,11 @@ func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc":
 			if m.searching {
 				m.searching = false
+				// Keep search query and filtered list; user can still navigate/act on results
+				return m, nil
+			}
+			if m.search != "" {
+				// Clear search filter and restore full list
 				m.search = ""
 				m.filterSkills()
 				return m, nil
@@ -552,7 +671,30 @@ func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						break
 					}
 				}
-				return m, checkUpdateForSkill(*item, m.targetDir)
+				return m, tea.Batch(checkUpdateForSkill(*item, m.targetDir, m.updateCache, false), spinnerTick())
+			}
+		case "R": // force-refresh update check (bypasses session cache)
+			if m.searching {
+				m.search += "R"
+				m.filterSkills()
+				return m, nil
+			}
+			if m.cursor >= 0 && m.cursor < len(m.filtered) {
+				item := &m.filtered[m.cursor]
+				if !item.Installed {
+					m.errMsg = i18n.T("tui_only_installed_check")
+					return m, nil
+				}
+				item.Checking = true
+				item.HasUpdate = nil // reset previous result
+				for i := range m.allSkills {
+					if m.allSkills[i].FullName == item.FullName {
+						m.allSkills[i].Checking = true
+						m.allSkills[i].HasUpdate = nil
+						break
+					}
+				}
+				return m, tea.Batch(checkUpdateForSkill(*item, m.targetDir, m.updateCache, true), spinnerTick())
 			}
 		case "f":
 			if m.searching {
@@ -570,6 +712,11 @@ func (m SkillsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.search += msg.String()
 			m.filterSkills()
 		case "enter":
+			if m.searching {
+				m.searching = false
+				// Keep search query and filtered list; user can now act on results
+				return m, nil
+			}
 			installCount := 0
 			uninstallCount := 0
 			updateCount := 0
@@ -647,6 +794,10 @@ func (m SkillsModel) View() string {
 			tagSuffix = "#"
 		}
 		b.WriteString(searchStyle.Render(" / " + searchPlaceholder + tagSuffix + " "))
+	} else if m.search != "" {
+		// Show active filter when not in search input mode
+		b.WriteString(searchStyle.Render(" / " + m.search + " "))
+		b.WriteString(hintStyle.Render("  (Esc clear)"))
 	} else {
 		b.WriteString(searchStyle.Render(i18n.T("tui_search_idle")))
 	}
@@ -705,7 +856,8 @@ func (m SkillsModel) View() string {
 		nameStyle := selectableStyle
 
 		if s.Checking {
-			marker = hintStyle.Render("[↻]")
+			frame := spinnerFrames[m.spinnerFrame%len(spinnerFrames)]
+			marker = warningStyle.Render("[" + frame + "]")
 			nameStyle = normalStyle
 		} else {
 			switch s.Action {

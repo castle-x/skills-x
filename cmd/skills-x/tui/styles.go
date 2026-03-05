@@ -20,7 +20,7 @@ var (
 	primaryColor   = lipgloss.Color("#00D4AA") // 青绿色
 	secondaryColor = lipgloss.Color("#FF6B6B") // 红色
 	accentColor    = lipgloss.Color("#4ECDC4") // 浅青色
-	dimColor       = lipgloss.Color("#666666") // 灰色
+	dimColor       = lipgloss.Color("#8A8A8A") // 灰色（提升对比度，兼容低对比终端主题）
 	whiteColor     = lipgloss.Color("#FFFFFF")
 	yellowColor    = lipgloss.Color("#FFCC00")
 	blueColor      = lipgloss.Color("#5599FF")

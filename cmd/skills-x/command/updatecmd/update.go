@@ -31,6 +31,12 @@ var (
 	flagTarget string
 )
 
+var (
+	cloneRepoWithRefresh = gitutil.CloneRepoWithRefresh
+	sparseCloneRepo      = gitutil.SparseCloneRepo
+	getRepoHeadCommit    = gitutil.GetRepoHeadCommit
+)
+
 // NewCommand creates the update command
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -172,12 +178,13 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 
 		// Get cached/fresh repo
 		var cloneResult *gitutil.CloneResult
-		refresh := !flagCheck // only refresh cache when actually updating
-		if is.source.SkipFetch && is.skill.Path != "" {
-			cloneResult, err = gitutil.SparseCloneRepo(is.source.GetGitURL(), is.source.Repo, []string{is.skill.Path})
-		} else {
-			cloneResult, err = gitutil.CloneRepoWithRefresh(is.source.GetGitURL(), is.source.Repo, refresh)
-		}
+			// Check mode must also refresh, otherwise stale cache can hide updates.
+			refresh := true
+			if is.source.SkipFetch && is.skill.Path != "" {
+				cloneResult, err = sparseCloneRepo(is.source.GetGitURL(), is.source.Repo, []string{is.skill.Path})
+			} else {
+				cloneResult, err = cloneRepoWithRefresh(is.source.GetGitURL(), is.source.Repo, refresh)
+			}
 		if err != nil {
 			results = append(results, skillCheckResult{
 				name:   is.name,
@@ -187,7 +194,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 			continue
 		}
 
-		remoteCommit, err := gitutil.GetRepoHeadCommit(cloneResult.TempDir)
+			remoteCommit, err := getRepoHeadCommit(cloneResult.TempDir)
 		if err != nil {
 			results = append(results, skillCheckResult{
 				name:   is.name,
