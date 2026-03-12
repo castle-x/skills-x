@@ -76,7 +76,7 @@ var DistDirFS, _ = fs.Sub(distDir, "dist")
 Core required:
 
 ```
-github.com/castle-x/go-pocketbase latest  # gopb — AppServer, defaults, setup routes, SPA helpers
+github.com/castle-x/goutils/pocketbase latest  # gopb — AppServer, defaults, setup routes, SPA helpers
 github.com/pocketbase/pocketbase  v0.36+  # PocketBase core
 github.com/pocketbase/dbx                 # included transitively, used for raw queries
 ```

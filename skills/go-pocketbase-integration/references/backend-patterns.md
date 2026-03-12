@@ -54,13 +54,13 @@ func main() {
 
 ## AppServer Pattern (with gopb)
 
-Use `gopb.AppServer` from `github.com/castle-x/go-pocketbase` as the base. It wraps `core.App` and provides default user management, setup routes, and SPA helpers.
+Use `gopb.AppServer` from `github.com/castle-x/goutils/pocketbase` as the base. It wraps `core.App` and provides default user management, setup routes, and SPA helpers.
 
 ```go
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/core"
 )
 
@@ -372,7 +372,7 @@ Separate dev and production server implementations using gopb SPA helpers:
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/core"
     "your-project/site"
 )
@@ -390,7 +390,7 @@ func (s *AppServer) serveFrontend(se *core.ServeEvent) {
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/core"
 )
 

@@ -1,11 +1,11 @@
 ---
 name: go-pocketbase-integration
-description: Integrate PocketBase as a Go library using the github.com/castle-x/go-pocketbase (gopb) package to build single-binary full-stack applications. Use when building Go applications that need user authentication, embedding PocketBase into Go binary, registering custom API routes, managing default users, serving embedded SPA frontend, or deploying single-binary applications. NOT for using PocketBase as a standalone separate process.
+description: Integrate PocketBase as a Go library using the github.com/castle-x/goutils/pocketbase (gopb) package to build single-binary full-stack applications. Use when building Go applications that need user authentication, embedding PocketBase into Go binary, registering custom API routes, managing default users, serving embedded SPA frontend, or deploying single-binary applications. NOT for using PocketBase as a standalone separate process.
 ---
 
 # Go PocketBase Integration
 
-Embed PocketBase as a Go library using the **`gopb`** package (`github.com/castle-x/go-pocketbase`) to produce a **single-binary full-stack application** with built-in auth, SQLite database, admin UI, and custom API routes.
+Embed PocketBase as a Go library using the **`gopb`** package (`github.com/castle-x/goutils/pocketbase`) to produce a **single-binary full-stack application** with built-in auth, SQLite database, admin UI, and custom API routes.
 
 ## Architecture Overview
 
@@ -27,7 +27,7 @@ PocketBase runs **in-process** — no separate service, no HTTP calls for auth v
 ### 1. Add dependencies
 
 ```bash
-go get github.com/castle-x/go-pocketbase@latest
+go get github.com/castle-x/goutils/pocketbase@latest
 go get github.com/pocketbase/pocketbase@latest
 ```
 
@@ -73,7 +73,7 @@ func main() {
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/apis"
     "github.com/pocketbase/pocketbase/core"
 )
@@ -122,7 +122,7 @@ func (s *AppServer) Start() error {
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/core"
     "your-project/site"
 )
@@ -139,7 +139,7 @@ func (s *AppServer) serveFrontend(se *core.ServeEvent) {
 package server
 
 import (
-    gopb "github.com/castle-x/go-pocketbase"
+    gopb "github.com/castle-x/goutils/pocketbase"
     "github.com/pocketbase/pocketbase/core"
 )
 
