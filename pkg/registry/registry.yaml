@@ -534,6 +534,122 @@ kevin7qi-codex-collab:
       description_zh: 将实现、代码评审、调研等协作任务委托给 Codex
 
 # =============================================================================
+# Impeccable (pbakaus) — Apache 2.0
+# https://github.com/pbakaus/impeccable
+# =============================================================================
+pbakaus-impeccable:
+  repo: github.com/pbakaus/impeccable
+  license: Apache-2.0
+  skills:
+    - name: frontend-design
+      path: source/skills/frontend-design
+      tags: [design, web-frontend]
+      description: Create distinctive, production-grade frontend interfaces that avoid generic AI aesthetics
+      description_zh: 创建有设计感的高质量前端界面，避免千篇一律的 AI 审美
+
+    - name: adapt
+      path: source/skills/adapt
+      tags: [design, web-frontend]
+      description: Adapt designs to work across different screen sizes, devices, contexts, or platforms
+      description_zh: 让设计适配不同屏幕尺寸、设备、上下文或平台
+
+    - name: animate
+      path: source/skills/animate
+      tags: [design, web-frontend]
+      description: Enhance features with purposeful animations, micro-interactions, and motion effects
+      description_zh: 为功能添加有目的性的动画、微交互和动效
+
+    - name: audit
+      path: source/skills/audit
+      tags: [design, web-frontend]
+      description: Comprehensive audit of interface quality across accessibility, performance, theming, and responsive design
+      description_zh: 对界面质量进行全面审查，涵盖无障碍性、性能、主题和响应式设计
+
+    - name: bolder
+      path: source/skills/bolder
+      tags: [design, web-frontend]
+      description: Amplify safe or boring designs to make them more visually interesting and stimulating
+      description_zh: 放大平淡的设计，使其更具视觉冲击力
+
+    - name: clarify
+      path: source/skills/clarify
+      tags: [design, web-frontend]
+      description: Improve unclear UX copy, error messages, microcopy, labels, and instructions
+      description_zh: 改进不清晰的 UX 文案、错误提示、微文案、标签和说明
+
+    - name: colorize
+      path: source/skills/colorize
+      tags: [design, web-frontend]
+      description: Add strategic color to features that are too monochromatic or lack visual interest
+      description_zh: 为过于单调或缺乏视觉趣味的界面添加有策略性的色彩
+
+    - name: critique
+      path: source/skills/critique
+      tags: [design, web-frontend]
+      description: Evaluate design effectiveness — visual hierarchy, information architecture, emotional resonance
+      description_zh: 评估设计效果，包括视觉层次、信息架构和情感共鸣
+
+    - name: delight
+      path: source/skills/delight
+      tags: [design, web-frontend]
+      description: Add moments of joy, personality, and unexpected touches that make interfaces memorable
+      description_zh: 为界面加入惊喜感和个性化细节，让体验令人难忘
+
+    - name: distill
+      path: source/skills/distill
+      tags: [design, web-frontend]
+      description: Strip designs to their essence by removing unnecessary complexity
+      description_zh: 去除多余复杂度，提炼设计的本质
+
+    - name: extract
+      path: source/skills/extract
+      tags: [design, web-frontend]
+      description: Extract reusable components, design tokens, and patterns into your design system
+      description_zh: 提取可复用的组件、设计 token 和模式，丰富设计系统
+
+    - name: harden
+      path: source/skills/harden
+      tags: [design, web-frontend]
+      description: Improve interface resilience — error handling, i18n, text overflow, and edge cases
+      description_zh: 增强界面健壮性，涵盖错误处理、国际化、文本溢出和边缘情况
+
+    - name: normalize
+      path: source/skills/normalize
+      tags: [design, web-frontend]
+      description: Normalize design to match your design system and ensure consistency
+      description_zh: 规范化设计，使其符合设计系统并保持一致性
+
+    - name: onboard
+      path: source/skills/onboard
+      tags: [design, web-frontend]
+      description: Design or improve onboarding flows, empty states, and first-time user experiences
+      description_zh: 设计或改进引导流程、空状态和首次用户体验
+
+    - name: optimize
+      path: source/skills/optimize
+      tags: [design, web-frontend]
+      description: Improve interface performance — loading speed, rendering, animations, images, and bundle size
+      description_zh: 提升界面性能，包括加载速度、渲染、动画、图片和包体积
+
+    - name: polish
+      path: source/skills/polish
+      tags: [design, web-frontend]
+      description: Final quality pass — alignment, spacing, consistency, and detail issues before shipping
+      description_zh: 上线前最终质检，修复对齐、间距、一致性等细节问题
+
+    - name: quieter
+      path: source/skills/quieter
+      tags: [design, web-frontend]
+      description: Tone down overly bold or visually aggressive designs while maintaining quality
+      description_zh: 降低过于张扬的设计强度，同时保持设计质量
+
+    - name: teach-impeccable
+      path: source/skills/teach-impeccable
+      tags: [design, skills-meta]
+      description: One-time setup that gathers design context and saves persistent design guidelines to AI config
+      description_zh: 一次性初始化，收集项目设计上下文并保存为持久化 AI 设计规范
+
+# =============================================================================
 # Skills-X Original Skills
 # https://github.com/castle-x/skills-x
 # =============================================================================
