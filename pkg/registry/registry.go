@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -67,14 +68,44 @@ type registryYAML map[string]struct {
 	} `yaml:"skills"`
 }
 
-// Load loads the embedded registry.yaml
+// Load loads the registry. It prefers a locally cached registry (written by
+// "skills-x registry update") over the embedded one, so users can get new
+// skills without upgrading the binary.
 func Load() (*Registry, error) {
+	// Try cached registry first.
+	if data, err := loadCachedRegistry(); err == nil {
+		if reg, err := Parse(data); err == nil {
+			return reg, nil
+		}
+		// Cached file is corrupt — fall through to embedded.
+	}
+
+	// Fall back to embedded registry.yaml.
 	data, err := registryFS.ReadFile("registry.yaml")
 	if err != nil {
 		return nil, fmt.Errorf("failed to read registry.yaml: %w", err)
 	}
-
 	return Parse(data)
+}
+
+// loadCachedRegistry reads the locally cached registry file if it exists.
+func loadCachedRegistry() ([]byte, error) {
+	path, err := CachedRegistryPath()
+	if err != nil {
+		return nil, err
+	}
+	return os.ReadFile(path)
+}
+
+// CachedRegistryPath returns the path where "registry update" stores the
+// downloaded registry (~/.config/skills-x/registry.yaml).
+func CachedRegistryPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		home, _ := os.UserHomeDir()
+		configDir = home + "/.config"
+	}
+	return filepath.Join(configDir, "skills-x", "registry.yaml"), nil
 }
 
 // Parse parses registry.yaml content

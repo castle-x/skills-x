@@ -348,6 +348,12 @@ cmd_registry_add_long: |
 
 cmd_registry_list_short: "列出用户本地注册表中的所有 skill"
 cmd_registry_remove_short: "从用户本地注册表移除一个 skill"
+cmd_registry_update_short: "从 GitHub 下载最新注册表"
+cmd_registry_update_long: |
+  从 GitHub 下载最新的 registry.yaml 并缓存到本地。
+  本地缓存优先于内嵌注册表，无需升级工具即可获取新增 skills。
+
+  缓存路径：~/.config/skills-x/registry.yaml
 
 # registry 运行时消息
 registry_checking: "正在校验 %s %s ..."
@@ -365,6 +371,13 @@ registry_list_empty: "用户注册表为空"
 registry_list_empty_hint: "使用 skills-x registry add <repo> <path> 添加自定义 skill"
 registry_list_header: "用户注册表"
 registry_list_source: "来源"
+
+registry_update_fetching: "正在从 GitHub 获取最新注册表..."
+registry_update_fetch_error: "获取注册表失败"
+registry_update_parse_error: "注册表内容无效"
+registry_update_save_error: "保存注册表缓存失败"
+registry_update_path_error: "无法解析缓存路径"
+registry_update_success: "注册表已更新（%d 个 skills）→ %s"
 
 # registry 字段标签
 registry_field_name: "名称"

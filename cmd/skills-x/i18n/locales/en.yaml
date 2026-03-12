@@ -345,6 +345,13 @@ cmd_registry_add_long: |
 
 cmd_registry_list_short: "List all skills in the user-local registry"
 cmd_registry_remove_short: "Remove a skill from the user-local registry"
+cmd_registry_update_short: "Download the latest registry from GitHub"
+cmd_registry_update_long: |
+  Download the latest registry.yaml from GitHub and cache it locally.
+  The cached registry takes precedence over the built-in one, so you
+  can get newly added skills without upgrading the binary.
+
+  Cache location: ~/.config/skills-x/registry.yaml
 
 # registry runtime messages
 registry_checking: "Validating %s %s ..."
@@ -362,6 +369,13 @@ registry_list_empty: "User registry is empty"
 registry_list_empty_hint: "Use 'skills-x registry add <repo> <path>' to add a custom skill"
 registry_list_header: "User Registry"
 registry_list_source: "source"
+
+registry_update_fetching: "Fetching latest registry from GitHub..."
+registry_update_fetch_error: "Failed to fetch registry"
+registry_update_parse_error: "Registry content is invalid"
+registry_update_save_error: "Failed to save registry cache"
+registry_update_path_error: "Failed to resolve cache path"
+registry_update_success: "Registry updated (%d skills) → %s"
 
 # registry field labels
 registry_field_name: "Name"
