@@ -470,9 +470,9 @@ func (m *InstallerModel) installRegistrySkillWithRefresh(item SkillItem, targetD
 
 	var result *gitutil.CloneResult
 	if source.SkipFetch && skill.Path != "" {
-		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
+		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, source.Branch, []string{skill.Path})
 	} else {
-		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, refresh)
+		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, source.Branch, refresh)
 	}
 	if err != nil {
 		return "", fmt.Errorf("clone failed: %w", err)

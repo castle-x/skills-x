@@ -173,7 +173,7 @@ func fetchSkillsFromRepo(source *registry.Source) ([]skillDisplay, error) {
 	fmt.Printf("%s  %s %s...%s", colorDim, i18n.T("list_fetching"), source.GetRepoShortName(), colorReset)
 
 	// Clone or use cached
-	result, err := gitutil.CloneRepo(gitURL, source.Repo)
+	result, err := gitutil.CloneRepo(gitURL, source.Repo, source.Branch)
 	if err != nil {
 		fmt.Printf("\r%s  %s %s ✗%s\n", colorYellow, i18n.T("list_fetch_failed"), source.GetRepoShortName(), colorReset)
 		return nil, err

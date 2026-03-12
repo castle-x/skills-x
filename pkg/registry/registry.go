@@ -18,6 +18,7 @@ var registryFS embed.FS
 type Source struct {
 	Name      string  // Source identifier (e.g., "anthropic", "vercel")
 	Repo      string  `yaml:"repo"`       // Repository URL (e.g., "github.com/anthropics/skills")
+	Branch    string  `yaml:"branch"`     // Branch to clone (empty = default branch)
 	License   string  `yaml:"license"`    // License type
 	SkipFetch bool    `yaml:"skip_fetch"` // Skip dynamic fetching (for large repos)
 	Skills    []Skill `yaml:"skills"`     // Skills in this source
@@ -56,6 +57,7 @@ func (s *Source) IsUserSource() bool {
 // registryYAML is the raw YAML structure
 type registryYAML map[string]struct {
 	Repo      string `yaml:"repo"`
+	Branch    string `yaml:"branch"`
 	License   string `yaml:"license"`
 	SkipFetch bool   `yaml:"skip_fetch"`
 	Skills    []struct {
@@ -123,6 +125,7 @@ func Parse(data []byte) (*Registry, error) {
 		source := &Source{
 			Name:      name,
 			Repo:      src.Repo,
+			Branch:    src.Branch,
 			License:   src.License,
 			SkipFetch: src.SkipFetch,
 			Skills:    make([]Skill, 0, len(src.Skills)),

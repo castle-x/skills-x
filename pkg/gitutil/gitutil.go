@@ -46,19 +46,21 @@ type CloneResult struct {
 // Uses shallow clone (--depth 1) for efficiency
 // Supports caching: if repo exists, reuses it directly (no network request)
 // Includes retry logic for transient network failures
-func CloneRepo(gitURL string, repoName string) (*CloneResult, error) {
-	return CloneRepoWithRefresh(gitURL, repoName, false)
+// branch can be empty to use the repository's default branch
+func CloneRepo(gitURL string, repoName string, branch string) (*CloneResult, error) {
+	return CloneRepoWithRefresh(gitURL, repoName, branch, false)
 }
 
 // CloneRepoWithRefresh clones a git repository with optional cache refresh
 // If refresh is true, it will fetch the latest changes even if cache exists
-func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneResult, error) {
-	tempDir := getTempDir(repoName)
+// branch can be empty to use the repository's default branch
+func CloneRepoWithRefresh(gitURL string, repoName string, branch string, refresh bool) (*CloneResult, error) {
+	tempDir := getTempDir(repoName + branchSuffix(branch))
 
 	if dirExists(tempDir) {
 		if hasGitContent(tempDir) {
 			if refresh {
-				if err := updateShallowRepo(tempDir); err != nil {
+				if err := updateShallowRepo(tempDir, branch); err != nil {
 					os.RemoveAll(tempDir)
 				} else {
 					return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
@@ -70,7 +72,7 @@ func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneR
 			// Cache exists but is corrupted — try to remove
 			if err := os.RemoveAll(tempDir); err != nil {
 				// Cannot remove (e.g. owned by another user), use fallback path
-				tempDir = getUserTempDir(repoName)
+				tempDir = getUserTempDir(repoName + branchSuffix(branch))
 				if dirExists(tempDir) && hasGitContent(tempDir) {
 					if !refresh {
 						return &CloneResult{TempDir: tempDir, Repo: repoName}, nil
@@ -89,7 +91,7 @@ func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneR
 
 	var lastErr error
 	for attempt := 1; attempt <= MaxRetries; attempt++ {
-		result, err := cloneWithTimeout(gitURL, tempDir)
+		result, err := cloneWithTimeout(gitURL, tempDir, branch)
 		if err == nil {
 			return result, nil
 		}
@@ -111,8 +113,13 @@ func CloneRepoWithRefresh(gitURL string, repoName string, refresh bool) (*CloneR
 }
 
 // cloneWithTimeout performs a single clone attempt with timeout
-func cloneWithTimeout(gitURL string, tempDir string) (*CloneResult, error) {
-	cmd := exec.Command("git", "clone", "--depth", "1", gitURL, tempDir)
+func cloneWithTimeout(gitURL string, tempDir string, branch string) (*CloneResult, error) {
+	args := []string{"clone", "--depth", "1"}
+	if branch != "" {
+		args = append(args, "--branch", branch)
+	}
+	args = append(args, gitURL, tempDir)
+	cmd := exec.Command("git", args...)
 
 	// Set up timeout
 	done := make(chan error, 1)
@@ -145,8 +152,9 @@ func cloneWithTimeout(gitURL string, tempDir string) (*CloneResult, error) {
 
 // SparseCloneRepo clones only specific directories from a git repository
 // This is much faster for large repositories when you only need specific paths
-func SparseCloneRepo(gitURL string, repoName string, sparsePaths []string) (*CloneResult, error) {
-	tempDir := getTempDirSparse(repoName, sparsePaths)
+// branch can be empty to use the repository's default branch
+func SparseCloneRepo(gitURL string, repoName string, branch string, sparsePaths []string) (*CloneResult, error) {
+	tempDir := getTempDirSparse(repoName+branchSuffix(branch), sparsePaths)
 
 	if dirExists(tempDir) {
 		if hasGitContent(tempDir) {
@@ -200,7 +208,11 @@ func SparseCloneRepo(gitURL string, repoName string, sparsePaths []string) (*Clo
 	}
 
 	// Step 5: Fetch only the needed data (depth 1)
-	fetchCmd := exec.Command("git", "-C", tempDir, "fetch", "--depth", "1", "origin", "HEAD")
+	fetchRef := "HEAD"
+	if branch != "" {
+		fetchRef = branch
+	}
+	fetchCmd := exec.Command("git", "-C", tempDir, "fetch", "--depth", "1", "origin", fetchRef)
 	if err := runWithTimeout(fetchCmd, CloneTimeout); err != nil {
 		os.RemoveAll(tempDir)
 		return nil, parseGitError(err, gitURL)
@@ -336,6 +348,14 @@ func getUserTempDirSparse(repoName string, sparsePaths []string) string {
 	return filepath.Join(userCacheDir(), TempDirPrefix+safeName+"-sparse-"+shortHash)
 }
 
+// branchSuffix returns a cache-key suffix for non-default branches.
+func branchSuffix(branch string) string {
+	if branch == "" {
+		return ""
+	}
+	return "@" + branch
+}
+
 // dirExists checks if a directory exists
 func dirExists(path string) bool {
 	info, err := os.Stat(path)
@@ -364,11 +384,20 @@ func pullRepo(dir string) error {
 
 // updateShallowRepo updates a shallow clone by fetching latest and resetting
 // This is the correct way to update a --depth 1 clone
-func updateShallowRepo(dir string) error {
+func updateShallowRepo(dir string, branch string) error {
 	// Fetch latest with depth 1
-	fetchCmd := exec.Command("git", "-C", dir, "fetch", "--depth", "1", "origin")
+	fetchArgs := []string{"-C", dir, "fetch", "--depth", "1", "origin"}
+	if branch != "" {
+		fetchArgs = append(fetchArgs, branch)
+	}
+	fetchCmd := exec.Command("git", fetchArgs...)
 	if err := runWithTimeout(fetchCmd, CloneTimeout); err != nil {
 		return err
+	}
+
+	if branch != "" {
+		resetCmd := exec.Command("git", "-C", dir, "reset", "--hard", "origin/"+branch)
+		return runWithTimeout(resetCmd, SparseCloneTimeout)
 	}
 
 	// Get the default branch name
@@ -381,8 +410,8 @@ func updateShallowRepo(dir string) error {
 	}
 
 	// Reset to the fetched head
-	branch := strings.TrimSpace(string(output))
-	resetCmd := exec.Command("git", "-C", dir, "reset", "--hard", branch)
+	defaultBranch := strings.TrimSpace(string(output))
+	resetCmd := exec.Command("git", "-C", dir, "reset", "--hard", defaultBranch)
 	return runWithTimeout(resetCmd, SparseCloneTimeout)
 }
 

@@ -155,6 +155,9 @@ SKILLS_LANG=zh skills-x
    cache-components  Next.js 缓存组件最佳实践（PPR 与缓存工作流）
    update-docs       基于源码变更更新 Next.js 文档
 
+📦 github.com/shadcn-ui/ui (MIT)
+   shadcn  shadcn/ui 官方技能 — 组件管理、CLI 工作流、样式与组合模式
+
 📦 github.com/google-gemini/gemini-cli (Apache-2.0)
    code-reviewer  审查本地改动或 PR，并输出结构化反馈
    pr-creator     基于模板与预检流程创建高质量 Pull Request
@@ -170,7 +173,6 @@ SKILLS_LANG=zh skills-x
 
 📦 github.com/giuseppe-trisciuoglio/developer-kit (MIT)
    react-patterns         React 19 模式 - 服务器组件、Actions、hooks
-   shadcn-ui              shadcn/ui 组件库 - Radix UI + Tailwind CSS
    tailwind-css-patterns  Tailwind CSS 实用优先样式模式
    typescript-docs        TypeScript 文档 - JSDoc 和 TypeDoc
 

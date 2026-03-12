@@ -142,9 +142,9 @@ func initRegistrySkill(reg *registry.Registry, name string, targetDir string) er
 	// For large repos (marked with skip_fetch), use sparse checkout
 	if source.SkipFetch && skill.Path != "" {
 		// Use sparse checkout for large repos - only fetch the specific skill path
-		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
+		result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, source.Branch, []string{skill.Path})
 	} else {
-		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, flagRefresh)
+		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, source.Branch, flagRefresh)
 	}
 	if err != nil {
 		return fmt.Errorf("%s: %w", i18n.T("init_clone_failed"), err)
@@ -216,7 +216,7 @@ func initAll(reg *registry.Registry, targetDir string) error {
 					continue
 				}
 
-				result, err := gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
+				result, err := gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, source.Branch, []string{skill.Path})
 				if err != nil {
 					fmt.Printf("%s  ⚠ %s: %v%s\n", colorYellow, skill.Name, err, colorReset)
 					errors++
@@ -251,7 +251,7 @@ func initAll(reg *registry.Registry, targetDir string) error {
 		}
 
 		// Clone repository for normal repos
-		result, err := gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, flagRefresh)
+		result, err := gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, source.Branch, flagRefresh)
 		if err != nil {
 			fmt.Printf("%s  ⚠ %s: %v%s\n", colorYellow, i18n.T("init_clone_failed"), err, colorReset)
 			errors++

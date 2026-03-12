@@ -147,7 +147,7 @@ func Discover(repo string) ([]DiscoveredSkill, error) {
 	gitURL := "https://" + repo + ".git"
 	repoName := strings.TrimPrefix(repo, "github.com/")
 
-	cloneResult, err := gitutil.CloneRepo(gitURL, repoName)
+	cloneResult, err := gitutil.CloneRepo(gitURL, repoName, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to clone %s: %w", repo, err)
 	}
@@ -206,7 +206,7 @@ func FindSkill(repo, skillHint string) (*DiscoveredSkill, error) {
 	gitURL := "https://" + repo + ".git"
 	repoName := strings.TrimPrefix(repo, "github.com/")
 
-	cloneResult, err := gitutil.CloneRepo(gitURL, repoName)
+	cloneResult, err := gitutil.CloneRepo(gitURL, repoName, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to clone %s: %w", repo, err)
 	}
@@ -385,9 +385,9 @@ func resolveGitHub(repo, skillPath string) (string, SourceType, error) {
 	}
 
 	if normalizedPath != "" {
-		cloneResult, err = gitutil.SparseCloneRepo(gitURL, repoName, []string{normalizedPath})
+		cloneResult, err = gitutil.SparseCloneRepo(gitURL, repoName, "", []string{normalizedPath})
 	} else {
-		cloneResult, err = gitutil.CloneRepo(gitURL, repoName)
+		cloneResult, err = gitutil.CloneRepo(gitURL, repoName, "")
 	}
 	if err != nil {
 		return "", SourceTypeGitHub, fmt.Errorf("failed to clone %s: %w", repo, err)

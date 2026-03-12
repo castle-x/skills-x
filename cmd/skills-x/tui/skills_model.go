@@ -447,10 +447,10 @@ func checkUpdateForSkill(item SkillItem, targetDir string, cache *repoUpdateCach
 
 		var result *gitutil.CloneResult
 			if source.SkipFetch && skill.Path != "" {
-				result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, []string{skill.Path})
+				result, err = gitutil.SparseCloneRepo(source.GetGitURL(), source.Repo, source.Branch, []string{skill.Path})
 			} else {
 				// Always refresh on explicit update checks to avoid stale cache false negatives.
-				result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, true)
+				result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, source.Branch, true)
 			}
 		if err != nil {
 			// Cache the error so subsequent checks for the same repo don't retry

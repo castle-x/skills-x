@@ -181,9 +181,9 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 			// Check mode must also refresh, otherwise stale cache can hide updates.
 			refresh := true
 			if is.source.SkipFetch && is.skill.Path != "" {
-				cloneResult, err = sparseCloneRepo(is.source.GetGitURL(), is.source.Repo, []string{is.skill.Path})
+				cloneResult, err = sparseCloneRepo(is.source.GetGitURL(), is.source.Repo, is.source.Branch, []string{is.skill.Path})
 			} else {
-				cloneResult, err = cloneRepoWithRefresh(is.source.GetGitURL(), is.source.Repo, refresh)
+				cloneResult, err = cloneRepoWithRefresh(is.source.GetGitURL(), is.source.Repo, is.source.Branch, refresh)
 			}
 		if err != nil {
 			results = append(results, skillCheckResult{

@@ -155,6 +155,9 @@ SKILLS_LANG=zh skills-x
    cache-components       Next.js cache components best practices for PPR and caching workflows
    update-docs            Update Next.js docs based on source code changes
 
+📦 github.com/shadcn-ui/ui (MIT)
+   shadcn                 Official shadcn/ui skill — component management, CLI workflows, styling
+
 📦 github.com/google-gemini/gemini-cli (Apache-2.0)
    code-reviewer          Review local changes or pull requests with structured feedback
    pr-creator             Create high-quality pull requests with templates and preflight checks
@@ -170,7 +173,6 @@ SKILLS_LANG=zh skills-x
 
 📦 github.com/giuseppe-trisciuoglio/developer-kit (MIT)
    react-patterns         React 19 patterns - Server Components, Actions, hooks
-   shadcn-ui              shadcn/ui with Radix UI and Tailwind CSS
    tailwind-css-patterns  Tailwind CSS utility-first styling patterns
    typescript-docs        TypeScript documentation with JSDoc and TypeDoc
 

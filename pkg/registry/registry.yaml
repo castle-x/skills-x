@@ -163,6 +163,21 @@ vercel-nextjs:
       description_zh: 基于源码变更更新 Next.js 文档的引导式工作流
 
 # =============================================================================
+# shadcn/ui Official Skills
+# https://github.com/shadcn-ui/ui
+# =============================================================================
+shadcn-ui:
+  repo: github.com/shadcn-ui/ui
+  branch: canary
+  license: MIT
+  skills:
+    - name: shadcn
+      path: skills/shadcn
+      tags: [web-frontend, design]
+      description: Official shadcn/ui skill — component management, CLI workflows, styling, and composition patterns
+      description_zh: shadcn/ui 官方技能 — 组件管理、CLI 工作流、样式与组合模式
+
+# =============================================================================
 # Google Gemini CLI Skills
 # https://github.com/google-gemini/gemini-cli
 # =============================================================================
@@ -351,12 +366,6 @@ developer-kit:
       tags: [web-frontend]
       description: React 19 patterns covering Server Components, Actions, hooks, Suspense and TypeScript
       description_zh: React 19 模式 - 服务器组件、Actions、hooks、Suspense 和 TypeScript
-
-    - name: shadcn-ui
-      path: plugins/developer-kit-typescript/skills/shadcn-ui
-      tags: [web-frontend, design]
-      description: shadcn/ui component library with Radix UI and Tailwind CSS
-      description_zh: shadcn/ui 组件库 - 基于 Radix UI 和 Tailwind CSS
 
     - name: tailwind-css-patterns
       path: plugins/developer-kit-typescript/skills/tailwind-css-patterns

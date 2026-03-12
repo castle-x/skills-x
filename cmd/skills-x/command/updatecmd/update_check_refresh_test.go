@@ -36,7 +36,7 @@ func TestRunUpdate_CheckModeRefreshesRepoCache(t *testing.T) {
 	flagTarget = targetDir
 
 	refreshCalled := false
-	cloneRepoWithRefresh = func(gitURL string, repoName string, refresh bool) (*gitutil.CloneResult, error) {
+	cloneRepoWithRefresh = func(gitURL string, repoName string, branch string, refresh bool) (*gitutil.CloneResult, error) {
 		if repoName == "github.com/castle-x/gve" {
 			refreshCalled = refresh
 		}
