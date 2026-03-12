@@ -5,6 +5,7 @@ bin/
 
 # npm package (published separately)
 npm/bin/
+!npm/bin/skills-x.js
 npm/node_modules/
 npm/.npmrc
 
