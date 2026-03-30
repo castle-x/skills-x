@@ -353,6 +353,12 @@ superpowers:
       description: Create, edit, and verify skills
       description_zh: 创建、编辑和验证 skills
 
+    - name: using-git-worktrees
+      path: skills/using-git-worktrees
+      tags: [featured, ai-efficiency]
+      description: Create isolated workspace on new branch for safe, non-blocking development
+      description_zh: 在新分支上创建隔离工作区，实现安全、无阻塞的开发
+
 # =============================================================================
 # Developer Kit by Giuseppe Trisciuoglio
 # https://github.com/giuseppe-trisciuoglio/developer-kit
