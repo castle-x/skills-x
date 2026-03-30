@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: x
-  version: "1.5"
+  version: "1.6"
 ---
 
 # Skills-X Contribution Guide
@@ -183,6 +183,39 @@ metadata:               # Optional: additional metadata
 
 ---
 
+## User Guide: Keeping Skills Up-to-Date
+
+### Refreshing the Registry Cache
+
+Skills-X uses a **smart caching system** to deliver skill updates without requiring a binary upgrade:
+
+- **Binary contains**: Only the registry index (skill metadata)
+- **Skills are fetched**: On-demand from GitHub repositories when users run `skills-x init`
+- **Automatic caching**: Registry is cached at `~/.config/skills-x/registry.yaml` for performance
+
+**To get the latest skills after an update:**
+
+```bash
+# Refresh the registry cache (downloads latest registry from GitHub)
+skills-x registry update
+
+# Now list/init commands will see the latest skills
+./bin/skills-x list
+./bin/skills-x init <skill-name>
+```
+
+**When is cache update needed?**
+- After a new skill is added to registry.yaml and pushed to GitHub
+- When registry paths are corrected
+- When you want the absolute latest before publishing a new binary version
+
+**Default behavior:**
+- Without a cached registry: Uses the registry embedded in the binary
+- With a cached registry: Uses the cached version (faster, more up-to-date)
+- Users can always run `skills-x registry update` to refresh
+
+---
+
 ## Contributing Community Skills (Open Source Skills)
 
 **NEW WORKFLOW:** To add a new open source skill to the registry, you only need to edit `pkg/registry/registry.yaml`. No manual downloading or local copying required!
@@ -251,12 +284,19 @@ ls /tmp/test-install/skill-name/
 - [ ] English and Chinese descriptions display correctly
 - [ ] License information is accurate
 
-### Step 4: Ask for Release Actions
+### Step 4: Release Path
 
-After tests finish, ask the user whether they want to:
-- Commit and push
-- Create GitHub release
-- Publish to npm
+After tests finish, choose the appropriate path:
+
+**Skills-only changes** (only `pkg/registry/registry.yaml` or skill content changed):
+- Simply commit and push to main
+- No version bump, binary build, or npm publish needed
+- Users will get the update by running `skills-x registry update`
+- Recommended workflow for most skill additions
+
+**Tool changes** (Go code, CLI behavior, registry format changed):
+- Full release required: version bump → build → GitHub release → npm publish
+- See "Release Workflow" section below
 
 ---
 
@@ -327,24 +367,55 @@ ls /tmp/test-skills/<skill-name>/
 
 ## Release Workflow
 
-### Step 1: Update Version
+> **Skills are fetched from GitHub at install time.** The binary only contains the registry index, not skill content. This means:
+> - **Skills-only changes** (add/update skills in registry.yaml) → just commit & push, **no release needed**
+> - **Tool changes** (Go code, CLI behavior, registry format) → full release required
+
+### Path A: Skills-only Release (FAST - no version bump needed)
+
+When ONLY `pkg/registry/registry.yaml` or skill content changes:
+
+```bash
+# Build and verify
+make build
+./bin/skills-x init --all --target "$(mktemp -d)"
+
+# Commit and push — done!
+git add pkg/registry/registry.yaml
+git commit -m "feat: add <skill-name> skill
+
+- Add <skill-name> to registry
+- Users can update registry: skills-x registry update"
+git push origin main
+```
+
+**That's it!** Users get the skill immediately by running:
+```bash
+skills-x registry update
+skills-x list  # See new skill
+skills-x init <skill-name>  # Install it
+```
+
+### Path B: Tool Release (FULL - version bump required)
+
+When Go source code, CLI behavior, or registry format changes:
+
+#### Step 1: Update Version
 
 Increment version in `npm/package.json`:
 ```json
 "version": "0.1.X"  // increment patch version
 ```
 
-### Step 2: Build for npm
+#### Step 2: Build for npm
 
 ```bash
 make build-npm
 ```
 
-### Step 3: Pre-Release Testing (CRITICAL)
+#### Step 3: Pre-Release Testing (CRITICAL)
 
 ⚠️ **IMPORTANT: Always run this test before releasing to catch broken or missing skills!**
-
-Test all skills can be installed successfully:
 
 ```bash
 # Use a clean temporary directory
@@ -393,7 +464,7 @@ make build-npm
 ./bin/skills-x init --all --target "$(mktemp -d)"
 ```
 
-### Step 4: Commit Changes
+#### Step 4: Commit Changes
 
 ```bash
 git add .
@@ -404,7 +475,7 @@ git commit -m "feat: add <skill-name> skill
 - Update README"
 ```
 
-### Step 5: Tag and Push
+#### Step 5: Tag and Push
 
 ```bash
 git tag -a v0.1.X -m "Add <skill-name> skill"
@@ -412,7 +483,7 @@ git push origin main
 git push --tags
 ```
 
-### Step 6: Create GitHub Release
+#### Step 6: Create GitHub Release
 
 ⚠️ **CRITICAL: You MUST upload binary assets to the release!**
 
@@ -458,7 +529,7 @@ gh release upload v0.1.X \
   --clobber
 ```
 
-### Step 7: Publish to npm
+#### Step 7: Publish to npm
 
 ```bash
 cd npm && npm publish --access public
@@ -469,6 +540,12 @@ cd npm && npm publish --access public
 ## Quick Reference Commands
 
 ```bash
+# Refresh registry cache to get latest skills (no binary rebuild needed)
+skills-x registry update
+
+# List all available skills
+./bin/skills-x list
+
 # Validate a skill
 head -20 skills/<name>/SKILL.md
 
@@ -477,7 +554,16 @@ make build
 SKILLS_LANG=zh ./bin/skills-x list
 SKILLS_LANG=en ./bin/skills-x list
 
-# Full release workflow
+# Skills-only change workflow (add/update skill in registry.yaml)
+# No release/npm publish needed — users get it on next `registry update`
+make build
+./bin/skills-x init --all --target "$(mktemp -d)"  # Verify all skills work
+git add pkg/registry/registry.yaml
+git commit -m "feat: add <skill-name> skill"
+git push origin main
+# Users will get the update with: skills-x registry update
+
+# Full release workflow (Go code or CLI behavior changed)
 make build-npm
 ./bin/skills-x init --all --target "$(mktemp -d)"  # Test all skills
 git add . && git commit -m "feat: add <skill>"
