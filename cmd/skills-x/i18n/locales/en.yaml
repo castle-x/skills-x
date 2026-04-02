@@ -164,6 +164,7 @@ skill_using-superpowers: "How to use skills"
 # X Skills
 skill_skills-x: "Contribute skills to skills-x collection"
 skill_go-i18n: "Go CLI i18n rules (author use)"
+skill_feishu-notify: "Send Feishu notifications when Claude Code task completes (Stop Hook config)"
 
 # Brian Lovin
 skill_simplify: "Simplify and refine code for clarity and consistency"
@@ -183,6 +184,7 @@ init_existing_count: "Found %d existing skills"
 init_cloning: "Cloning repository"
 init_clone_failed: "Clone failed"
 init_skill_path_not_found: "Skill path not found in repository"
+init_stale_cache_retry: "Stale cache detected, retrying with fresh clone..."
 init_from_source: "From: %s"
 init_conflict_found: "Found %d skills named '%s' from different sources:"
 init_choose_source: "Choose source"

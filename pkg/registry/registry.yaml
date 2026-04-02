@@ -713,3 +713,9 @@ castle-x-skills-x:
       tags: [design]
       description: TUI design specification for CLI terminal UI
       description_zh: TUI 终端交互界面设计规范
+
+    - name: feishu-notify
+      path: skills/feishu-notify
+      tags: [backend, ai-efficiency]
+      description: Send Feishu notifications when Claude Code task completes (Stop Hook config)
+      description_zh: Claude Code 任务完成后发送飞书通知（配置 Stop Hook）

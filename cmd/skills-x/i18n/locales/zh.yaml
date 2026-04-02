@@ -164,6 +164,7 @@ skill_using-superpowers: "如何使用 skills"
 # X Skills
 skill_skills-x: "向 skills-x 贡献 skills"
 skill_go-i18n: "Go CLI 多语言规则（作者自用）"
+skill_feishu-notify: "Claude Code 任务完成后发送飞书通知（配置 Stop Hook）"
 
 # Brian Lovin
 skill_simplify: "简化和优化代码，提升可读性和一致性"
@@ -183,6 +184,7 @@ init_existing_count: "发现 %d 个已存在的 skills"
 init_cloning: "正在克隆仓库"
 init_clone_failed: "克隆失败"
 init_skill_path_not_found: "在仓库中未找到 skill 路径"
+init_stale_cache_retry: "检测到旧缓存，正在重新拉取..."
 init_from_source: "来源: %s"
 init_conflict_found: "发现 %d 个名为 '%s' 的 skill 来自不同源:"
 init_choose_source: "请选择来源"
