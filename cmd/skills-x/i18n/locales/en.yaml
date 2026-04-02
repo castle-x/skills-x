@@ -169,6 +169,9 @@ skill_feishu-notify: "Send Feishu notifications when Claude Code task completes 
 # Brian Lovin
 skill_simplify: "Simplify and refine code for clarity and consistency"
 
+# GitHub Awesome Copilot
+skill_excalidraw-diagram-generator: "Generate Excalidraw diagrams from natural language — flowcharts, mind maps, architecture, swimlane diagrams"
+
 init_refresh_warning: "⚠ Refresh mode: fetching latest from repositories (this may be slower)"
 init_downloading: "Installing: %s"
 init_success: "Installed: %s"

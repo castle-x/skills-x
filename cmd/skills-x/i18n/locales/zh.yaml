@@ -169,6 +169,9 @@ skill_feishu-notify: "Claude Code 任务完成后发送飞书通知（配置 Sto
 # Brian Lovin
 skill_simplify: "简化和优化代码，提升可读性和一致性"
 
+# GitHub Awesome Copilot
+skill_excalidraw-diagram-generator: "从自然语言生成 Excalidraw 图 — 流程图、思维导图、架构图、泳道图"
+
 init_refresh_warning: "⚠ 刷新模式: 正在从仓库获取最新版本（可能较慢）"
 init_downloading: "正在安装: %s"
 init_success: "安装成功: %s"

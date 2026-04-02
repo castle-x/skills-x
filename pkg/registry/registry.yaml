@@ -466,6 +466,20 @@ axton-obsidian-visual-skills:
       description_zh: 根据文本生成 Excalidraw 图，支持 Obsidian/标准/动画三种输出
 
 # =============================================================================
+# GitHub Awesome Copilot Skills
+# https://github.com/github/awesome-copilot
+# =============================================================================
+github-awesome-copilot:
+  repo: github.com/github/awesome-copilot
+  license: MIT
+  skills:
+    - name: excalidraw-diagram-generator
+      path: skills/excalidraw-diagram-generator
+      tags: [design, ai-efficiency]
+      description: Generate Excalidraw diagrams (.excalidraw JSON) from natural language — flowcharts, mind maps, architecture, swimlane diagrams
+      description_zh: 从自然语言生成 Excalidraw 图（.excalidraw JSON）— 流程图、思维导图、架构图、泳道图
+
+# =============================================================================
 # Terma Skills
 # https://github.com/bfollington/terma
 # =============================================================================
