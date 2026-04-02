@@ -679,6 +679,20 @@ pbakaus-impeccable:
       description_zh: 一次性初始化，收集项目设计上下文并保存为持久化 AI 设计规范
 
 # =============================================================================
+# gstack - AI Software Factory by Garry Tan (YC CEO)
+# https://github.com/garrytan/gstack
+# =============================================================================
+garrytan-gstack:
+  repo: github.com/garrytan/gstack
+  license: MIT
+  skills:
+    - name: gstack
+      path: .
+      tags: [ai-efficiency, workflow, fullstack, devops, qa, design]
+      description: AI software factory - 23+ AI agents for the full dev lifecycle (plan, build, review, test, ship)
+      description_zh: AI 软件工厂 - 23+ 个 AI 代理覆盖完整开发周期（规划、构建、审查、测试、发布）
+
+# =============================================================================
 # Skills-X Original Skills
 # https://github.com/castle-x/skills-x
 # =============================================================================
