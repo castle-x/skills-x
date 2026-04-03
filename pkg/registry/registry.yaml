@@ -400,6 +400,20 @@ vercel-labs-skills:
       description_zh: 使用 Skills CLI 查找并安装技能
 
 # =============================================================================
+# Vercel Labs Agent Browser - Browser automation for AI agents
+# https://github.com/vercel-labs/agent-browser
+# =============================================================================
+vercel-labs-agent-browser:
+  repo: github.com/vercel-labs/agent-browser
+  license: Apache-2.0
+  skills:
+    - name: agent-browser
+      path: skills/agent-browser
+      tags: [web-frontend, tools, qa, devops]
+      description: Browser automation CLI for AI agents - navigate pages, fill forms, click buttons, take screenshots, extract data
+      description_zh: AI 代理浏览器自动化 CLI - 导航页面、填写表单、点击按钮、截图、提取数据
+
+# =============================================================================
 # Masayuki Kono Agent Skills
 # https://github.com/masayuki-kono/agent-skills
 # =============================================================================
@@ -677,6 +691,34 @@ pbakaus-impeccable:
       tags: [design, skills-meta]
       description: One-time setup that gathers design context and saves persistent design guidelines to AI config
       description_zh: 一次性初始化，收集项目设计上下文并保存为持久化 AI 设计规范
+
+# =============================================================================
+# taste-skill - Frontend design taste skills collection
+# https://github.com/leonxlnx/taste-skill
+# =============================================================================
+leonxlnx-taste-skill:
+  repo: github.com/leonxlnx/taste-skill
+  license: MIT
+  skills:
+    - name: design-taste-frontend
+      path: skills/taste-skill
+      tags: [web-frontend, design]
+      description: Senior UI/UX engineer rules - enforces metric-based design, premium animations, and anti-generic-AI patterns
+      description_zh: 高级 UI/UX 工程师规范 - 强制基于度量的设计、高质量动效，消除 AI 通用设计模式
+
+# =============================================================================
+# Better Icons - Icon search CLI & MCP for 200+ libraries
+# https://github.com/better-auth/better-icons
+# =============================================================================
+better-auth-better-icons:
+  repo: github.com/better-auth/better-icons
+  license: MIT
+  skills:
+    - name: better-icons
+      path: skills
+      tags: [web-frontend, design, tools]
+      description: Search and retrieve icons from 200+ libraries (Iconify) via CLI or MCP server
+      description_zh: 通过 CLI 或 MCP 服务器搜索并获取 200+ 图标库（Iconify）中的图标
 
 # =============================================================================
 # gstack - AI Software Factory by Garry Tan (YC CEO)
