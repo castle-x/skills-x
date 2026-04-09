@@ -1,7 +1,7 @@
 {
   "skill": "skills-x",
-  "source": "skills-x",
-  "repo": "skills-x",
-  "commit": "",
-  "installed_at": "2026-02-28T14:47:10Z"
+  "source": "castle-x-skills-x",
+  "repo": "github.com/castle-x/skills-x",
+  "commit": "ba89fd5",
+  "installed_at": "2026-04-02T10:37:10Z"
 }

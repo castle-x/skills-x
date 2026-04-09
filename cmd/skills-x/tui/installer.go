@@ -495,6 +495,19 @@ func (m *InstallerModel) installRegistrySkillWithRefresh(item SkillItem, targetD
 		return "", fmt.Errorf("skill path not found: %s", skill.Name)
 	}
 
+	// If the skill directory exists but is empty, the cache is stale (skill was added
+	// to the repo after the cache was created). Auto-retry with a fresh clone.
+	if !refresh && !source.SkipFetch && isDirEmpty(skillPath) {
+		result, err = gitutil.CloneRepoWithRefresh(source.GetGitURL(), source.Repo, source.Branch, true)
+		if err != nil {
+			return "", fmt.Errorf("clone failed (retry): %w", err)
+		}
+		skillPath = filepath.Join(result.TempDir, skill.Path)
+		if skillPath == "" || !dirExists(skillPath) {
+			return "", fmt.Errorf("skill path not found after retry: %s", skill.Name)
+		}
+	}
+
 	dstPath := filepath.Join(targetDir, skill.Name)
 	os.RemoveAll(dstPath)
 
@@ -536,6 +549,15 @@ func findSkillInRepo(repoPath string, skillName string) (*discover.DiscoveredSki
 	}
 
 	return nil, nil
+}
+
+// isDirEmpty returns true if the directory exists but contains no entries.
+func isDirEmpty(path string) bool {
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return false
+	}
+	return len(entries) == 0
 }
 
 // dirExists checks if a directory exists

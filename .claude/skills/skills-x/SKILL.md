@@ -4,7 +4,7 @@ description: Guide for contributing new skills to the skills-x collection. This 
 license: MIT
 metadata:
   author: x
-  version: "1.5"
+  version: "1.7"
 ---
 
 # Skills-X Contribution Guide
@@ -14,21 +14,43 @@ This skill provides a standardized workflow for contributing new skills to the s
 ## When to Use This Skill
 
 - Adding new community skills from external sources (agentskills.io, anthropics/skills, etc.)
-- Creating x original skills
+- Creating x original self-developed skills (自研)
 - Updating existing skills with new versions
 - Validating skill format compliance before submission
- - After creating a new skill, ask whether to generate a REAEDME (background summary)
+- After creating a new skill, ask whether to generate a README (background summary)
+
+---
+
+## ⚡ Core Principle: No Binary Rebuild Needed for Skills
+
+> **Adding or updating skills NEVER requires rebuilding or republishing the skills-x binary.**
+
+The skills-x tool uses a **registry-first architecture**:
+
+- The binary only contains the **registry index** (skill metadata)
+- Actual skill content is **fetched from GitHub at install time**
+- The registry is **cached locally** at `~/.config/skills-x/registry.yaml`
+
+This means:
+- ✅ Add a self-developed skill → push to git → done
+- ✅ Add a third-party skill → push to git → done
+- ✅ Users get new skills by running `skills-x registry update`
+- ❌ No version bump, no binary build, no npm publish needed
+
+**The only time a full release is needed** is when Go source code or CLI behavior changes.
+
+---
 
 ## Project Structure Overview
 
 ```
 skills-x/
 ├── pkg/registry/        # Skill registry definition
-│   └── registry.yaml    # Indexes skills from external sources
-├── skills/              # Self-developed skills (自研)
-│   └── skills-x/        # This skill (embedded in binary)
+│   └── registry.yaml    # Central index of ALL skills (self-developed + third-party)
+├── skills/              # Self-developed skills (自研) source code
+│   └── skills-x/        # This contribution skill
 ├── cmd/skills-x/        # Go source code
-│   ├── command/         # CLI commands (list, init)
+│   ├── command/         # CLI commands (list, init, registry)
 │   └── i18n/
 │       └── locales/     # Language files (zh.yaml, en.yaml)
 ├── npm/                 # npm package
@@ -36,10 +58,10 @@ skills-x/
 └── Makefile             # Build commands
 ```
 
-**Key Changes:**
-- **No local `skills/` directory** - Skills are fetched directly from external repositories
-- **Central registry** - All skill sources defined in `pkg/registry/registry.yaml`
-- **Dynamic fetching** - Skills are cloned on-demand, not bundled with binary
+**Architecture summary:**
+- `pkg/registry/registry.yaml` — single source of truth for all skills
+- `skills/<name>/` — self-developed skill content (committed to this repo)
+- Third-party skills — content lives in external repos, only metadata in registry.yaml
 
 ---
 
@@ -103,22 +125,16 @@ msg := i18n.Tf("my_format_msg", arg1, arg2)
 
 ### Rule 4: Adding New Skill Descriptions
 
-When adding a new skill, you MUST add descriptions to BOTH language files:
+For installable skills, descriptions should be defined in `pkg/registry/registry.yaml`:
 
-**Step 1:** Add English description to `en.yaml`:
 ```yaml
-skill_new-skill: "Brief description in English"
+- name: new-skill
+  path: skills/new-skill
+  description: "Brief English description"
+  description_zh: "简短的中文描述"
 ```
 
-**Step 2:** Add Chinese description to `zh.yaml`:
-```yaml
-skill_new-skill: "简短的中文描述"
-```
-
-**Step 3:** The code automatically picks up translations via:
-```go
-desc := i18n.T("skill_" + skillName)
-```
+Only add `i18n` keys when introducing new CLI/TUI message keys.
 
 ### Rule 5: Testing Bilingual Output
 
@@ -189,86 +205,35 @@ metadata:               # Optional: additional metadata
 
 ---
 
-## Contributing Community Skills (Open Source Skills)
+## User Guide: Keeping Skills Up-to-Date
 
-**NEW WORKFLOW:** To add a new open source skill to the registry, you only need to edit `pkg/registry/registry.yaml`. No manual downloading or local copying required!
-
-### Step 1: Find and Validate Source Skill
-
-Search for skills at:
-- https://agentskills.io/
-- https://github.com/anthropics/skills
-- https://github.com/vercel-labs/agent-skills
-- https://github.com/remotion-dev/skills
-- Other GitHub repositories with proper skill structure
-
-**Before adding a skill to registry, verify:**
-1. The repository has a valid `SKILL.md` file in the skill directory
-2. The `SKILL.md` has proper YAML frontmatter with `name` and `description` fields
-3. The skill name matches directory name (lowercase, hyphens only)
-4. License information is available
-
-### Step 2: Add Skill Source to Registry
-
-Edit `pkg/registry/registry.yaml` and add a new source entry:
-
-```yaml
-# Example: Adding a new skill source
-new-source-name:
-  repo: github.com/owner/repo-name
-  license: MIT  # or Apache-2.0, etc.
-  skills:
-    - name: skill-name
-      path: path/to/skill/in/repo  # e.g., "skills/pdf" or "packages/skills/pdf"
-      description: "Brief English description"
-      description_zh: "简短的中文描述"
-```
-
-**Required fields for each source:**
-- `repo`: GitHub repository URL (without https://)
-- `license`: License type (MIT, Apache-2.0, etc.)
-- `skills`: List of skills available from this source
-
-**Required fields for each skill:**
-- `name`: Skill name (must match directory name in repo)
-- `path`: Path to skill directory within repository
-- `description`: English description (max 1024 chars)
-- `description_zh`: Chinese description (optional, max 1024 chars)
-
-### Step 3: Verify Skill Installation (Always)
-
-After updating the registry, ALWAYS build and run list/init tests (no need to ask).
+### The `registry update` Command
 
 ```bash
-# Build the binary
-make build
-
-# Test listing the skill
-./bin/skills-x list | grep "skill-name"
-
-# Test installing the skill
-./bin/skills-x init skill-name --target /tmp/test-install
-ls /tmp/test-install/skill-name/
+skills-x registry update
 ```
 
-**Validation checks:**
-- [ ] Skill appears in `list` output
-- [ ] Skill can be installed with `init`
-- [ ] English and Chinese descriptions display correctly
-- [ ] License information is accurate
+This command downloads the latest `registry.yaml` from GitHub and caches it locally at `~/.config/skills-x/registry.yaml`.
 
-### Step 4: Ask for Release Actions
+**When to run it:**
+- After any skill has been added/updated and pushed to GitHub
+- To see newly contributed skills before upgrading the binary
+- Anytime `skills-x list` doesn't show a skill you expect
 
-After tests finish, ask the user whether they want to:
-- Commit and push
-- Create GitHub release
-- Publish to npm
+**How the cache works:**
+| State | What `list` / `init` sees |
+|-------|--------------------------|
+| No cache | Registry embedded in the binary (older) |
+| Cache present | Cached registry from GitHub (newer) |
+| After `registry update` | Latest registry from GitHub |
+
+> ⚠️ **Important for local development:** After pushing new skills to GitHub, you MUST run `skills-x registry update` before `skills-x list` will show the new skill. The locally built binary still has the old registry embedded until the cache is refreshed.
 
 ---
 
 ## Contributing Self-Developed Skills (自研)
 
-Self-developed skills should be placed in the `skills/` directory at the project root.
+> **No binary release needed.** Just create the skill, update the registry, push to git.
 
 ### Step 1: Create Skill Directory
 
@@ -296,19 +261,119 @@ metadata:
 
 2. Add `LICENSE.txt` (copy from project root or create)
 
-3. Ask the user whether to add a summary document named `REAEDME.md`.
-   - Purpose: describe the skill’s background, the problem it solves, and the author's goals.
-   - Do NOT include any secrets or API keys.
+3. Ask the user whether to add a `README.md` (background, problem it solves, author goals — no secrets).
 
-### Step 3: Add i18n Translations
+### Step 3: Update Registry
 
-Same as community skills - add to both `en.yaml` and `zh.yaml`:
+Add the skill to `pkg/registry/registry.yaml` under the `castle-x-skills-x` source:
 
 ```yaml
-skill_new-skill: "Description"
+castle-x-skills-x:
+  repo: github.com/castle-x/skills-x
+  license: MIT
+  skills:
+    # ... existing skills ...
+    - name: <skill-name>
+      path: skills/<skill-name>
+      tags: [<relevant-tags>]
+      description: "Brief English description"
+      description_zh: "简短的中文描述"
 ```
 
-Note: Self-developed skills are automatically assigned category `skills-x` and marked with `IsX: true`.
+### Step 4: Add i18n Translations
+
+Add to both `cmd/skills-x/i18n/locales/en.yaml` and `zh.yaml`:
+
+```yaml
+skill_<skill-name>: "Brief description"
+```
+
+### Step 5: Commit and Push
+
+```bash
+git add skills/<skill-name>/ pkg/registry/registry.yaml cmd/skills-x/i18n/locales/
+git commit -m "feat: add <skill-name> skill"
+git push origin main
+```
+
+**That’s it — no binary build or npm publish needed!**
+
+### Step 6: Test Locally (After Pushing)
+
+After pushing, verify the new skill is visible:
+
+```bash
+# Pull the latest registry from GitHub (REQUIRED to see new skills)
+skills-x registry update
+
+# Now the new skill should appear
+skills-x list | grep "<skill-name>"
+
+# Try installing it
+skills-x init <skill-name> --target /tmp/test-skills
+ls /tmp/test-skills/<skill-name>/
+```
+
+> ⚠️ **Without `skills-x registry update`, your local binary still shows the old embedded registry and the new skill will NOT appear.**
+
+---
+
+## Contributing Community Skills (Open Source Skills)
+
+> **No binary release needed.** Just validate, update registry, push to git.
+
+### Step 1: Find and Validate the Source Skill
+
+Search for skills at:
+- https://agentskills.io/
+- https://github.com/anthropics/skills
+- https://github.com/vercel-labs/agent-skills
+- https://github.com/remotion-dev/skills
+- Other GitHub repositories with proper skill structure
+
+**Before adding to registry, verify:**
+1. Repository has a valid `SKILL.md` in the skill directory
+2. `SKILL.md` has proper YAML frontmatter (`name` + `description`)
+3. Skill name matches directory name (lowercase, hyphens only)
+4. License is identifiable
+
+### Step 2: Add to Registry
+
+Edit `pkg/registry/registry.yaml`:
+
+```yaml
+new-source-name:
+  repo: github.com/owner/repo-name
+  license: MIT
+  skills:
+    - name: skill-name
+      path: path/to/skill/in/repo
+      tags: [<relevant-tags>]
+      description: "Brief English description"
+      description_zh: "简短的中文描述"
+```
+
+### Step 3: Commit and Push
+
+```bash
+git add pkg/registry/registry.yaml
+git commit -m "feat: add <skill-name> skill from <source>"
+git push origin main
+```
+
+### Step 4: Test Locally (After Pushing)
+
+```bash
+# Pull the latest registry from GitHub (REQUIRED)
+skills-x registry update
+
+# Verify the skill appears
+skills-x list | grep "<skill-name>"
+
+# Test installing it
+skills-x init <skill-name> --target /tmp/test-install
+ls /tmp/test-install/<skill-name>/
+```
 
 ---
 
@@ -333,24 +398,55 @@ ls /tmp/test-skills/<skill-name>/
 
 ## Release Workflow
 
-### Step 1: Update Version
+> **Skills are fetched from GitHub at install time.** The binary only contains the registry index, not skill content. This means:
+> - **Skills-only changes** (add/update skills in registry.yaml) → just commit & push, **no release needed**
+> - **Tool changes** (Go code, CLI behavior, registry format) → full release required
+
+### Path A: Skills-only Release (FAST - no version bump needed)
+
+When ONLY `pkg/registry/registry.yaml` or skill content changes:
+
+```bash
+# Build and verify
+make build
+./bin/skills-x init --all --target "$(mktemp -d)"
+
+# Commit and push — done!
+git add pkg/registry/registry.yaml
+git commit -m "feat: add <skill-name> skill
+
+- Add <skill-name> to registry
+- Users can update registry: skills-x registry update"
+git push origin main
+```
+
+**That's it!** Users get the skill immediately by running:
+```bash
+skills-x registry update
+skills-x list  # See new skill
+skills-x init <skill-name>  # Install it
+```
+
+### Path B: Tool Release (FULL - version bump required)
+
+When Go source code, CLI behavior, or registry format changes:
+
+#### Step 1: Update Version
 
 Increment version in `npm/package.json`:
 ```json
 "version": "0.1.X"  // increment patch version
 ```
 
-### Step 2: Build for npm
+#### Step 2: Build for npm
 
 ```bash
 make build-npm
 ```
 
-### Step 3: Pre-Release Testing (CRITICAL)
+#### Step 3: Pre-Release Testing (CRITICAL)
 
 ⚠️ **IMPORTANT: Always run this test before releasing to catch broken or missing skills!**
-
-Test all skills can be installed successfully:
 
 ```bash
 # Use a clean temporary directory
@@ -399,7 +495,7 @@ make build-npm
 ./bin/skills-x init --all --target "$(mktemp -d)"
 ```
 
-### Step 4: Commit Changes
+#### Step 4: Commit Changes
 
 ```bash
 git add .
@@ -410,7 +506,7 @@ git commit -m "feat: add <skill-name> skill
 - Update README"
 ```
 
-### Step 5: Tag and Push
+#### Step 5: Tag and Push
 
 ```bash
 git tag -a v0.1.X -m "Add <skill-name> skill"
@@ -418,7 +514,7 @@ git push origin main
 git push --tags
 ```
 
-### Step 6: Create GitHub Release
+#### Step 6: Create GitHub Release
 
 ⚠️ **CRITICAL: You MUST upload binary assets to the release!**
 
@@ -464,7 +560,7 @@ gh release upload v0.1.X \
   --clobber
 ```
 
-### Step 7: Publish to npm
+#### Step 7: Publish to npm
 
 ```bash
 cd npm && npm publish --access public
@@ -472,22 +568,47 @@ cd npm && npm publish --access public
 
 ---
 
-## Quick Reference Commands
+## Quick Reference
 
 ```bash
-# Validate a skill
-head -20 skills/<name>/SKILL.md
+# ─── After adding a skill and pushing ───────────────────────────────────────
+# Pull latest registry from GitHub (REQUIRED before testing new skills)
+skills-x registry update
 
-# Build and test locally (both languages)
+# List all skills (now shows newly added skills)
+skills-x list
+skills-x list | grep "<skill-name>"
+
+# Install a skill
+skills-x init <skill-name> --target /tmp/test-skills
+
+# ─── Local dev build & verify ────────────────────────────────────────────────
 make build
 SKILLS_LANG=zh ./bin/skills-x list
 SKILLS_LANG=en ./bin/skills-x list
 
-# Full release workflow
+# ─── Self-developed skill (自研) — no binary release needed ──────────────────
+# 1. Create skills/<skill-name>/SKILL.md + LICENSE.txt
+# 2. Add entry to pkg/registry/registry.yaml (under castle-x-skills-x)
+# 3. Add i18n keys to en.yaml + zh.yaml
+git add skills/<skill-name>/ pkg/registry/registry.yaml cmd/skills-x/i18n/locales/
+git commit -m "feat: add <skill-name> skill"
+git push origin main
+# Users get it with: skills-x registry update
+
+# ─── Third-party skill — no binary release needed ────────────────────────────
+# 1. Validate SKILL.md in source repo
+# 2. Add entry to pkg/registry/registry.yaml
+git add pkg/registry/registry.yaml
+git commit -m "feat: add <skill-name> skill from <source>"
+git push origin main
+# Users get it with: skills-x registry update
+
+# ─── Full tool release (Go code changes only) ────────────────────────────────
 make build-npm
 ./bin/skills-x init --all --target "$(mktemp -d)"  # Test all skills
-git add . && git commit -m "feat: add <skill>"
-git tag -a v0.1.X -m "Add <skill>"
+git add . && git commit -m "feat: ..."
+git tag -a v0.1.X -m "..."
 git push origin main --tags
 gh release create v0.1.X --title "v0.1.X" --notes "..." \
   npm/bin/skills-x-linux-amd64 \
@@ -505,11 +626,11 @@ cd npm && npm publish --access public
 | Issue | Solution |
 |-------|----------|
 | Open source skill not in list | Check registry.yaml entry (repo, path, name fields) |
-| Self-developed skill not in list | Check i18n translations and skill directory in `skills/` |
+| Self-developed skill not in list | Check `pkg/registry/registry.yaml` source entry, skill path, and source repository accessibility |
 | Mixed language output | Ensure ALL strings use `i18n.T()`, no hardcoded text |
 | Missing translation | Add keys to BOTH `en.yaml` and `zh.yaml` |
 | init fails | Verify SKILL.md exists and has valid frontmatter |
-| Windows fails | Ensure using `/` not `\` for embed.FS paths |
+| Windows fails | Ensure registry `path` uses `/` separators and target directories are writable |
 | Version mismatch | Check `npm/package.json` version matches build |
 | **Release has no assets** | **MUST include binary files when running `gh release create`** |
 | **Skill not in README** | **MUST update BOTH `README.md` and `README_ZH.md` with new skill** |
@@ -518,42 +639,36 @@ cd npm && npm publish --access public
 
 ## Summary: Skill Contribution Workflows
 
-| Skill Type | Storage Location | Description Source | Workflow |
-|------------|------------------|--------------------|----------|
-| **Open Source Skills** (from external repositories) | **Remote repositories only** - no local copy | Directly in `registry.yaml` (`description` and `description_zh` fields) | Edit `pkg/registry/registry.yaml` to add source and skills |
-| **Self-Developed Skills** (自研) | `skills/<name>/` directory (embedded in binary) | `i18n/locales/` files (`skill_<name>` keys) | 1. Create skill in `skills/<name>/`<br>2. Add i18n translations<br>3. Build binary |
-
-**Key Differences:**
-- **Open Source Skills**: Descriptions stored in registry.yaml, fetched on-demand from remote repos
-- **Self-Developed Skills**: Descriptions stored in i18n files, embedded in binary during build
+| Skill Type | Storage | Description Source | Release needed? | How users get it |
+|------------|---------|-------------------|-----------------|-----------------|
+| **Self-Developed** (自研) | `skills/<name>/` in this repo | `registry.yaml` fields | ❌ No | `skills-x registry update` |
+| **Third-Party** (open source) | External repo only | `registry.yaml` fields | ❌ No | `skills-x registry update` |
+| **Tool change** (Go code) | n/a | n/a | ✅ Yes (full release) | Install new binary version |
 
 ---
 
 ## Checklists for New Skills
 
-### For Open Source Skills (in registry.yaml)
-
-Before submitting a PR for adding new open source skills, verify:
-
-- [ ] Source entry added to `pkg/registry/registry.yaml`
-- [ ] `repo` field is correct GitHub repository URL
-- [ ] `license` field specifies correct license type
-- [ ] `name` field matches skill directory name
-- [ ] `path` field points to correct skill location in repo
-- [ ] `description` field provides clear English description
-- [ ] `description_zh` field provides Chinese translation (optional but recommended)
-- [ ] Skill appears in `list` output
-- [ ] Skill can be installed with `init` command
-
 ### For Self-Developed Skills (自研)
 
-Before submitting a PR for new self-developed skills, verify:
+- [ ] Skill directory created at `skills/<name>/`
+- [ ] `SKILL.md` with valid YAML frontmatter (`name`, `description`, `license`)
+- [ ] `LICENSE.txt` present
+- [ ] Entry added to `pkg/registry/registry.yaml` under `castle-x-skills-x` source
+- [ ] `description` (English) and `description_zh` (Chinese) filled in registry.yaml
+- [ ] `skill_<name>` key added to `en.yaml` and `zh.yaml`
+- [ ] Committed and pushed to `origin/main`
+- [ ] `skills-x registry update` run locally
+- [ ] `skills-x list | grep "<name>"` shows the skill
+- [ ] `skills-x init <name> --target /tmp/test` installs successfully
 
-- [ ] Skill directory created in `skills/<name>/`
-- [ ] `SKILL.md` file with proper YAML frontmatter
-- [ ] `skill_<name>` key added to `en.yaml`
-- [ ] `skill_<name>` key added to `zh.yaml`
-- [ ] No mixed Chinese/English in any single string
-- [ ] Tested with `SKILLS_LANG=zh` - shows Chinese
-- [ ] Tested with `SKILLS_LANG=en` - shows English
-- [ ] Skill appears in `list` output under "skills-x (Original)" section
+### For Third-Party / Open Source Skills
+
+- [ ] Source repo has valid `SKILL.md` with frontmatter
+- [ ] Skill name matches directory name in source repo
+- [ ] Entry added to `pkg/registry/registry.yaml` with correct `repo`, `path`, `license`
+- [ ] `description` (English) and `description_zh` (Chinese) filled in registry.yaml
+- [ ] Committed and pushed to `origin/main`
+- [ ] `skills-x registry update` run locally
+- [ ] `skills-x list | grep "<name>"` shows the skill
+- [ ] `skills-x init <name> --target /tmp/test` installs successfully
