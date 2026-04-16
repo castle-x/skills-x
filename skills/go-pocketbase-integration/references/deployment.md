@@ -29,7 +29,38 @@
 
 PocketBase uses Cobra CLI. The `serve` command starts the HTTP server.
 
-## Data Directory Structure
+## Data Directory Configuration
+
+### Recommended: XDG-like home directory with env override
+
+```go
+func getDataDir() string {
+    if dir := os.Getenv("DATA_DIR"); dir != "" {
+        return dir
+    }
+    home, err := os.UserHomeDir()
+    if err != nil {
+        return "app_data" // fallback if home dir unavailable
+    }
+    return filepath.Join(home, ".myapp")
+}
+```
+
+Default locations by environment:
+
+| Scenario | DATA_DIR | Actual Path |
+|----------|----------|-------------|
+| Dev (default) | (unset) | `~/.myapp/` |
+| Production custom | `/var/lib/myapp` | `/var/lib/myapp/` |
+| Fallback | (unset, HomeDir fails) | `./app_data` |
+
+Benefits over hardcoded `"app_data"`:
+- Dev data doesn't pollute project directory (won't be accidentally committed)
+- `make clean` can safely remove build artifacts without touching user data
+- Follows XDG convention (`~/.appname/`) for predictable data location
+- Environment variable allows Docker volume mounts or custom paths
+
+### Data Directory Structure
 
 PocketBase stores all data in the `DefaultDataDir` (set in `pocketbase.Config`):
 
@@ -155,9 +186,10 @@ Common patterns for PocketBase-integrated apps:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ENV` | (empty) | Set to `dev` to enable dev mode and auto-migrations |
+| `DATA_DIR` | `~/.myapp/` | PocketBase data directory (falls back to `app_data` if home dir unavailable) |
 | `APP_URL` | (empty) | Public URL for the app (used for subpath routing) |
 | `USER_EMAIL` | (empty) | Initial admin email (used in initial migration) |
-| `USER_PASSWORD` | (empty) | Initial admin password |
+| `USER_PASSWORD` | (empty) | Initial admin password (used in initial migration) |
 | `DISABLE_PASSWORD_AUTH` | (empty) | Set to `true` to disable email/password login |
 | `TRUSTED_AUTH_HEADER` | (empty) | HTTP header for trusted proxy authentication |
 
